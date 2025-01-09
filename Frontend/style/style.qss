@@ -1,0 +1,49 @@
+#widgetGeneral{
+background-color: white;
+}
+
+
+#topmenu{
+    background-color: rgba(237, 249, 242, 0.2); ; /* Sleek dark background */
+    border-radius: 15px; /* Softer rounded corners */
+    border: 2px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
+    box-shadow: 0px 4px 10px rgba(237, 249, 242, 0.1); /* Light shadow for depth */ 
+}
+#leftmenu{
+    background-color: rgba(237, 249, 242, 0.2) ; /* Sleek dark background */
+    border-radius: 15px; /* Softer rounded corners */
+    border: 2px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
+    box-shadow: 0px 4px 10px rgba(237, 249, 242, 0.1); /* Light shadow for depth */ 
+}
+#contentframe{
+    background-color: rgba(237, 249, 242, 0.2) ; /* Sleek dark background */
+    border-radius: 15px; /* Softer rounded corners */
+    border: 2px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Light shadow for depth */ 
+}
+#ButtonWithLogo{
+    display: flex; /* Permet d'aligner le logo et le texte */
+    align-items: center; /* Centrer le contenu verticalement */
+    justify-content: center; /* Centrer le contenu horizontalement */
+    background-color: #b7e9c3; /* Vert médical */
+    color: #ffffff; /* Texte en blanc */
+    font-size: 16px; /* Taille de police */
+    font-weight: bold; /* Texte en gras */
+    border: none; /* Pas de bordure */
+    border-radius: 8px; /* Coins arrondis */
+    padding: 10px 20px; /* Espacement intérieur */
+    cursor: pointer; /* Curseur de pointeur au survol */
+    box-shadow: 0px 4px 6px rgba(79, 219, 156, 0.1); /* Ombre subtile */
+    transition: background-color 0.3s, transform 0.2s; /* Transition fluide */
+    max-width: 40px;
+}
+#ButtonWithLogo:hover {
+    background-color: #218838; /* Vert légèrement plus foncé au survol */
+    transform: translateY(-2px); /* Légère élévation au survol */
+}
+
+#ButtonWithLogo img {
+    width: 24px; /* Taille du logo */
+    height: 24px; /* Taille du logo */
+    margin-right: 8px; /* Espacement entre le logo et le texte */
+}
