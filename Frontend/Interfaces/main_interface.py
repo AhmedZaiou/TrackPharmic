@@ -1,9 +1,11 @@
-from qtpy.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QAction, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame, QLabel
+
+from qtpy.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QAction, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame, QLabel, QLineEdit
 from qtpy.QtCore import Qt,QSize
 from qtpy.QtGui import QPixmap, QIcon 
 
 
 from Frontend.utils.utils import *
+from Backend.Dataset.dataset import *
 
 
 class MainInterface(QMainWindow):
@@ -11,18 +13,83 @@ class MainInterface(QMainWindow):
         super().__init__()
 
         self.setWindowTitle(name_application)
-        self.setGeometry(100, 100, 1200, 800)
+        self.setGeometry(100, 100, 1200, 800) # merci de remplire 
         #self.showFullScreen()
         self.setStyleSheet(set_styles())
-        self.show_main_interface()
+        #self.show_main_interface()
+        self.show_login_interface()
+        self.setFocusPolicy(Qt.StrongFocus)
+     
+
+    def show_login_interface(self):
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget) 
+
+        self.central_widget.setObjectName("widgetGeneral")
+
+
+        self.central_widget = QWidget()
+        self.central_widget.setObjectName("widgetGeneral")  
+
+        self.main_layout_p = QVBoxLayout(self.central_widget) 
+        
+        self.setCentralWidget(self.central_widget)
+
+        self.central_widget = QWidget()
+        self.central_widget.setObjectName("main") 
+        
+        self.main_layout = QVBoxLayout(self.central_widget) 
+
+        
+ 
+        # Page de connexion
+        self.login_frame = QFrame()
+        self.login_frame.setFixedSize(400, 400)  # Frame carrée avec taille fixe 
+        self.main_layout.addWidget(self.login_frame, alignment=Qt.AlignCenter)
+        self.login_frame.setObjectName("loginframe")
+        # Layout de la frame de connexion
+        self.login_layout = QVBoxLayout(self.login_frame)
+        self.connexion = QLabel("Connexion")
+        self.connexion.setObjectName('connexionlab')
+        self.login_layout.addWidget(self.connexion )
+        self.user_label = QLabel("Utilisateur :")
+        self.login_layout.addWidget(self.user_label)
+        self.user_entry = QLineEdit()
+        self.user_entry.setPlaceholderText("Entrez votre nom d'utilisateur")
+        self.login_layout.addWidget(self.user_entry)
+
+        self.password_label = QLabel("Mot de passe :")
+        self.login_layout.addWidget(self.password_label)
+
+        self.password_entry = QLineEdit()
+        self.password_entry.setEchoMode(QLineEdit.Password)
+        self.password_entry.setPlaceholderText("Entrez votre mot de passe")
+        self.login_layout.addWidget(self.password_entry)
+
+        self.login_button = QPushButton("Se connecter")
+        self.login_button.clicked.connect(self.login)
+        self.login_button.setObjectName("buttconexion")
+        self.login_layout.addWidget(self.login_button)
+
+        self.main_layout_p.addWidget(self.central_widget)
+        
+
+    def login(self):
+        login = self.user_entry.text()
+        password = self.password_entry.text() 
+        self.user_session = extraire_salarie_login(login, password)
+        if self.user_session is None:
+            print("mot de passe erreur") 
+
+        else: 
+            self.show_main_interface()  
     
 
     def show_main_interface(self):
         # Widget central
         self.central_widget = QWidget(self)
-        self.setCentralWidget(self.central_widget)
-        self.path_profil_image = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/profile.png"
-        self.nom_utilisateur = "Nom de l'utilisateur"
+        self.setCentralWidget(self.central_widget)  
+        self.current_input = ""
 
         self.central_widget.setObjectName("widgetGeneral")
 
@@ -43,13 +110,13 @@ class MainInterface(QMainWindow):
 
         # Ajouter une image de profil
         profile_image = QLabel()
-        pixmap = QPixmap(self.path_profil_image)  # Remplacez par le chemin de votre image
+        pixmap = QPixmap(self.user_session['Photo'])  # Remplacez par le chemin de votre image
         pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         profile_image.setPixmap(pixmap)
         profile_image.setAlignment(Qt.AlignCenter)
 
         # Ajouter un nom de profil
-        profile_name = QLabel(self.nom_utilisateur) 
+        profile_name = QLabel(str(self.user_session['Nom']+" "+self.user_session['Prenom'])) 
         profile_name.setAlignment(Qt.AlignCenter)
         profile_name.setStyleSheet("font-size: 14px; font-weight: bold;")
 
@@ -63,13 +130,19 @@ class MainInterface(QMainWindow):
         self.deconexion_bouton = self.create_button_with_icon("", deconexion_logo)
         self.salarie_bouton = self.create_button_with_icon("", salare_logo)
         self.kpi_bouton = self.create_button_with_icon("", kpi_logo)
+        self.medicament_bouton = self.create_button_with_icon("", medicament_logo)
+        self.fournisseur_bouton = self.create_button_with_icon("", fournisseur_logo)
+
+        self.top_menu_layout.addWidget(self.fournisseur_bouton)
+        self.top_menu_layout.addWidget(self.medicament_bouton)
 
         self.top_menu_layout.addWidget(self.salarie_bouton)
         self.top_menu_layout.addWidget(self.kpi_bouton)
         # Ajouter des boutons dans le menu vertical du haut 
         self.top_menu_layout.addWidget(self.deconexion_bouton)
 
-
+        self.fournisseur_bouton.clicked.connect(self.fournisseur_click)
+        self.medicament_bouton.clicked.connect(self.medicament_click)
         self.salarie_bouton.clicked.connect(self.salarie_click)
         self.kpi_bouton.clicked.connect(self.compta_click)
         self.deconexion_bouton.clicked.connect(self.deconexion_click)
@@ -94,6 +167,7 @@ class MainInterface(QMainWindow):
         self.client_bouton = self.create_button_with_icon("", client_logo)
         self.echange_bouton = self.create_button_with_icon("", echange_logo)
         self.stock_bouton = self.create_button_with_icon("", stock_logo)
+        self.ferme_bouton = self.create_button_with_icon("", ferme_logo)
 
         self.acceuil_bouton.clicked.connect(self.acceuil_click)
         self.commande_bouton.clicked.connect(self.commande_click)
@@ -102,6 +176,7 @@ class MainInterface(QMainWindow):
         self.client_bouton.clicked.connect(self.client_click)
         self.echange_bouton.clicked.connect(self.echange_click)
         self.stock_bouton.clicked.connect(self.stock_click)
+        self.ferme_bouton.clicked.connect(self.stock_click)
 
 
         # Ajouter des boutons dans le menu gauche
@@ -112,6 +187,7 @@ class MainInterface(QMainWindow):
         self.left_menu_layout.addWidget(self.client_bouton)
         self.left_menu_layout.addWidget(self.echange_bouton)
         self.left_menu_layout.addWidget(self.stock_bouton)
+        self.left_menu_layout.addWidget(self.ferme_bouton)
 
         # Frame pour contenu principal
         self.content_frame = QFrame(self)
@@ -126,6 +202,10 @@ class MainInterface(QMainWindow):
 
         # Créer les menus (Menu horizontal en haut et menu latéral)
         self.create_menus()
+    
+    def keyPressEvent(self, event):
+        """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
+        pass
     
         
 
@@ -164,6 +244,12 @@ class MainInterface(QMainWindow):
     def compta_click(self):
         from .compta_interface import Compta_dash
         self.main_interface = Compta_dash(self)
+    def fournisseur_click(self):
+        from .fourniseur_interface import Fournisseur_dash
+        self.main_interface = Fournisseur_dash(self)
+    def medicament_click(self):
+        from .medicament_interface import Medicament_dash
+        self.main_interface = Medicament_dash(self)
     def deconexion_click(self): 
         self.close() 
     
@@ -223,11 +309,7 @@ class MainInterface(QMainWindow):
     def show_main_interface_salarie(self):
         # Widget central
         self.central_widget = QWidget(self)
-        self.setCentralWidget(self.central_widget)
-        self.path_profil_image = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/profile.png"
-        
-
-        self.nom_utilisateur = "Nom de l'utilisateur"
+        self.setCentralWidget(self.central_widget)  
         self.central_widget.setObjectName("widgetGeneral")
 
         # Layout principal
@@ -247,13 +329,13 @@ class MainInterface(QMainWindow):
         profile_layout = QHBoxLayout(profile_widget)
         # Ajouter une image de profil
         profile_image = QLabel()
-        pixmap = QPixmap(self.path_profil_image)  # Remplacez par le chemin de votre image
+        pixmap = QPixmap(self.user_session['Photo'])  # Remplacez par le chemin de votre image
         pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         profile_image.setPixmap(pixmap)
         profile_image.setAlignment(Qt.AlignCenter)
 
         # Ajouter un nom de profil
-        profile_name = QLabel(self.nom_utilisateur) 
+        profile_name = QLabel(str(self.user_session['Nom']+" "+self.user_session['Prenom'])) 
         profile_name.setAlignment(Qt.AlignCenter)
         profile_name.setStyleSheet("font-size: 14px; font-weight: bold;")
 

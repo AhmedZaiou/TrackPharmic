@@ -1,16 +1,111 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QDoubleSpinBox,QGridLayout,QHeaderView,QCompleter,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
 )
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, QStringListModel
+
+from Backend.Dataset.dataset import *
 
 
 class Echange_dash:
     def __init__(self, main_interface):
         self.main_interface = main_interface
-        self.show_vente_interface()
+        self.show_principal_interface()
+    
 
-    def show_vente_interface(self):
+
+    def create_menu_commande(self):
+        menu_layout = QHBoxLayout()
+        self.add_commande_menu = QPushButton("gestion echange")
+        self.add_commande_menu.clicked.connect(self.gestion_echange)
+        menu_layout.addWidget(self.add_commande_menu)
+        self.list_commande_menu = QPushButton(" gestion pharma")
+        self.list_commande_menu.clicked.connect(self.gestion_pharma)
+        menu_layout.addWidget(self.list_commande_menu)
+        return menu_layout
+    
+
+    def gestion_echange(self):
+        self.show_principal_interface()
+    def gestion_pharma(self):
+        self.show_gestion_pharma_interface()
+
+    def show_principal_interface(self):
+        self.main_interface.clear_content_frame()
+        self.vente_dash = QWidget()
+        self.vente_dash.setObjectName("vente_dash") 
+        main_layout = QVBoxLayout(self.vente_dash) 
+        titre_page = QLabel("Gestion d'echanges")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter) 
+        main_layout.addWidget(titre_page)
+        menu_layout = self.create_menu_commande()
+        main_layout.addLayout(menu_layout)
+
+        table_form_layout = QGridLayout() 
+        self.list_medicament_data = []
+
+        # Créer les champs de saisie pour le formulaire sans 'self'
+        self.name_pharma = QLineEdit() 
+        self.name_pharma.textChanged.connect(self.OntextChangepharma)
+
+        self.completer_pharma = QCompleter()
+        self.completer_pharma.setCaseSensitivity(Qt.CaseInsensitive)
+        self.completer_pharma.setCompletionMode(QCompleter.PopupCompletion)
+        self.name_pharma.setCompleter(self.completer_pharma)
+        self.completer_pharma.activated.connect(self.selectionner_pharma)
+
+        self.medicament_code = QLineEdit()
+        self.quantite = QLineEdit()
+        self.prix = QLineEdit()
+ 
+
+        # Créer un bouton pour soumettre le formulaire
+        self.submit_button_echange = QPushButton("Ajouter ajouter Medicament")
+        self.submit_button_echange.clicked.connect(self.add_echange)
+
+
+        table_form_layout.addWidget(QLabel("Nom de pharma :"), 0,0) 
+        table_form_layout.addWidget(self.name_pharma, 0,1)   
+        table_form_layout.addWidget(QLabel("Scanner medicament :"), 0,2) 
+        table_form_layout.addWidget(self.medicament_code, 0,3) 
+        table_form_layout.addWidget(QLabel("Quantité :"), 1,0) 
+        table_form_layout.addWidget(self.quantite, 1,1)
+        table_form_layout.addWidget(QLabel("Prix  :"), 1,2) 
+        table_form_layout.addWidget(self.prix, 1,3)   
+        table_form_layout.addWidget(self.submit_button_echange, 2,3)  
+
+        main_layout.addLayout(table_form_layout) 
+
+        self.list_medicaments = QTableWidget(0, 4)
+        self.list_medicaments.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.list_medicaments.setHorizontalHeaderLabels(["Code Medicament","Nom de medicament", "Quantité", "prix achat"])
+        main_layout.addWidget(self.list_medicaments)
+
+        self.confirm_echange = QPushButton("Confirmer l'echange")
+        main_layout.addWidget(self.confirm_echange)
+
+
+
+
+
+        self.main_interface.content_layout.addWidget(self.vente_dash)
+    
+    def OntextChangepharma(self,text):
+        if len(text) >= 3:
+            self.updateCompleter_pharma(text)
+
+    def updateCompleter_pharma(self, text): 
+        results = extraire_pharma_nom_like(text)   
+        results = ["_".join(res) for res in results]
+        model = QStringListModel(results)  
+        self.completer_pharma.setModel(model) 
+    def selectionner_pharma(self, text):
+        print(text)
+    
+
+
+    def show_gestion_pharma_interface(self):
         self.main_interface.clear_content_frame()
 
         self.vente_dash = QWidget()
@@ -18,181 +113,99 @@ class Echange_dash:
 
         # Widget central
         # Layout principal
-        main_layout = QVBoxLayout(self.vente_dash)
-
-        top_layout = QHBoxLayout()
-
-        # Section Client
-        client_layout = QVBoxLayout()
-        self.client_id_input = QLineEdit()
-        self.client_id_input.setPlaceholderText("Rechercher client par ID")
-        self.search_client_button = QPushButton("Rechercher")
-        self.search_client_button.clicked.connect(self.search_client)
-        self.add_client_button = QPushButton("Nouveau client")
-        self.add_client_button.clicked.connect(self.search_client)
-
-        self.client_status_label = QLabel("Client : Anonyme")
-        self.client_max_credit = QLabel("Max_credit : 100")
-        self.client_credit_actuel = QLabel("Credit Actuel : 0")
+        main_layout = QVBoxLayout(self.vente_dash) 
+        titre_page = QLabel("Gestion d'echanges : Ajouter et lister les pharmacies")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter) 
+        main_layout.addWidget(titre_page)
 
 
-        client_layout.addWidget(self.client_id_input)
-        client_layout.addWidget(self.search_client_button)
-        client_layout.addWidget(self.add_client_button)
-        client_layout.addWidget(self.client_status_label)
-        client_layout.addWidget(self.client_max_credit)
-        client_layout.addWidget(self.client_credit_actuel)
-        
+        menu_layout = self.create_menu_commande()
+        main_layout.addLayout(menu_layout)
 
-        # Zone d'entrée pour le code-barres
-        barcode_layout = QVBoxLayout()
-        self.barcode_input = QLineEdit()
-        self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
-        self.barcode_input.returnPressed.connect(self.process_barcode)
-        self.product_table = QTableWidget(0, 3)  # (0 lignes, 3 colonnes)
-        self.product_table.setHorizontalHeaderLabels(["Code barre","Nom", "Prix", "Caractéristique"])
-        barcode_layout.addWidget(self.product_table)
+        table_form_layout = QGridLayout() 
 
+        # Créer les champs de saisie pour le formulaire sans 'self'
+        self.name_input = QLineEdit() 
+        self.telephone_input = QLineEdit()
+        self.email_input = QLineEdit()
+        self.address_input = QLineEdit()
+
+
+        # Créer un bouton pour soumettre le formulaire
+        self.submit_button = QPushButton("Ajouter Pharmacie")
+        self.submit_button.clicked.connect(self.add_pharma)
+
+
+        table_form_layout.addWidget(QLabel("Nom :"), 0,0) 
+        table_form_layout.addWidget(self.name_input, 0,1)   
+        table_form_layout.addWidget(QLabel("Téléphone :"), 0,2) 
+        table_form_layout.addWidget(self.telephone_input, 0,3) 
+        table_form_layout.addWidget(QLabel("Email :"), 1,0) 
+        table_form_layout.addWidget(self.email_input, 1,1) 
+        table_form_layout.addWidget(QLabel("Adresse :"), 1,2) 
+        table_form_layout.addWidget(self.address_input, 1,3)   
+        table_form_layout.addWidget(self.submit_button, 2,3)  
 
 
 
+        main_layout.addLayout(table_form_layout) 
 
-        self.add_to_cart_button = QPushButton("Ajouter au panier")
-        self.add_to_cart_button.clicked.connect(self.process_barcode)
-        barcode_layout.addWidget(self.barcode_input)
-        barcode_layout.addWidget(self.add_to_cart_button)
-
-        top_layout.addLayout(barcode_layout)
-        top_layout.addLayout(client_layout)
-
-        main_layout.addLayout(top_layout)
-
-
-
-
-        # Liste des produits
-        
-
-        # Panier
-        self.cart_table = QTableWidget(0, 3)
-        self.cart_table.setHorizontalHeaderLabels(["Code barre","Nom", "Quantité", "Prix total"])
-        main_layout.addWidget(self.cart_table)
-
-        # Totaux
-        totals_layout = QHBoxLayout()
-        self.subtotal_label = QLabel("Sous-total : 0 Dh")
-        self.tax_label = QLabel("Taxes : 0 Dh")
-        self.total_label = QLabel("<b>Total : 0 Dh</b>")
-        totals_layout.addWidget(self.subtotal_label)
-        totals_layout.addWidget(self.tax_label)
-        totals_layout.addWidget(self.total_label)
-        main_layout.addLayout(totals_layout)
-
-        # Paiement
-        payment_layout = QHBoxLayout()
-        self.checkbox = QCheckBox('Crédit ?', self.main_interface)
-        self.checkbox.stateChanged.connect(self.toggle_inputs)
-        
-
-        payment_layout.addWidget(self.checkbox)
-
-        # Montant à payer
-        self.amount_input = QLineEdit()
-        self.amount_input.setPlaceholderText("Montant à payer maintenant")
-        payment_layout.addWidget(self.amount_input) 
-
-        self.rest_a_payer = QLabel("Réste à payer après :")
-        self.rest_a_payer_value = QLineEdit()
-
-        payment_layout.addWidget(self.rest_a_payer) 
-        payment_layout.addWidget(self.rest_a_payer_value) 
-        self.toggle_inputs()
-
-        
-
-        # Bouton pour annuler
-        
-
-        main_layout.addLayout(payment_layout)
-
-        self.cancel_button = QPushButton("Annuler")
-        self.cancel_button.clicked.connect(self.cancel_sale)
-        main_layout.addWidget(self.cancel_button)
-
-        # Actions
-        self.confirm_button = QPushButton("Confirmer la vente")
-        main_layout.addWidget(self.confirm_button)
-
-        # Assign layout to central widget
-        self.main_interface.content_layout.addWidget(self.vente_dash)
-
-        # Connecter les signaux
-        self.confirm_button.clicked.connect(self.confirm_sale)
+        self.list_client = QTableWidget(0, 6)
+        self.list_client.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.list_client.setHorizontalHeaderLabels(["Nom","Téléphone","Email","Adresse", "Crédit Actuel", "Max Crédit"])
+        self.remplire_table()
+        main_layout.addWidget(self.list_client)
     
 
-
-    def toggle_inputs(self):
-        if self.checkbox.isChecked():
-            self.amount_input.setEnabled(True)
-            self.rest_a_payer.setEnabled(True)
-            self.rest_a_payer_value.setEnabled(True)
-        else:
-            self.amount_input.setDisabled(True)
-            self.rest_a_payer.setDisabled(True)
-            self.rest_a_payer_value.setDisabled(True)
-
-    def search_client(self):
-        client_id = self.client_id_input.text()
-        if client_id:
-            # Simulation de recherche d'un client
-            print(f"Recherche du client avec ID : {client_id}")
-            # Exemple : remplacer par une recherche réelle
-            if client_id == "123":
-                self.client_status_label.setText("Client : Jean Dupont")
-                print("Client trouvé : Jean Dupont")
-            else:
-                self.client_status_label.setText("Client : Inconnu")
-                print("Client non trouvé.")
-        else:
-            self.client_status_label.setText("Client : Anonyme")
-            print("Aucun client sélectionné. Vente anonyme.")
-
-    def process_barcode(self):
-        barcode = self.barcode_input.text()
-        if barcode:
-            print(f"Code-barres traité : {barcode}")
-            # Simuler l'ajout d'un produit au panier
-            self.add_product_to_cart(barcode)
-            self.barcode_input.clear()
-
-    def add_product_to_cart(self, barcode):
-        # Simule l'ajout d'un produit basé sur un code-barres
-        print(f"Ajout du produit avec le code-barres {barcode} au panier.")
-        row_position = self.cart_table.rowCount()
-        self.cart_table.insertRow(row_position)
-        self.cart_table.setItem(row_position, 0, QTableWidgetItem("Produit Exemple"))
-        self.cart_table.setItem(row_position, 1, QTableWidgetItem("1"))
-        self.cart_table.setItem(row_position, 2, QTableWidgetItem("10 €"))
-        # Mettre à jour les totaux (exemple simplifié)
-        self.update_totals(10)
-
-    def update_totals(self, price):
-        # Exemple : mettre à jour les étiquettes de sous-total, taxes et total
-        current_total = int(self.total_label.text().split(":")[1].split("€")[0].strip())
-        new_total = current_total + price
-        self.total_label.setText(f"<b>Total : {new_total} €</b>")
-
-    def activate_credit_mode(self):
-        print("Mode Crédit activé.")
-        # Logique supplémentaire pour le crédit peut être ajoutée ici
-
-    def cancel_sale(self):
-        print("Vente annulée.")
-
-    def confirm_sale(self):
-        amount = self.amount_input.text()
-        print(f"Vente confirmée avec {amount} € payé maintenant.")
-        # Logique de confirmation peut être ajoutée ici
+        self.main_interface.content_layout.addWidget(self.vente_dash)
 
 
+    def remplire_table(self):
+        all_client = extraire_tous_pharma()
+        self.list_client.setRowCount(len(all_client))
+        for index,element in enumerate(all_client):
+            dict_element = dict(element)
+            self.list_client.setItem(index, 0, QTableWidgetItem(str(dict_element['Nom']))) 
+            self.list_client.setItem(index, 1, QTableWidgetItem(str(dict_element['telephone']))) 
+            self.list_client.setItem(index, 2, QTableWidgetItem(str(dict_element['email']))) 
+            self.list_client.setItem(index, 3, QTableWidgetItem(str(dict_element['adresse']))) 
+            self.list_client.setItem(index, 4, QTableWidgetItem(str(dict_element['outvalue']))) 
+            self.list_client.setItem(index, 5, QTableWidgetItem(str(dict_element['invalue']))) 
 
+    def add_pharma(self):
+        # Récupérer les valeurs des champs
+        name = self.name_input.text() 
+        telephone = self.telephone_input.text()
+        email = self.email_input.text()
+        address = self.address_input.text() 
+        # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
+        ajouter_pharmacie(name, address, telephone, email, 0, 0) 
+        # Effacer les champs après soumission
+        self.name_input.clear() 
+        self.telephone_input.clear()
+        self.email_input.clear()
+        self.address_input.clear() 
+    
+
+    def add_echange(self):
+        # Récupérer les valeurs des champs
+        name = self.name_pharma.text() 
+        code_med = self.medicament_code.text()
+        quantite = self.quantite.text()
+        prix = self.prix.text() 
+        # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
+        self.list_medicament_data.append({'id' :name, "code_med" : code_med , "quantite" : quantite,"prix":prix })
+        self.remplire_table_echange()
+        # Effacer les champs après soumission 
+        self.medicament_code.clear()
+        self.quantite.clear()
+        self.prix.clear() 
+    
+    def remplire_table_echange(self): 
+        self.list_medicaments.setRowCount(len(self.list_medicament_data))
+        for index,element in enumerate(self.list_medicament_data): 
+            self.list_medicaments.setItem(index, 0, QTableWidgetItem(str(element['id']))) 
+            self.list_medicaments.setItem(index, 1, QTableWidgetItem(str(element['code_med']))) 
+            self.list_medicaments.setItem(index, 2, QTableWidgetItem(str(element['quantite']))) 
+            self.list_medicaments.setItem(index, 3, QTableWidgetItem(str(element['prix'])))  

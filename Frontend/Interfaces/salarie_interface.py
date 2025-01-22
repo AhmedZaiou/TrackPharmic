@@ -1,8 +1,9 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QGridLayout,QDoubleSpinBox,
+    QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox, QHeaderView
 )
 from qtpy.QtCore import Qt
+from Backend.Dataset.dataset import *
 
 
 class Salarie_dash:
@@ -13,186 +14,134 @@ class Salarie_dash:
     def show_vente_interface(self):
         self.main_interface.clear_content_frame()
 
-        self.vente_dash = QWidget()
-        self.vente_dash.setObjectName("vente_dash")
+        self.client_dash = QWidget()
+        self.client_dash.setObjectName("client_dash")
 
-        # Widget central
-        # Layout principal
-        main_layout = QVBoxLayout(self.vente_dash)
+        main_layout = QVBoxLayout(self.client_dash)
 
-        top_layout = QHBoxLayout()
-
-        # Section Client
-        client_layout = QVBoxLayout()
-        self.client_id_input = QLineEdit()
-        self.client_id_input.setPlaceholderText("Rechercher client par ID")
-        self.search_client_button = QPushButton("Rechercher")
-        self.search_client_button.clicked.connect(self.search_client)
-        self.add_client_button = QPushButton("Nouveau client")
-        self.add_client_button.clicked.connect(self.search_client)
-
-        self.client_status_label = QLabel("Client : Anonyme")
-        self.client_max_credit = QLabel("Max_credit : 100")
-        self.client_credit_actuel = QLabel("Credit Actuel : 0")
+        titre_page = QLabel("Gestion des clients")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter) 
+        main_layout.addWidget(titre_page)
 
 
-        client_layout.addWidget(self.client_id_input)
-        client_layout.addWidget(self.search_client_button)
-        client_layout.addWidget(self.add_client_button)
-        client_layout.addWidget(self.client_status_label)
-        client_layout.addWidget(self.client_max_credit)
-        client_layout.addWidget(self.client_credit_actuel)
-        
-
-        # Zone d'entrée pour le code-barres
-        barcode_layout = QVBoxLayout()
-        self.barcode_input = QLineEdit()
-        self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
-        self.barcode_input.returnPressed.connect(self.process_barcode)
-        self.product_table = QTableWidget(0, 3)  # (0 lignes, 3 colonnes)
-        self.product_table.setHorizontalHeaderLabels(["Code barre","Nom", "Prix", "Caractéristique"])
-        barcode_layout.addWidget(self.product_table)
+        table_form_layout = QGridLayout()
 
 
 
-
-
-        self.add_to_cart_button = QPushButton("Ajouter au panier")
-        self.add_to_cart_button.clicked.connect(self.process_barcode)
-        barcode_layout.addWidget(self.barcode_input)
-        barcode_layout.addWidget(self.add_to_cart_button)
-
-        top_layout.addLayout(barcode_layout)
-        top_layout.addLayout(client_layout)
-
-        main_layout.addLayout(top_layout)
+         
 
 
 
+ 
+        self.name_input = QLineEdit()
+        self.surname_input = QLineEdit()
+        self.cin_input = QLineEdit()
+        self.telephone_input = QLineEdit()
+        self.email_input = QLineEdit()
+        self.address_input = QLineEdit()
 
-        # Liste des produits
-        
+        self.photo = QLineEdit()
+        self.salaire = QLineEdit()
+        self.type_contrat = QLineEdit() 
+        self.date_embauche = QLineEdit()
+        self.grade = QLineEdit()
+        self.password = QLineEdit()
 
-        # Panier
-        self.cart_table = QTableWidget(0, 3)
-        self.cart_table.setHorizontalHeaderLabels(["Code barre","Nom", "Quantité", "Prix total"])
-        main_layout.addWidget(self.cart_table)
+         
 
-        # Totaux
-        totals_layout = QHBoxLayout()
-        self.subtotal_label = QLabel("Sous-total : 0 Dh")
-        self.tax_label = QLabel("Taxes : 0 Dh")
-        self.total_label = QLabel("<b>Total : 0 Dh</b>")
-        totals_layout.addWidget(self.subtotal_label)
-        totals_layout.addWidget(self.tax_label)
-        totals_layout.addWidget(self.total_label)
-        main_layout.addLayout(totals_layout)
+        # Créer un bouton pour soumettre le formulaire
+        self.submit_button = QPushButton("Ajouter Salarié")
+        self.submit_button.clicked.connect(self.add_client)
 
-        # Paiement
-        payment_layout = QHBoxLayout()
-        self.checkbox = QCheckBox('Crédit ?', self.main_interface)
-        self.checkbox.stateChanged.connect(self.toggle_inputs)
-        
 
-        payment_layout.addWidget(self.checkbox)
+        table_form_layout.addWidget(QLabel("Nom :"), 0,0) 
+        table_form_layout.addWidget(self.name_input, 0,1) 
+        table_form_layout.addWidget(QLabel("Prénom :"), 0,2) 
+        table_form_layout.addWidget(self.surname_input, 0,3) 
+        table_form_layout.addWidget(QLabel("CIN :"), 1,0) 
+        table_form_layout.addWidget(self.cin_input, 1,1) 
+        table_form_layout.addWidget(QLabel("Téléphone :"), 1,2) 
+        table_form_layout.addWidget(self.telephone_input, 1,3) 
+        table_form_layout.addWidget(QLabel("Email :"), 2,0) 
+        table_form_layout.addWidget(self.email_input, 2,1) 
+        table_form_layout.addWidget(QLabel("Adresse :"), 2,2) 
+        table_form_layout.addWidget(self.address_input, 2,3) 
 
-        # Montant à payer
-        self.amount_input = QLineEdit()
-        self.amount_input.setPlaceholderText("Montant à payer maintenant")
-        payment_layout.addWidget(self.amount_input) 
+        table_form_layout.addWidget(QLabel("Photo :"), 3,0) 
+        table_form_layout.addWidget(self.photo, 3,1) 
+        table_form_layout.addWidget(QLabel("Salaire (Dh) :"), 3,2) 
+        table_form_layout.addWidget(self.salaire, 3,3)  
+        table_form_layout.addWidget(QLabel("Type contrat :"), 4,0) 
+        table_form_layout.addWidget(self.type_contrat, 4,1) 
+        table_form_layout.addWidget(QLabel("Date d'embauche :"), 4,2) 
+        table_form_layout.addWidget(self.date_embauche, 4,3)  
 
-        self.rest_a_payer = QLabel("Réste à payer après :")
-        self.rest_a_payer_value = QLineEdit()
+        table_form_layout.addWidget(QLabel("Grade :"), 5,0) 
+        table_form_layout.addWidget(self.grade, 5,1) 
+        table_form_layout.addWidget(QLabel("Mot de passe :"), 5,2) 
+        table_form_layout.addWidget(self.password, 5,3) 
+        table_form_layout.addWidget(self.submit_button, 6,3)  
 
-        payment_layout.addWidget(self.rest_a_payer) 
-        payment_layout.addWidget(self.rest_a_payer_value) 
-        self.toggle_inputs()
 
-        
+        main_layout.addLayout(table_form_layout)
 
-        # Bouton pour annuler
-        
 
-        main_layout.addLayout(payment_layout)
 
-        self.cancel_button = QPushButton("Annuler")
-        self.cancel_button.clicked.connect(self.cancel_sale)
-        main_layout.addWidget(self.cancel_button)
 
-        # Actions
-        self.confirm_button = QPushButton("Confirmer la vente")
-        main_layout.addWidget(self.confirm_button)
+        self.list_client = QTableWidget(0, 6)
+        self.list_client.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.list_client.setHorizontalHeaderLabels(["Nom","Prénom","CIN","Téléphone", "Email"])
+        self.remplire_table()
+        main_layout.addWidget(self.list_client)
 
-        # Assign layout to central widget
-        self.main_interface.content_layout.addWidget(self.vente_dash)
 
-        # Connecter les signaux
-        self.confirm_button.clicked.connect(self.confirm_sale)
+
+        self.main_interface.content_layout.addWidget(self.client_dash)
+
     
 
+    def remplire_table(self):
+        all_salaries = extraire_tous_salaries()
+        self.list_client.setRowCount(len(all_salaries))
+        for index,element in enumerate(all_salaries):
+            dict_element = dict(element)
+            self.list_client.setItem(index, 0, QTableWidgetItem(str(dict_element['Nom']))) 
+            self.list_client.setItem(index, 1, QTableWidgetItem(str(dict_element['Prenom']))) 
+            self.list_client.setItem(index, 2, QTableWidgetItem(str(dict_element['CIN']))) 
+            self.list_client.setItem(index, 3, QTableWidgetItem(str(dict_element['Telephone']))) 
+            self.list_client.setItem(index, 4, QTableWidgetItem(str(dict_element['Email'])))  
 
-    def toggle_inputs(self):
-        if self.checkbox.isChecked():
-            self.amount_input.setEnabled(True)
-            self.rest_a_payer.setEnabled(True)
-            self.rest_a_payer_value.setEnabled(True)
-        else:
-            self.amount_input.setDisabled(True)
-            self.rest_a_payer.setDisabled(True)
-            self.rest_a_payer_value.setDisabled(True)
+    def add_client(self):
+        # Récupérer les valeurs des champs
+        name = self.name_input.text()
+        surname = self.surname_input.text()
+        cin = self.cin_input.text()
+        telephone = self.telephone_input.text()
+        email = self.email_input.text()
+        address = self.address_input.text()
+        salaire = self.salaire.text()
+        type_contrat = self.type_contrat.text()
+        photo = self.photo.text()
+        date_embauche = self.date_embauche.text() #.date().toString("yyyy-MM-dd")
+        grade = self.grade.text()
+        password = self.password.text()
+        # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
+        ajouter_salarie(name, surname, cin,telephone, email, address, photo, salaire, type_contrat, date_embauche, grade,password)
+        # Effacer les champs après soumission
+        self.name_input.clear()
+        self.surname_input.clear()
+        self.cin_input.clear()
+        self.telephone_input.clear()
+        self.email_input.clear()
+        self.address_input.clear() 
+        self.photo.clear()
+        self.password.clear()
+        self.type_contrat.clear()
+        self.salaire.clear()
+        self.date_embauche.clear()
+        self.grade.clear()
 
-    def search_client(self):
-        client_id = self.client_id_input.text()
-        if client_id:
-            # Simulation de recherche d'un client
-            print(f"Recherche du client avec ID : {client_id}")
-            # Exemple : remplacer par une recherche réelle
-            if client_id == "123":
-                self.client_status_label.setText("Client : Jean Dupont")
-                print("Client trouvé : Jean Dupont")
-            else:
-                self.client_status_label.setText("Client : Inconnu")
-                print("Client non trouvé.")
-        else:
-            self.client_status_label.setText("Client : Anonyme")
-            print("Aucun client sélectionné. Vente anonyme.")
-
-    def process_barcode(self):
-        barcode = self.barcode_input.text()
-        if barcode:
-            print(f"Code-barres traité : {barcode}")
-            # Simuler l'ajout d'un produit au panier
-            self.add_product_to_cart(barcode)
-            self.barcode_input.clear()
-
-    def add_product_to_cart(self, barcode):
-        # Simule l'ajout d'un produit basé sur un code-barres
-        print(f"Ajout du produit avec le code-barres {barcode} au panier.")
-        row_position = self.cart_table.rowCount()
-        self.cart_table.insertRow(row_position)
-        self.cart_table.setItem(row_position, 0, QTableWidgetItem("Produit Exemple"))
-        self.cart_table.setItem(row_position, 1, QTableWidgetItem("1"))
-        self.cart_table.setItem(row_position, 2, QTableWidgetItem("10 €"))
-        # Mettre à jour les totaux (exemple simplifié)
-        self.update_totals(10)
-
-    def update_totals(self, price):
-        # Exemple : mettre à jour les étiquettes de sous-total, taxes et total
-        current_total = int(self.total_label.text().split(":")[1].split("€")[0].strip())
-        new_total = current_total + price
-        self.total_label.setText(f"<b>Total : {new_total} €</b>")
-
-    def activate_credit_mode(self):
-        print("Mode Crédit activé.")
-        # Logique supplémentaire pour le crédit peut être ajoutée ici
-
-    def cancel_sale(self):
-        print("Vente annulée.")
-
-    def confirm_sale(self):
-        amount = self.amount_input.text()
-        print(f"Vente confirmée avec {amount} € payé maintenant.")
-        # Logique de confirmation peut être ajoutée ici
-
-
-
+         
+        
+ 

@@ -8,8 +8,8 @@ Tracpharmic = Path.home()/"Tracpharmic"
 
 images = Tracpharmic/"images"
 
-dataset = Tracpharmic/"dataset"/"pharmadataset.db"
-
+dataset = Tracpharmic/"dataset"/"pharmadataset.db" 
+print(dataset)
 
 name_application = "TracPharmic"  
 
@@ -34,6 +34,7 @@ def set_styles():
 deconexion_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/deconexion.png"
 
 salare_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/salarielogo.png"
+fournisseur_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/fournisseurlogo.png"
 
 kpi_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/kpi.png"
 acceuil_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/logoacceuil.png"
@@ -43,3 +44,5 @@ vente_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/imag
 client_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/clientlogo.png"
 echange_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/echangelogo.png"
 stock_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/stocklogo.png"
+medicament_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/medicamentlogo.png"
+ferme_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/ferme.png"

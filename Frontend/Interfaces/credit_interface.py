@@ -1,8 +1,10 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QGridLayout,QHeaderView, QDoubleSpinBox,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
 )
 from qtpy.QtCore import Qt
+from Backend.Dataset.dataset import *
+import pandas as pd
 
 
 class Credit_dash:
@@ -13,186 +15,150 @@ class Credit_dash:
     def show_vente_interface(self):
         self.main_interface.clear_content_frame()
 
-        self.vente_dash = QWidget()
-        self.vente_dash.setObjectName("vente_dash")
+        self.credit_dash = QWidget()
+        self.credit_dash.setObjectName("credit_dash")
 
         # Widget central
         # Layout principal
-        main_layout = QVBoxLayout(self.vente_dash)
+        main_layout = QVBoxLayout(self.credit_dash) 
 
-        top_layout = QHBoxLayout()
-
-        # Section Client
-        client_layout = QVBoxLayout()
-        self.client_id_input = QLineEdit()
-        self.client_id_input.setPlaceholderText("Rechercher client par ID")
-        self.search_client_button = QPushButton("Rechercher")
-        self.search_client_button.clicked.connect(self.search_client)
-        self.add_client_button = QPushButton("Nouveau client")
-        self.add_client_button.clicked.connect(self.search_client)
-
-        self.client_status_label = QLabel("Client : Anonyme")
-        self.client_max_credit = QLabel("Max_credit : 100")
-        self.client_credit_actuel = QLabel("Credit Actuel : 0")
+        titre_page = QLabel("Gestion de credit")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter) 
+        main_layout.addWidget(titre_page) 
+ 
 
 
-        client_layout.addWidget(self.client_id_input)
-        client_layout.addWidget(self.search_client_button)
-        client_layout.addWidget(self.add_client_button)
-        client_layout.addWidget(self.client_status_label)
-        client_layout.addWidget(self.client_max_credit)
-        client_layout.addWidget(self.client_credit_actuel)
-        
+        self.table = QTableWidget()
+        self.table.setColumnCount(5)
 
-        # Zone d'entrée pour le code-barres
-        barcode_layout = QVBoxLayout()
-        self.barcode_input = QLineEdit()
-        self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
-        self.barcode_input.returnPressed.connect(self.process_barcode)
-        self.product_table = QTableWidget(0, 3)  # (0 lignes, 3 colonnes)
-        self.product_table.setHorizontalHeaderLabels(["Code barre","Nom", "Prix", "Caractéristique"])
-        barcode_layout.addWidget(self.product_table)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.setHorizontalHeaderLabels(["Id","Nom Prenom", "CIN" ,"Téléphone", "Credit actuel"])
+        self.remplir_tableau() 
+        self.table.cellClicked.connect(self.credit_selected)
+        main_layout.addWidget(self.table)
 
+        self.main_interface.content_layout.addWidget(self.credit_dash)
 
-
-
-
-        self.add_to_cart_button = QPushButton("Ajouter au panier")
-        self.add_to_cart_button.clicked.connect(self.process_barcode)
-        barcode_layout.addWidget(self.barcode_input)
-        barcode_layout.addWidget(self.add_to_cart_button)
-
-        top_layout.addLayout(barcode_layout)
-        top_layout.addLayout(client_layout)
-
-        main_layout.addLayout(top_layout)
-
-
-
-
-        # Liste des produits
-        
-
-        # Panier
-        self.cart_table = QTableWidget(0, 3)
-        self.cart_table.setHorizontalHeaderLabels(["Code barre","Nom", "Quantité", "Prix total"])
-        main_layout.addWidget(self.cart_table)
-
-        # Totaux
-        totals_layout = QHBoxLayout()
-        self.subtotal_label = QLabel("Sous-total : 0 Dh")
-        self.tax_label = QLabel("Taxes : 0 Dh")
-        self.total_label = QLabel("<b>Total : 0 Dh</b>")
-        totals_layout.addWidget(self.subtotal_label)
-        totals_layout.addWidget(self.tax_label)
-        totals_layout.addWidget(self.total_label)
-        main_layout.addLayout(totals_layout)
-
-        # Paiement
-        payment_layout = QHBoxLayout()
-        self.checkbox = QCheckBox('Crédit ?', self.main_interface)
-        self.checkbox.stateChanged.connect(self.toggle_inputs)
-        
-
-        payment_layout.addWidget(self.checkbox)
-
-        # Montant à payer
-        self.amount_input = QLineEdit()
-        self.amount_input.setPlaceholderText("Montant à payer maintenant")
-        payment_layout.addWidget(self.amount_input) 
-
-        self.rest_a_payer = QLabel("Réste à payer après :")
-        self.rest_a_payer_value = QLineEdit()
-
-        payment_layout.addWidget(self.rest_a_payer) 
-        payment_layout.addWidget(self.rest_a_payer_value) 
-        self.toggle_inputs()
-
-        
-
-        # Bouton pour annuler
-        
-
-        main_layout.addLayout(payment_layout)
-
-        self.cancel_button = QPushButton("Annuler")
-        self.cancel_button.clicked.connect(self.cancel_sale)
-        main_layout.addWidget(self.cancel_button)
-
-        # Actions
-        self.confirm_button = QPushButton("Confirmer la vente")
-        main_layout.addWidget(self.confirm_button)
-
-        # Assign layout to central widget
-        self.main_interface.content_layout.addWidget(self.vente_dash)
-
-        # Connecter les signaux
-        self.confirm_button.clicked.connect(self.confirm_sale)
+    def remplir_tableau(self):
+        # Exemple de données fictives
+        credits = extraire_tous_client_with_credit() 
+        credits = [ dict(i) for i in credits]  
+        self.table.setRowCount(len(credits)) 
+        for row, credit in enumerate(credits): 
+            self.table.setItem(row, 0, QTableWidgetItem(str(credit['ID_Client'])))
+            self.table.setItem(row, 1, QTableWidgetItem(credit['Nom']+' '+credit['Prenom']))
+            self.table.setItem(row, 2, QTableWidgetItem(credit['CIN']))
+            self.table.setItem(row, 3, QTableWidgetItem(credit['Telephone']))
+            self.table.setItem(row, 4, QTableWidgetItem(str(credit['Credit_Actuel']))) 
+    def credit_selected(self,row, column):
+        self.id_client = self.table.item(row, 0).text() 
+        self.show_payment_interface()
     
 
 
-    def toggle_inputs(self):
-        if self.checkbox.isChecked():
-            self.amount_input.setEnabled(True)
-            self.rest_a_payer.setEnabled(True)
-            self.rest_a_payer_value.setEnabled(True)
-        else:
-            self.amount_input.setDisabled(True)
-            self.rest_a_payer.setDisabled(True)
-            self.rest_a_payer_value.setDisabled(True)
+    def show_payment_interface(self):
+        self.main_interface.clear_content_frame()
+        self.credit_dash = QWidget()
+        self.credit_dash.setObjectName("credit_dash")
 
-    def search_client(self):
-        client_id = self.client_id_input.text()
-        if client_id:
-            # Simulation de recherche d'un client
-            print(f"Recherche du client avec ID : {client_id}")
-            # Exemple : remplacer par une recherche réelle
-            if client_id == "123":
-                self.client_status_label.setText("Client : Jean Dupont")
-                print("Client trouvé : Jean Dupont")
-            else:
-                self.client_status_label.setText("Client : Inconnu")
-                print("Client non trouvé.")
-        else:
-            self.client_status_label.setText("Client : Anonyme")
-            print("Aucun client sélectionné. Vente anonyme.")
+        # Widget central
+        # Layout principal
+        main_layout = QVBoxLayout(self.credit_dash) 
 
-    def process_barcode(self):
-        barcode = self.barcode_input.text()
-        if barcode:
-            print(f"Code-barres traité : {barcode}")
-            # Simuler l'ajout d'un produit au panier
-            self.add_product_to_cart(barcode)
-            self.barcode_input.clear()
-
-    def add_product_to_cart(self, barcode):
-        # Simule l'ajout d'un produit basé sur un code-barres
-        print(f"Ajout du produit avec le code-barres {barcode} au panier.")
-        row_position = self.cart_table.rowCount()
-        self.cart_table.insertRow(row_position)
-        self.cart_table.setItem(row_position, 0, QTableWidgetItem("Produit Exemple"))
-        self.cart_table.setItem(row_position, 1, QTableWidgetItem("1"))
-        self.cart_table.setItem(row_position, 2, QTableWidgetItem("10 €"))
-        # Mettre à jour les totaux (exemple simplifié)
-        self.update_totals(10)
-
-    def update_totals(self, price):
-        # Exemple : mettre à jour les étiquettes de sous-total, taxes et total
-        current_total = int(self.total_label.text().split(":")[1].split("€")[0].strip())
-        new_total = current_total + price
-        self.total_label.setText(f"<b>Total : {new_total} €</b>")
-
-    def activate_credit_mode(self):
-        print("Mode Crédit activé.")
-        # Logique supplémentaire pour le crédit peut être ajoutée ici
-
-    def cancel_sale(self):
-        print("Vente annulée.")
-
-    def confirm_sale(self):
-        amount = self.amount_input.text()
-        print(f"Vente confirmée avec {amount} € payé maintenant.")
-        # Logique de confirmation peut être ajoutée ici
+        titre_page = QLabel("Gestion de payment credit")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter) 
+        main_layout.addWidget(titre_page) 
 
 
 
+        table_form_layout = QGridLayout()
+
+        self.client = extraire_client_id(self.id_client)
+        self.client = dict(self.client)
+        
+
+        table_form_layout.addWidget(QLabel("Nom :"), 0,0)  
+        table_form_layout.addWidget(QLabel(self.client['Nom']), 0,1) 
+        table_form_layout.addWidget(QLabel("Prénom :"), 0,2) 
+        table_form_layout.addWidget(QLabel(self.client['Prenom']), 0,3) 
+
+        table_form_layout.addWidget(QLabel("CIN :"), 1,0)  
+        table_form_layout.addWidget(QLabel(self.client['CIN']), 1,1) 
+        table_form_layout.addWidget(QLabel("Téléphone :"), 1,2) 
+        table_form_layout.addWidget(QLabel(self.client['Telephone']), 1,3) 
+
+
+        table_form_layout.addWidget(QLabel("Email :"), 2,0)  
+        table_form_layout.addWidget(QLabel(self.client['Email']), 2,1) 
+        table_form_layout.addWidget(QLabel("Adresse :"), 2,2) 
+        table_form_layout.addWidget(QLabel(self.client['Adresse']), 2,3) 
+
+
+        table_form_layout.addWidget(QLabel("Max Credit"), 3,0)  
+        table_form_layout.addWidget(QLabel(str(self.client['Max_Credit'])), 3,1) 
+        table_form_layout.addWidget(QLabel("Credit Actuel"), 3,2) 
+        table_form_layout.addWidget(QLabel(str(self.client['Credit_Actuel'])), 3,3) 
+
+
+        self.payment_input = QDoubleSpinBox()
+        self.payment_input.setMinimum(0)  # Valeur minimale
+        self.payment_input.setMaximum(float(self.client['Credit_Actuel']))  # Valeur maximale 
+
+        self.submit_button = QPushButton("Payer")
+        self.submit_button.clicked.connect(self.add_paiment)
+
+        table_form_layout.addWidget(QLabel("Effectuer un paiement :"), 4,0)  
+        table_form_layout.addWidget(self.payment_input, 4,1)  
+        table_form_layout.addWidget(self.submit_button, 4,3) 
+        main_layout.addLayout(table_form_layout)
+
+
+
+        self.list_factures = QTableWidget(0, 4)
+        self.list_factures.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.list_factures.setHorizontalHeaderLabels(["Type","Numero Facture","Totale", 'Date'])
+        self.remplire_table()
+        main_layout.addWidget(self.list_factures) 
+        self.main_interface.content_layout.addWidget(self.credit_dash)
+
+    
+    def add_paiment(self):
+        now = datetime.now()
+        now_str = now.strftime("%d/%m/%Y %H:%M:%S")
+        montant_paye = self.payment_input.value()
+        id_salarie = self.main_interface.user_session['ID_Salarie']
+        ajouter_payment(self.id_client, int(now.timestamp()), montant_paye, now_str, id_salarie)
+        ajouter_credit_client(self.id_client,  -montant_paye)
+        self.show_payment_interface()
+
+        
+    def remplire_table(self):
+        all_credit = extraire_credit_with_id_client(self.id_client)
+        all_paiment = extraire_paiment_with_id_client(self.id_client)
+
+        all_credit = pd.DataFrame([dict(credit) for credit in all_credit])[['Numero_Facture', "Reste_A_Payer", "Date_Dernier_Paiement"]]
+        all_paiment = pd.DataFrame([dict(pay) for pay in all_paiment])[['Numero_Facture', "Montant_Paye", "Date_Paiement"]]
+        all_credit.rename(columns={'Reste_A_Payer':'Totale', "Date_Dernier_Paiement" : "Date"}, inplace=True)
+        all_paiment.rename(columns={'Montant_Paye':'Totale', "Date_Paiement": "Date"},inplace=True)
+        all_credit['Type'] = 'Credit'
+        all_paiment['Type'] = 'Paiment'
+
+        result = pd.concat([all_credit, all_paiment], ignore_index=True)
+        result["Date"] = pd.to_datetime(result["Date"], format="%d/%m/%Y %H:%M:%S", errors="coerce")
+        result=result.sort_values(by="Date",  ascending=False,  ignore_index=True).reset_index()
+
+        self.list_factures.setRowCount(len(result)) 
+        for row, element in result.iterrows(): 
+            self.list_factures.setItem(row, 0, QTableWidgetItem(str(element['Type'])))
+            self.list_factures.setItem(row, 1, QTableWidgetItem(element['Numero_Facture']))
+            self.list_factures.setItem(row, 2, QTableWidgetItem(str(element['Totale'])))
+            self.list_factures.setItem(row, 3, QTableWidgetItem(str(element['Date']))  )
+
+  
+
+
+
+    
+ 

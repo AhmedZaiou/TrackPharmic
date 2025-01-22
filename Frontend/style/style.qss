@@ -6,19 +6,19 @@ background-color: white;
 #topmenu{
     background-color: rgba(237, 249, 242, 0.2); ; /* Sleek dark background */
     border-radius: 15px; /* Softer rounded corners */
-    border: 2px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
+    border: 1px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
     box-shadow: 0px 4px 10px rgba(237, 249, 242, 0.1); /* Light shadow for depth */ 
 }
 #leftmenu{
     background-color: rgba(237, 249, 242, 0.2) ; /* Sleek dark background */
     border-radius: 15px; /* Softer rounded corners */
-    border: 2px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
+    border: 1px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
     box-shadow: 0px 4px 10px rgba(237, 249, 242, 0.1); /* Light shadow for depth */ 
 }
 #contentframe{
     background-color: rgba(237, 249, 242, 0.2) ; /* Sleek dark background */
     border-radius: 15px; /* Softer rounded corners */
-    border: 2px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
+    border: 1px solid rgba(237, 249, 242, 0.1); /* Subtle border to outline the form */ 
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Light shadow for depth */ 
 }
 #ButtonWithLogo{
@@ -38,7 +38,7 @@ background-color: white;
     max-width: 40px;
 }
 #ButtonWithLogo:hover {
-    background-color: #218838; /* Vert légèrement plus foncé au survol */
+    background-color: #65c87d; /* Vert légèrement plus foncé au survol */
     transform: translateY(-2px); /* Légère élévation au survol */
 }
 
@@ -46,4 +46,168 @@ background-color: white;
     width: 24px; /* Taille du logo */
     height: 24px; /* Taille du logo */
     margin-right: 8px; /* Espacement entre le logo et le texte */
+}
+#TitrePage{
+    font-size: 20px;
+    color: black; /* Couleur du texte */
+    text-align: center; /* Centrer le titre */
+    margin-bottom: 20px; /* Espacement sous le titre */    
+    
+}
+
+
+QLineEdit {
+    background-color: white;  /* Couleur de fond vert très clair */
+    border: 1px solid #65c87d; /* Bordure verte */
+    border-radius: 8px;        /* Coins arrondis */
+    padding: 8px;             /* Espacement intérieur */
+    font-size: 16px;          /* Taille de la police */
+    color: #155724;           /* Texte vert foncé */
+    font-family: Arial, sans-serif; /* Police simple et lisible */
+}
+
+QLineEdit:focus {
+    border: 1px solid #65c87d; /* Bordure verte plus intense quand sélectionné */
+    background-color: #ffffff; /* Fond blanc en focus */
+    color: #0c4128;            /* Texte vert encore plus foncé */
+    box-shadow: 0 0 5px #65c87d; /* Lueur autour du champ */
+}
+
+QLineEdit:disabled {
+    background-color: #e6e6e6; /* Couleur grisée pour l'état désactivé */
+    border: 1px solid #ced4da; /* Bordure grisée pour désactivé */
+    color: #6c757d;            /* Texte grisé */
+}
+
+
+
+
+/* Style global pour l'application */
+QApplication {
+    background-color: #f8fff8; /* Couleur de fond générale */
+}
+
+/* Style pour la fenêtre principale */
+QMainWindow {
+    background-color: #ffffff; /* Fond blanc propre */
+    border: 1px solid #65c87d; /* Bordure verte subtile */
+}
+
+/* Style pour les widgets */
+QWidget {
+    background-color: #f3fff3; /* Couleur de fond vert très clair */
+    border: none;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #155724; /* Texte vert foncé */
+}
+
+/* Layouts (pas directement visibles, mais pour le contexte) */
+QVBoxLayout, QHBoxLayout, QGridLayout {
+    margin: 5px;
+    padding: 5px;
+}
+
+/* Double SpinBox */
+QDoubleSpinBox {
+    background-color: #ffffff; /* Fond blanc */
+    border: 1px solid #65c87d;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 14px;
+    color: #155724;
+}
+QDoubleSpinBox:focus {
+    border: 1px solid #65c87d; /* Bordure verte foncée en focus */
+}
+
+/* TableWidget */
+QTableWidget {
+    background-color: #ffffff; /* Fond blanc */
+    border: 1px solid #65c87d; 
+    gridline-color: #65c87d; /* Ligne verte pour la grille */
+    font-size: 14px;
+    color: #155724;
+}
+QTableWidget::item {
+    padding: 5px;
+}
+QTableWidget::item:selected {
+    background-color: #c3e6cb; /* Vert clair pour la sélection */
+    color: #155724;
+}
+QHeaderView::section {
+    background-color: #65c87d;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #65c87d;
+}
+
+/* QLabel */
+QLabel {
+    font-size: 14px;
+    color: #155724;
+}
+
+/* QPushButton */
+QPushButton {
+    background-color: #65c87d;
+    border: 1px solid #65c87d;
+    border-radius: 5px;
+    padding: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #65c87d; /* Couleur plus foncée au survol */
+}
+QPushButton:pressed {
+    background-color: #1e7e34; /* Couleur encore plus foncée quand cliqué */
+}
+
+/* QLineEdit */
+QLineEdit {
+    background-color: #ffffff;
+    border: 1px solid #65c87d;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 14px;
+    color: #155724;
+}
+QLineEdit:focus {
+    border: 1px solid #65c87d;
+    box-shadow: 0 0 5px #65c87d; /* Lueur verte */
+}
+
+/* QCheckBox */
+QCheckBox {
+    font-size: 14px;
+    color: #155724;
+    spacing: 5px;
+}
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #65c87d;
+    background-color: #f3fff3;
+    border-radius: 5px;
+}
+QCheckBox::indicator:checked {
+    background-color: #65c87d;
+    border: 1px solid #65c87d;
+}
+
+/* HeaderView (en-têtes des tableaux) */
+QHeaderView {
+    background-color: #65c87d;
+    color: #ffffff;
+    font-weight: bold;
+    border: none;
+    font-size: 14px;
+}
+QHeaderView::section {
+    background-color: #65c87d;
+    padding: 5px;
+    border: 1px solid #155724;
 }
