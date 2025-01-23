@@ -1,11 +1,12 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QDoubleSpinBox,QGridLayout,QHeaderView,QCompleter,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QDoubleSpinBox,QGridLayout,QHeaderView,QCompleter,QMessageBox,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
 )
 from qtpy.QtCore import Qt, QStringListModel
 
 from Backend.Dataset.dataset import *
-
+import time
+import numpy as np
 
 class Echange_dash:
     def __init__(self, main_interface):
@@ -32,6 +33,7 @@ class Echange_dash:
 
     def show_principal_interface(self):
         self.main_interface.clear_content_frame()
+        self.main_interface.keyPressEvent = self.keyPressEvent
         self.vente_dash = QWidget()
         self.vente_dash.setObjectName("vente_dash") 
         main_layout = QVBoxLayout(self.vente_dash) 
@@ -114,7 +116,7 @@ class Echange_dash:
         # Widget central
         # Layout principal
         main_layout = QVBoxLayout(self.vente_dash) 
-        titre_page = QLabel("Gestion d'echanges : Ajouter et lister les pharmacies")
+        titre_page = QLabel("Gestion d'échanges : Ajouter et lister les pharmacies")
         titre_page.setObjectName("TitrePage")
         titre_page.setAlignment(Qt.AlignCenter) 
         main_layout.addWidget(titre_page)
@@ -127,13 +129,17 @@ class Echange_dash:
 
         # Créer les champs de saisie pour le formulaire sans 'self'
         self.name_input = QLineEdit() 
+        self.name_input.setPlaceholderText("Nom")
         self.telephone_input = QLineEdit()
+        self.telephone_input.setPlaceholderText("Téléphone")
         self.email_input = QLineEdit()
+        self.email_input.setPlaceholderText("Email")
         self.address_input = QLineEdit()
+        self.address_input.setPlaceholderText("Adresse")
 
 
         # Créer un bouton pour soumettre le formulaire
-        self.submit_button = QPushButton("Ajouter Pharmacie")
+        self.submit_button = QPushButton("Ajouter Pharmacie") 
         self.submit_button.clicked.connect(self.add_pharma)
 
 
@@ -153,7 +159,7 @@ class Echange_dash:
 
         self.list_client = QTableWidget(0, 6)
         self.list_client.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.list_client.setHorizontalHeaderLabels(["Nom","Téléphone","Email","Adresse", "Crédit Actuel", "Max Crédit"])
+        self.list_client.setHorizontalHeaderLabels(["Nom","Téléphone","Email","Adresse", "Crédit Actuel", "Crédit Maximum"])
         self.remplire_table()
         main_layout.addWidget(self.list_client)
     
@@ -209,3 +215,62 @@ class Echange_dash:
             self.list_medicaments.setItem(index, 1, QTableWidgetItem(str(element['code_med']))) 
             self.list_medicaments.setItem(index, 2, QTableWidgetItem(str(element['quantite']))) 
             self.list_medicaments.setItem(index, 3, QTableWidgetItem(str(element['prix'])))  
+    
+
+    def process_barcode(self, codebare):
+        if len(codebare) > 13:
+            return codebare[-13:]
+        return ""
+    def keyPressEvent(self, event): 
+        key = event.text() 
+        current_time = time.time()
+        if current_time - self.last_key_time < self.barcode_delay_threshold:  
+            code_b = True
+        self.last_key_time = current_time 
+        
+        if key == '\r' and code_b:  # Lorsque le lecteur envoie un saut de ligne  
+            self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+            if self.code_barre_scanner != "":
+                self.add_medicament_to_echange(self.code_barre_scanner)
+                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan                  
+                 
+        else:
+            self.code_barre_scanner += key  # Ajouter le caractère au code en cours 
+    
+    def add_medicament_to_echange(self,code_barre_scanner):
+
+        if  not self.producs_table.empty and code_barre_scanner in self.producs_table["Code_EAN_13"].values:
+            self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Quantite'] += 1
+            self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Prix_total'] += self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Prix_Public_de_Vente']
+        else: 
+            medicament  = extraire_medicament_code_barre(code_barre_scanner)
+            if medicament is None:
+                QMessageBox.information(self.main_interface, "Medicament non reconue", "Medicament non reconue")
+                return 
+            else: 
+                medicament_on_dtock = extraire_medicament_id_stock(medicament['ID_Medicament']) 
+                medicament = dict(medicament)  
+
+                if medicament_on_dtock is None:
+                    QMessageBox.information(self.main_interface, "stock vide", "Stock vide")
+                else:  
+                    if len(np.unique(medicament_on_dtock['Prix_Vente']))>1:
+                        QMessageBox.information(self.main_interface, "Atention le prix de ce medicament à changer", "Atention le prix de ce medicament à changer, Merci de séparer les facture en cas de quantité superieur a 1")
+                    
+                    medicament["Quantite"]  = 1
+                    medicament['Prix_Public_de_Vente'] = medicament_on_dtock['Prix_Vente'][0]
+                    medicament['Prix_Vente'] = medicament_on_dtock['Prix_Vente']
+                    medicament['Date_Expiration'] = medicament_on_dtock['Date_Expiration'][0]
+                    medicament['Quantite_Actuelle'] = medicament_on_dtock['Quantite_Actuelle']
+                    medicament['ID_Commande'] = medicament_on_dtock['ID_Commande']
+                    medicament['list_quantity'] = medicament_on_dtock['list_quantity']
+                    medicament['Prix_Achat'] = medicament_on_dtock['Prix_Achat']
+                    medicament['ID_Stock'] = medicament_on_dtock['ID_Stock']
+                    medicament["Prix_total"]  = medicament["Quantite"] * medicament['Prix_Public_de_Vente']
+                    df = pd.DataFrame([medicament])
+                    if self.producs_table.empty :
+                        self.producs_table = df 
+                    else:
+                        self.producs_table = pd.concat([self.producs_table, df], ignore_index=True)
+                    self.producs_table['Prix_total']=self.producs_table['Prix_total'].round(2)
+        self.update_table()

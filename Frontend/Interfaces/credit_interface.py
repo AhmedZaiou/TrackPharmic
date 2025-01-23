@@ -33,7 +33,7 @@ class Credit_dash:
         self.table.setColumnCount(5)
 
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table.setHorizontalHeaderLabels(["Id","Nom Prenom", "CIN" ,"Téléphone", "Credit actuel"])
+        self.table.setHorizontalHeaderLabels(["Id", "Nom Prénom", "CIN", "Téléphone", "Crédit actuel"])
         self.remplir_tableau() 
         self.table.cellClicked.connect(self.credit_selected)
         main_layout.addWidget(self.table)
@@ -66,7 +66,7 @@ class Credit_dash:
         # Layout principal
         main_layout = QVBoxLayout(self.credit_dash) 
 
-        titre_page = QLabel("Gestion de payment credit")
+        titre_page = QLabel("Gestion des paiements de crédit")
         titre_page.setObjectName("TitrePage")
         titre_page.setAlignment(Qt.AlignCenter) 
         main_layout.addWidget(titre_page) 
@@ -96,9 +96,9 @@ class Credit_dash:
         table_form_layout.addWidget(QLabel(self.client['Adresse']), 2,3) 
 
 
-        table_form_layout.addWidget(QLabel("Max Credit"), 3,0)  
+        table_form_layout.addWidget(QLabel("Crédit Maximum"), 3,0)  
         table_form_layout.addWidget(QLabel(str(self.client['Max_Credit'])), 3,1) 
-        table_form_layout.addWidget(QLabel("Credit Actuel"), 3,2) 
+        table_form_layout.addWidget(QLabel("Crédit Actuel"), 3,2) 
         table_form_layout.addWidget(QLabel(str(self.client['Credit_Actuel'])), 3,3) 
 
 
@@ -109,7 +109,7 @@ class Credit_dash:
         self.submit_button = QPushButton("Payer")
         self.submit_button.clicked.connect(self.add_paiment)
 
-        table_form_layout.addWidget(QLabel("Effectuer un paiement :"), 4,0)  
+        table_form_layout.addWidget(QLabel("Effectuer un paiement :"), 4,0)
         table_form_layout.addWidget(self.payment_input, 4,1)  
         table_form_layout.addWidget(self.submit_button, 4,3) 
         main_layout.addLayout(table_form_layout)
@@ -118,7 +118,7 @@ class Credit_dash:
 
         self.list_factures = QTableWidget(0, 4)
         self.list_factures.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.list_factures.setHorizontalHeaderLabels(["Type","Numero Facture","Totale", 'Date'])
+        self.list_factures.setHorizontalHeaderLabels(["Type", "Numéro de Facture", "Total", "Date"])
         self.remplire_table()
         main_layout.addWidget(self.list_factures) 
         self.main_interface.content_layout.addWidget(self.credit_dash)

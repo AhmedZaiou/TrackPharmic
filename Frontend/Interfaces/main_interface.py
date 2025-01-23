@@ -38,10 +38,29 @@ class MainInterface(QMainWindow):
         self.central_widget = QWidget()
         self.central_widget.setObjectName("main") 
         
+
         self.main_layout = QVBoxLayout(self.central_widget) 
 
+        # Ajouter le logo de l'application
+        self.logo_label = QLabel()
+        pixmap = QPixmap(app_logo)  # Remplacez "path_to_logo_image" par le chemin de votre image
+        pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)  # Réduire la taille du logo
+        self.logo_label.setPixmap(pixmap)
+        self.main_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
+        # Ajouter le titre de l'application
+        self.title_label = QLabel("Titre de l'application")
+        self.title_label.setObjectName("title")
+
+        # Créer un widget pour contenir le logo et le titre
+        logo_title_widget = QWidget()
+        logo_title_layout = QHBoxLayout(logo_title_widget)
+        logo_title_layout.addWidget(self.logo_label)
+        logo_title_layout.addWidget(self.title_label)
+
+        self.main_layout.addWidget(logo_title_widget, alignment=Qt.AlignCenter)
+
         
- 
+     
         # Page de connexion
         self.login_frame = QFrame()
         self.login_frame.setFixedSize(400, 400)  # Frame carrée avec taille fixe 
@@ -72,6 +91,8 @@ class MainInterface(QMainWindow):
         self.login_layout.addWidget(self.login_button)
 
         self.main_layout_p.addWidget(self.central_widget)
+
+        
         
 
     def login(self):
@@ -118,7 +139,7 @@ class MainInterface(QMainWindow):
         # Ajouter un nom de profil
         profile_name = QLabel(str(self.user_session['Nom']+" "+self.user_session['Prenom'])) 
         profile_name.setAlignment(Qt.AlignCenter)
-        profile_name.setStyleSheet("font-size: 14px; font-weight: bold;")
+        profile_name.setStyleSheet("font-size: 14px; font-weight: bold; align: left;")
 
         # Ajouter l'image et le nom au layout
         profile_layout.addWidget(profile_image)
@@ -127,11 +148,11 @@ class MainInterface(QMainWindow):
         # Ajouter le widget de profil au menu gauche
         self.top_menu_layout.addWidget(profile_widget)
 
-        self.deconexion_bouton = self.create_button_with_icon("", deconexion_logo)
-        self.salarie_bouton = self.create_button_with_icon("", salare_logo)
-        self.kpi_bouton = self.create_button_with_icon("", kpi_logo)
-        self.medicament_bouton = self.create_button_with_icon("", medicament_logo)
-        self.fournisseur_bouton = self.create_button_with_icon("", fournisseur_logo)
+        self.deconexion_bouton = self.create_button_with_icon("Déconnexion", deconexion_logo)
+        self.salarie_bouton = self.create_button_with_icon("Gesion Salariés", salare_logo)
+        self.kpi_bouton = self.create_button_with_icon("Comptabilité de la pharmacie", kpi_logo)
+        self.medicament_bouton = self.create_button_with_icon("Gestion des médicaments", medicament_logo)
+        self.fournisseur_bouton = self.create_button_with_icon("Gestion des fournisseurs", fournisseur_logo)
 
         self.top_menu_layout.addWidget(self.fournisseur_bouton)
         self.top_menu_layout.addWidget(self.medicament_bouton)
@@ -160,14 +181,14 @@ class MainInterface(QMainWindow):
         # Layout pour menu gauche
         self.left_menu_layout = QVBoxLayout(self.left_menu_frame)
 
-        self.acceuil_bouton = self.create_button_with_icon("", acceuil_logo)
-        self.commande_bouton = self.create_button_with_icon("", commande_logo)
-        self.credit_bouton = self.create_button_with_icon("", credit_logo)
-        self.vente_bouton = self.create_button_with_icon("", vente_logo)
-        self.client_bouton = self.create_button_with_icon("", client_logo)
-        self.echange_bouton = self.create_button_with_icon("", echange_logo)
-        self.stock_bouton = self.create_button_with_icon("", stock_logo)
-        self.ferme_bouton = self.create_button_with_icon("", ferme_logo)
+        self.acceuil_bouton = self.create_button_with_icon("Acceuil", acceuil_logo)
+        self.commande_bouton = self.create_button_with_icon("Gestion des commandes", commande_logo)
+        self.credit_bouton = self.create_button_with_icon("Gestion des crédits", credit_logo)
+        self.vente_bouton = self.create_button_with_icon("Gestion des ventes", vente_logo)
+        self.client_bouton = self.create_button_with_icon("Gestion des clients", client_logo)
+        self.echange_bouton = self.create_button_with_icon("Gestion des échanges", echange_logo)
+        self.stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
+        self.ferme_bouton = self.create_button_with_icon("Cloturé la caisse", ferme_logo)
 
         self.acceuil_bouton.clicked.connect(self.acceuil_click)
         self.commande_bouton.clicked.connect(self.commande_click)
@@ -255,8 +276,9 @@ class MainInterface(QMainWindow):
     
     def create_button_with_icon(self, text, icon_path):
         # Créer un bouton avec une image
-        button = QPushButton(text)
+        button = QPushButton("")
         button.setObjectName("ButtonWithLogo")
+        button.setToolTip(text) 
         icon = QIcon(icon_path)
 
         if not icon.isNull():  # Vérifie si l'icône est valide

@@ -35,18 +35,30 @@ class Salarie_dash:
 
  
         self.name_input = QLineEdit()
+        self.name_input.setPlaceholderText("Nom")
         self.surname_input = QLineEdit()
+        self.surname_input.setPlaceholderText("Prénom")
         self.cin_input = QLineEdit()
+        self.cin_input.setPlaceholderText("CIN")
         self.telephone_input = QLineEdit()
+        self.telephone_input.setPlaceholderText("Téléphone")
         self.email_input = QLineEdit()
+        self.email_input.setPlaceholderText("Email")
         self.address_input = QLineEdit()
+        self.address_input.setPlaceholderText("Adresse")
 
         self.photo = QLineEdit()
+        self.photo.setPlaceholderText("Photo")
         self.salaire = QLineEdit()
-        self.type_contrat = QLineEdit() 
+        self.salaire.setPlaceholderText("Salaire (Dh)")
+        self.type_contrat = QLineEdit()
+        self.type_contrat.setPlaceholderText("Type contrat")
         self.date_embauche = QLineEdit()
+        self.date_embauche.setPlaceholderText("Date d'embauche")
         self.grade = QLineEdit()
+        self.grade.setPlaceholderText("Grade")
         self.password = QLineEdit()
+        self.password.setPlaceholderText("Mot de passe")
 
          
 

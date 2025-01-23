@@ -28,11 +28,17 @@ class Client_dash:
 
         # Créer les champs de saisie pour le formulaire sans 'self'
         self.name_input = QLineEdit()
+        self.name_input.setPlaceholderText("Nom")
         self.surname_input = QLineEdit()
+        self.surname_input.setPlaceholderText("Prénom")
         self.cin_input = QLineEdit()
+        self.cin_input.setPlaceholderText("CIN")
         self.telephone_input = QLineEdit()
+        self.telephone_input.setPlaceholderText("Téléphone")
         self.email_input = QLineEdit()
+        self.email_input.setPlaceholderText("Email")
         self.address_input = QLineEdit()
+        self.address_input.setPlaceholderText("Adresse")
 
         # Création de champs numériques pour Max_Credit et Credit_Actuel
         self.max_credit_input = QDoubleSpinBox()
@@ -73,7 +79,7 @@ class Client_dash:
 
         self.list_client = QTableWidget(0, 6)
         self.list_client.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.list_client.setHorizontalHeaderLabels(["Nom","Téléphone","Email","Adresse", "Crédit Actuel", "Max Crédit"])
+        self.list_client.setHorizontalHeaderLabels(["Nom", "Prénom", "CIN", "Téléphone", "Crédit Actuel", "Max Crédit"])
         self.remplire_table()
         main_layout.addWidget(self.list_client)
 

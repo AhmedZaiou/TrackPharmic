@@ -114,6 +114,7 @@ QDoubleSpinBox {
     border: 1px solid #65c87d;
     border-radius: 5px;
     padding: 5px;
+    min-height: 17px;
     font-size: 14px;
     color: #155724;
 }

@@ -9,7 +9,7 @@ Tracpharmic = Path.home()/"Tracpharmic"
 images = Tracpharmic/"images"
 
 dataset = Tracpharmic/"dataset"/"pharmadataset.db" 
-print(dataset)
+
 
 name_application = "TracPharmic"  
 
@@ -30,6 +30,7 @@ def set_styles():
 
 
 
+app_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/pharmacie_bloc.png"
 
 deconexion_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/deconexion.png"
 

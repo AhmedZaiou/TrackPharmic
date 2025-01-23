@@ -1,5 +1,5 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QCompleter,QSpinBox,QHeaderView,QMessageBox,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QCompleter,QSpinBox,QHeaderView,QMessageBox,QGridLayout,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
 )
 from qtpy.QtCore import Qt, QStringListModel
@@ -37,42 +37,43 @@ class Vente_dash:
         titre_page.setAlignment(Qt.AlignCenter) 
         main_layout.addWidget(titre_page) 
 
-        top_layout = QHBoxLayout()
+        
+        
         # Section Client
-        client_layout = QVBoxLayout()
+        client_layout = QGridLayout()
         self.client_id_input = QLineEdit()
         self.client_id_input.setPlaceholderText("Rechercher client par Nom")
-
         self.client_id_input.textChanged.connect(self.OntextChangeClient)
-
         self.completer_client = QCompleter()
         self.completer_client.setCaseSensitivity(Qt.CaseInsensitive)
         self.completer_client.setCompletionMode(QCompleter.PopupCompletion)
         self.client_id_input.setCompleter(self.completer_client)
         self.completer_client.activated.connect(self.selectionner_client)
 
-
         self.search_client_button = QPushButton("Rechercher")
         self.search_client_button.clicked.connect(self.search_client)
         self.add_client_button = QPushButton("Nouveau client")
         self.add_client_button.clicked.connect(self.search_client)
 
-        self.client_status_label = QLabel("Client : None")
-        self.client_cin_label = QLabel("CIN : None")
-        self.client_max_credit = QLabel("Max_credit : None")
-        self.client_credit_actuel = QLabel("Credit Actuel : None")
+        self.client_status_label = QLabel("None")
+        self.client_cin_label = QLabel(" None")
+        self.client_max_credit = QLabel(" None")
+        self.client_credit_actuel = QLabel(" None")
 
-        client_layout.addWidget(self.client_id_input)
-        client_layout.addWidget(self.search_client_button)
-        client_layout.addWidget(self.add_client_button)
-        client_layout.addWidget(self.client_status_label)
-        client_layout.addWidget(self.client_cin_label)
-        client_layout.addWidget(self.client_max_credit)
-        client_layout.addWidget(self.client_credit_actuel)
+        self.client_status_label_ = QLabel("Client : ")
+        self.client_cin_label_ = QLabel("CIN : ")
+        self.client_max_credit_ = QLabel("Max_credit : ")
+        self.client_credit_actuel_ = QLabel("Credit Actuel : ")
+ 
+        client_layout.addWidget(self.client_id_input, 0 ,0)
+        client_layout.addWidget(self.search_client_button, 0, 1)
+        client_layout.addWidget(self.add_client_button, 0, 2)
+        
+        
         
 
         # Zone d'entrée pour le code-barres
-        barcode_layout = QVBoxLayout()
+        barcode_layout = QHBoxLayout()
         self.barcode_input = QLineEdit()
         self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
         self.barcode_input.returnPressed.connect(self.process_barcode_manuel) 
@@ -82,10 +83,9 @@ class Vente_dash:
         barcode_layout.addWidget(self.barcode_input)
         barcode_layout.addWidget(self.add_to_cart_button)
 
-        top_layout.addLayout(barcode_layout)
-        top_layout.addLayout(client_layout)
+        
 
-        main_layout.addLayout(top_layout) 
+        main_layout.addLayout(barcode_layout) 
         # Liste des produits
         
 
@@ -96,8 +96,12 @@ class Vente_dash:
                 "Prix_Public_de_Vente" , "Prix_base_remboursement" , "Prix_Hospitalier" , "Substance_active_DCI" ,
                 "Classe_Therapeutique" ]
         
-        self.cart_table.setHorizontalHeaderLabels(["Code EAN 13","Nom","Caracteristique","Stock","Prix unité", "Quantité", "Date_Expiration", "Prix total"])
+        self.cart_table.setHorizontalHeaderLabels(["Code EAN 13", "Nom", "Caractéristique", "Stock", "Prix unité", "Quantité", "Date d'expiration", "Prix total"])
         main_layout.addWidget(self.cart_table)
+
+
+
+        
 
         # Totaux
         totals_layout = QHBoxLayout()
@@ -109,13 +113,26 @@ class Vente_dash:
         totals_layout.addWidget(self.total_label)
         main_layout.addLayout(totals_layout)
 
+
+
+        client_layout_tab = QGridLayout() 
+        client_layout_tab.addWidget(self.client_status_label_, 1, 0)
+        client_layout_tab.addWidget(self.client_status_label, 1, 1)
+        client_layout_tab.addWidget(self.client_cin_label_, 1, 2)
+        client_layout_tab.addWidget(self.client_cin_label, 1, 3)
+        client_layout_tab.addWidget(self.client_max_credit_, 2, 0)
+        client_layout_tab.addWidget(self.client_max_credit, 2, 1)
+        client_layout_tab.addWidget(self.client_credit_actuel_, 2, 2)
+        client_layout_tab.addWidget(self.client_credit_actuel, 2, 3)
+        main_layout.addLayout(client_layout)
+        main_layout.addLayout(client_layout_tab)
+
         # Paiement
         payment_layout = QHBoxLayout()
         self.checkbox = QCheckBox('Crédit ?', self.main_interface)
         self.checkbox.stateChanged.connect(self.toggle_inputs)
         
         payment_layout.addWidget(self.checkbox)
-
         # Montant à payer
         self.amount_input = QLineEdit()
         self.amount_input.setPlaceholderText("Montant à payer maintenant")
@@ -132,13 +149,18 @@ class Vente_dash:
 
         main_layout.addLayout(payment_layout)
 
-        self.cancel_button = QPushButton("Annuler")
-        self.cancel_button.clicked.connect(self.cancel_sale)
-        main_layout.addWidget(self.cancel_button)
+
+        button_layout = QHBoxLayout()
 
         # Actions
         self.confirm_button = QPushButton("Confirmer la vente")
-        main_layout.addWidget(self.confirm_button)
+        button_layout.addWidget(self.confirm_button)
+
+        self.cancel_button = QPushButton("Annuler")
+        self.cancel_button.clicked.connect(self.cancel_sale)
+        button_layout.addWidget(self.cancel_button)
+
+        main_layout.addLayout(button_layout)
 
         # Assign layout to central widget
         self.main_interface.content_layout.addWidget(self.vente_dash)
@@ -180,31 +202,33 @@ class Vente_dash:
         client_id = self.client_id_input.text()
         if '_' not in client_id:
             print('merci de remplire les informations du client dans la bare de recherche ')
-            self.client_status_label.setText("Client : None")
-            self.client_cin_label.setText("CIN : None")
-            self.client_max_credit.setText("Max_credit : None")
-            self.client_credit_actuel.setText("Credit Actuel : None")
+            self.client_status_label.setText("None")
+            self.client_cin_label.setText("None")
+            self.client_max_credit.setText("None")
+            self.client_credit_actuel.setText("None")
 
             self.client_info = None
         else:
             nom,prenom,cin = client_id.split('_') 
             self.client_info = dict(extraire_client_info(nom,prenom,cin))
-            self.client_status_label.setText(f"Client : {self.client_info['Nom']} {self.client_info['Prenom']} ")
-            self.client_cin_label.setText(f"CIN : {self.client_info['CIN']}")
-            self.client_max_credit.setText(f"Max_credit : {self.client_info['Max_Credit']} Dh")
-            self.client_credit_actuel.setText(f"Credit Actuel : {self.client_info['Credit_Actuel']} Dh")
+            self.client_status_label.setText(f"{self.client_info['Nom']} {self.client_info['Prenom']} ")
+            self.client_cin_label.setText(f"{self.client_info['CIN']}")
+            self.client_max_credit.setText(f"{self.client_info['Max_Credit']} Dh")
+            self.client_credit_actuel.setText(f"{self.client_info['Credit_Actuel']} Dh")
 
 
 
 
     def process_barcode(self, codebare):
-        if len(codebare) > 13:
+        if len(codebare) >= 13:
             return codebare[-13:]
         return ""
 
     def ajouter_panier(self): 
         code = self.barcode_input.text()
+        print(len(code))
         code = self.process_barcode(code) 
+        print(code)
         if len(code) == 13:
             self.add_medicament_to_vente(code)
 
@@ -281,14 +305,13 @@ class Vente_dash:
         key = event.text() 
         current_time = time.time()
         if current_time - self.last_key_time < self.barcode_delay_threshold:
-            print("saisie de code bare", self.code_barre_scanner)   
+            print("Saisie de code-barres en cours:", self.code_barre_scanner)   
             code_b = True
         self.last_key_time = current_time 
         
-
         if key == '\r' and code_b:  # Lorsque le lecteur envoie un saut de ligne  
             self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
-            if self.code_barre_scanner  != "":
+            if self.code_barre_scanner != "":
                 self.add_medicament_to_vente(self.code_barre_scanner)
                 self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan                  
                  
@@ -328,6 +351,115 @@ class Vente_dash:
     def confirm_sale(self):  
         now = datetime.now()
         now_str = now.strftime("%d/%m/%Y %H:%M:%S")
+        id_client = 0 if self.client_info is None else self.client_info['ID_Client']
+        numero_facture = int(now.timestamp())
+        id_salarie = self.main_interface.user_session['ID_Salarie']
+        # Générer la facture
+
+        message = "Pharmacie Hajra\n"
+        message += "Adresse : 123, Rue Exemple, Ville, Pays\n"
+        message += "Téléphone : +212 123 456 789\n"
+        message += "Bonjour,\n"
+        message += "Facture n°: " + str(numero_facture) + "\n"
+        message += "Agent : " + str(self.main_interface.user_session['ID_Salarie'])+ "\n"
+        message += "----------------------------------------\n"
+        message += "Détails du client:\n"
+        message += "Nom : " + self.client_info['Nom'] + " " + self.client_info['Prenom'] + "\n"
+        message += "CIN : " + self.client_info['CIN'] + "\n" 
+        message += "Credit Actuel : " + str(self.client_info['Credit_Actuel']) + " Dh\n"
+        message += "----------------------------------------\n"
+
+        message += "Détails de la vente:\n"
+        message += "Détails de la vente:\n"
+        message += "----------------------------------------\n"
+        message += "Produit\t\tQuantité\tPrix unitaire\tPrix total\n"
+        message += "----------------------------------------\n"
+        total_facture = 0
+        for index, items in self.producs_table.iterrows():
+            message += f"{items['Code_EAN_13']}\t\t{items['Quantite']}\t\t{items['Prix_Public_de_Vente']} Dh\t\t{items['Prix_total']} Dh\n"
+            total_facture += items['Prix_total']
+
+        if self.checkbox.isChecked():  
+            to_pay_now = self.amount_input.text() 
+        else:
+            to_pay_now = total_facture
+        message +="Total facture : " + str(total_facture) + " Dh\n"
+        message += "Montant payé : " + to_pay_now + " Dh\n"
+        message += "Reste à payer : " + str(total_facture - int(to_pay_now)) + " Dh\n"
+        message += "----------------------------------------\n"
+        message += "Merci pour votre achat!\n" 
+        message += "Date: " + now_str + "\n"
+
+
+        self.producs_table.reset_index(drop=True) 
+        reply = QMessageBox.question(self.main_interface, "Confirmation de vente", message,
+                                 QMessageBox.Yes, QMessageBox.Cancel)
+
+        if reply == QMessageBox.Yes:
+            for index, items in self.producs_table.iterrows():
+                id_medicament = items['ID_Medicament']
+                id_commande_entre = items['ID_Commande']
+                prix_achat = items['Prix_Achat']
+                prix_v = items['Prix_Vente']
+                prix_vente = items['Prix_Public_de_Vente']
+                date_vente = now_str
+                quantite_vendue = items['Quantite'] 
+                quantite_list= items['list_quantity']  
+                total_facture = items['Prix_total']
+                ID_Stock = items['ID_Stock']
+                quantite_traiter = 0
+                self.total_facture = 0
+                for idcommande_item, prix_achat_item, prix_vente_item, ID_Stock_item, quanti in zip(id_commande_entre, prix_achat, prix_v , ID_Stock, quantite_list) :
+                    quanti_rest_to_hand = quantite_vendue - quantite_traiter
+                    if  quanti_rest_to_hand <= quanti:
+                        totale = self.ajouter_vente_with_all_operation(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti_rest_to_hand, 
+                        id_client, numero_facture, id_salarie) 
+                        self.total_facture+=totale
+                        quantite_traiter += quanti_rest_to_hand 
+                    else: 
+                        quantite_traiter+=quanti
+                        totale = self.ajouter_vente_with_all_operation(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, 
+                        id_client, numero_facture, id_salarie) 
+                        self.total_facture+=totale
+                    if quantite_traiter >= quantite_vendue:
+                        break  
+            if self.checkbox.isChecked(): 
+                to_pay_now = self.amount_input.text()  
+                self.ajouter_credit_with_all_operation(id_client, numero_facture, to_pay_now, self.total_facture, now_str, 'in progresse', id_salarie)
+            
+        
+            QMessageBox.information(self.main_interface, "Confirmation de vente", "Vente confirmée avec succès!")
+
+            self.client_id_input.clear()
+            self.barcode_input.clear()
+            self.cart_table.clearContents()
+            self.cart_table.setRowCount(0)
+            self.subtotal_label.setText("Sous-total : 0 Dh")
+            self.tax_label.setText("Taxes : 0 Dh")
+            self.total_label.setText("<b>Total : 0 Dh</b>")
+            self.checkbox.setChecked(False)
+            self.amount_input.clear()
+            self.rest_a_payer_value.clear()
+            self.producs_table = pd.DataFrame()
+
+
+    def ajouter_vente_with_all_operation(self, id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, id_client, numero_facture, id_salarie):
+        ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, quanti * prix_vente_item, id_client, numero_facture, id_salarie) 
+        return quanti * prix_vente_item
+        # todo : supprimer du stock 
+    def ajouter_credit_with_all_operation(self, id_client, numero_facture, to_pay_now, total_facture, now_str, status, id_salarie):
+        ajouter_credit(id_client, numero_facture, to_pay_now,  total_facture-int(to_pay_now), now_str, status, id_salarie)
+        ajouter_credit_client(id_client,  total_facture-int(to_pay_now))
+
+
+    
+
+        
+
+
+def confirm_sale_test(self):  
+        now = datetime.now()
+        now_str = now.strftime("%d/%m/%Y %H:%M:%S")
 
         for index, items in self.producs_table.iterrows():
             id_medicament = items['ID_Medicament']
@@ -364,22 +496,4 @@ class Vente_dash:
             credit = True
             to_pay_now = self.amount_input.text()  
             self.ajouter_credit_with_all_operation(id_client, numero_facture, to_pay_now, self.total_facture, now_str, 'in progresse', id_salarie)
-            
         
-
-
-    def ajouter_vente_with_all_operation(self, id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, id_client, numero_facture, id_salarie):
-        ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, quanti * prix_vente_item, id_client, numero_facture, id_salarie) 
-        return quanti * prix_vente_item
-        # todo : supprimer du stock 
-    def ajouter_credit_with_all_operation(self, id_client, numero_facture, to_pay_now, total_facture, now_str, status, id_salarie):
-        ajouter_credit(id_client, numero_facture, to_pay_now,  total_facture-int(to_pay_now), now_str, status, id_salarie)
-        ajouter_credit_client(id_client,  total_facture-int(to_pay_now))
-
-
-    
-
-        
-
-
-

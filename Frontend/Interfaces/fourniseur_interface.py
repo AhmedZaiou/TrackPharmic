@@ -28,11 +28,17 @@ class Fournisseur_dash:
 
 
         self.nom_input = QLineEdit()
+        self.nom_input.setPlaceholderText("Entrez le nom du fournisseur")
         self.telephone_input = QLineEdit()
+        self.telephone_input.setPlaceholderText("Entrez le numéro de téléphone du fournisseur")
         self.email_input = QLineEdit()
+        self.email_input.setPlaceholderText("Entrez l'email du fournisseur")
         self.adresse_input = QLineEdit()
+        self.adresse_input.setPlaceholderText("Entrez l'adresse du fournisseur")
         self.ville_input = QLineEdit()
+        self.ville_input.setPlaceholderText("Entrez la ville du fournisseur")
         self.pays_input = QLineEdit()
+        self.pays_input.setPlaceholderText("Entrez le pays du fournisseur")
 
 
         form_layout.addWidget(QLabel("Nom du Fournisseur :"), 0,0)

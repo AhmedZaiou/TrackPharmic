@@ -65,11 +65,13 @@ class Medicament_dash:
         self.nom_label = QLabel("Nom du Médicament :")
         layout.addWidget(self.nom_label, 1,0)
         self.nom_input = QLineEdit()
+        self.nom_input.setPlaceholderText("Nom du Médicament")
         layout.addWidget(self.nom_input, 1,1)
 
         self.caracteristique_label = QLabel("Caractéristique :")
         layout.addWidget(self.caracteristique_label, 2,0)
         self.caracteristique_input = QLineEdit()
+        self.caracteristique_input.setPlaceholderText("Caractéristique")
         layout.addWidget(self.caracteristique_input, 2,1)
 
         
@@ -77,6 +79,7 @@ class Medicament_dash:
         self.generique_label = QLabel("Médicament Générique (Oui/Non) :")
         layout.addWidget(self.generique_label, 3,0)
         self.generique_input = QLineEdit()
+        self.generique_input.setPlaceholderText("Médicament Générique (Oui/Non)")
         layout.addWidget(self.generique_input, 3,1)
 
         self.prix_officine_label = QLabel("Prix Officine :")
@@ -102,11 +105,13 @@ class Medicament_dash:
         self.substance_label = QLabel("Substance Active DCI :")
         layout.addWidget(self.substance_label, 8,0)
         self.substance_input = QLineEdit()
+        self.substance_input.setPlaceholderText("Substance Active DCI")
         layout.addWidget(self.substance_input, 8,1)
 
         self.classe_label = QLabel("Classe Thérapeutique :")
         layout.addWidget(self.classe_label, 9,0)
         self.classe_input = QLineEdit()
+        self.classe_input.setPlaceholderText("Classe Thérapeutique")
         layout.addWidget(self.classe_input, 9,1)
 
 

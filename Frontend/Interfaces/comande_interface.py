@@ -51,7 +51,7 @@ class Commande_dash:
         # Section Fournisseur
         fournisseur_layout = QGridLayout()
         self.fournisseur_input = QLineEdit()
-        self.fournisseur_input.setPlaceholderText("Rechercher fournisseur par Nom") 
+        self.fournisseur_input.setPlaceholderText("Rechercher fournisseur par Nom")
 
         self.fournisseur_input.textChanged.connect(self.OntextChangeFournisseur)
 
@@ -64,12 +64,17 @@ class Commande_dash:
 
         self.add_fournisseur_button = QPushButton("Nouveau fournisseur")
         self.add_fournisseur_button.clicked.connect(self.create_fournisseur)
- 
-        self.fournisseur_status_label = QLabel("Fournisseur : XXX")
-        self.fournisseur_activite_label = QLabel("Email : XXX")
+         
+        self.fournisseur_status_label = QLabel("Fournisseur : ")
+        self.fournisseur_activite_label = QLabel("Email : ")
 
-        self.fournisseur_max_credit = QLabel("Téléphone : XXX")
-        self.fournisseur_credit_actuel = QLabel("Adresse : XXX")
+        self.fournisseur_max_credit = QLabel("Téléphone : ")
+        self.fournisseur_credit_actuel = QLabel("Adresse : ")
+
+        self.fournisseur_status_label.setText("Fournisseur : Nom Fournisseur")
+        self.fournisseur_activite_label.setText("Email : Email Fournisseur")
+        self.fournisseur_max_credit.setText("Téléphone : Téléphone Fournisseur")
+        self.fournisseur_credit_actuel.setText("Adresse : Adresse Fournisseur")
         fournisseur_layout.addWidget(self.fournisseur_input, 0,0) 
         fournisseur_layout.addWidget(self.add_fournisseur_button, 0,1) 
 
@@ -87,7 +92,7 @@ class Commande_dash:
         self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
 
         self.nom_medicament = QLineEdit()
-        self.nom_medicament.setPlaceholderText("Entrez le nom du medicament ici")
+        self.nom_medicament.setPlaceholderText("Entrez le nom du médicament ici")  # Updated placeholder text to be in French
         self.barcode_input.returnPressed.connect(self.process_barcode)
         self.nom_medicament.textChanged.connect(self.onTextChanged)
 
@@ -121,11 +126,12 @@ class Commande_dash:
         self.product_table = QTableWidget(0, 3)  # (0 lignes, 3 colonnes)
 
         self.product_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.product_table.setHorizontalHeaderLabels(["Code barre","Nom", "Quantité"])
+        self.product_table.setHorizontalHeaderLabels(["Code-barre", "Nom", "Quantité"])
         main_layout_add.addWidget(self.product_table)  
 
         button_layout = QGridLayout()
         self.confirmation_button = QPushButton("Confirmer la commande")
+        self.confirmation_button.clicked.connect(self.confirmation_function)
         self.confirmation_button.clicked.connect(self.confirmation_function)
 
         self.annuler_button = QPushButton("Annuler la commande")
@@ -176,7 +182,7 @@ class Commande_dash:
         quantite = self.quantite_input.value()
 
         if code_barre == "" and  nom_medicament == "":
-            QMessageBox.information(self.main_interface, "merci de selectionner un medicament", "merci de selectionner un medicament")
+            QMessageBox.information(self.main_interface, "Merci de sélectionner un médicament", "Merci de sélectionner un médicament avant d'ajouter au panier.")
         else:
             self.commande.append([code_barre, nom_medicament, quantite]) 
             self.product_table.setRowCount(len(self.commande))
@@ -189,17 +195,16 @@ class Commande_dash:
 
     
     def confirmation_function(self):
-
         if self.info_fourniseur is None: 
-            QMessageBox.information(self.main_interface, "merci de selectionner un fournisseur", "merci de selectionner un fournisseur")
+            QMessageBox.information(self.main_interface, "Merci de sélectionner un fournisseur", "Merci de sélectionner un fournisseur avant de confirmer la commande.")
             return
-        if len(self.commande)==0: 
-            QMessageBox.information(self.main_interface, "merci de selectionner des medicaments", "merci de selectionner des medicaments")
+        if len(self.commande) == 0: 
+            QMessageBox.information(self.main_interface, "Merci de sélectionner des médicaments", "Merci de sélectionner des médicaments")
             return
-        ajouter_commande(str(self.commande), self.info_fourniseur[0], datetime.now(),  datetime.now(), "en cours", 
-                     None, None, None, self.main_interface.user_session['ID_Salarie'], True) 
         
-        QMessageBox.information(self.main_interface, "La commande à été enregistrer avec succee", "La commande à été enregistrer avec succee")
+        ajouter_commande(str(self.commande), self.info_fourniseur[0], datetime.now(), datetime.now(), "en cours", None, None, None, self.main_interface.user_session['ID_Salarie'], True) 
+        
+        QMessageBox.information(self.main_interface, "La commande a été enregistrée avec succès", "La commande a été enregistrée avec succès")
         self.main_interface = Commande_dash(self.main_interface)
         
         
@@ -232,7 +237,7 @@ class Commande_dash:
 
         # Panier
         self.cart_table = QTableWidget(0, 8)
-        self.cart_table.setHorizontalHeaderLabels(["Code commande","Fourniseur", "Date de comande", "Noms des medicaments",  "Statue commande", "Traiter"])
+        self.cart_table.setHorizontalHeaderLabels(["Code commande", "Fournisseur", "Date de commande", "Noms des médicaments", "Statut commande", "Traiter"])
         main_layout.addWidget(self.cart_table)
 
         self.charger_carte_table()
