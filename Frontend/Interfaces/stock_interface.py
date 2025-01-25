@@ -1,5 +1,5 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,QSpinBox,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,QSpinBox,QHeaderView,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox, QMessageBox
 )
 from qtpy.QtCore import Qt
@@ -24,9 +24,6 @@ class Stock_dash:
         self.last_time = time.time()
         self.commande_deja_traiter_list = []
 
-    
-
-
     def create_menu_commande(self):
         menu_layout = QHBoxLayout()
         self.reception_commande = QPushButton("Reception d'une commande")
@@ -40,7 +37,7 @@ class Stock_dash:
     def reception_commande_fc(self):
         self.show_reception_interface()
     def add_stock_menu_fc(self):
-        self.show_add_stock_interface()
+        self.show_add_stock_interface_saisie_libre()
 
     def show_reception_interface(self):
         self.main_interface.clear_content_frame()
@@ -61,34 +58,14 @@ class Stock_dash:
         main_layout.addLayout(menu_layout)
 
 
-        self.cart_table = QTableWidget(0, 8)
-        self.cart_table.setHorizontalHeaderLabels(["Code commande","Fourniseur", "Date de comande", "Noms des medicaments",  "Statue commande", "Traiter"])
+        self.cart_table = QTableWidget(0, 5)
+        self.cart_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.cart_table.setHorizontalHeaderLabels(["Code commande","Fourniseur", "Date de comande", "Noms des medicaments",  "Statue commande"])
         self.cart_table.cellClicked.connect(self.commande_select)
         main_layout.addWidget(self.cart_table)
         self.charger_carte_table()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
+ 
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
@@ -212,13 +189,160 @@ class Stock_dash:
         situation_layout = QVBoxLayout(self.situation_widget)
 
         self.medicament_commande_list = QTableWidget(0, 3)
+
+        self.medicament_commande_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.medicament_commande_list.setHorizontalHeaderLabels(["Code EAN 13","Nom Medicament", "Quantité"])
 
         situation_layout.addWidget(self.medicament_commande_list)
 
         self.medicament_traiter_commande_list = QTableWidget(0, 3)
+        self.medicament_traiter_commande_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.medicament_traiter_commande_list.setHorizontalHeaderLabels(["Code EAN 13","Nom Medicament", "Quantité"])
+        situation_layout.addWidget(self.medicament_traiter_commande_list)
 
+
+        formul_layout.addWidget(self.situation_widget)
+
+
+
+        button_layout = QGridLayout()
+        self.supprission_button = QPushButton("Supprimer la commande")
+        button_layout.addWidget(self.supprission_button, 0,0)
+
+
+        self.finalisation_button = QPushButton("finaliser la commande")
+        self.finalisation_button.clicked.connect(self.finaliser_commande)
+        button_layout.addWidget(self.finalisation_button,0,1)
+        
+        main_layout.addLayout(formul_layout)
+        main_layout.addLayout(button_layout)
+
+        self.main_interface.content_layout.addWidget(self.vente_dash)
+    
+
+
+
+
+    def show_add_stock_interface_saisie_libre(self):
+        self.main_interface.clear_content_frame()
+
+        self.vente_dash = QWidget()
+        self.vente_dash.setObjectName("vente_dash")
+        self.code_barre_scanner = ""
+
+        # Widget central
+        # Layout principal
+        main_layout = QVBoxLayout(self.vente_dash)
+ 
+        titre_page = QLabel("Gestion de Stock")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter) 
+        main_layout.addWidget(titre_page)
+
+        menu_layout = self.create_menu_commande()
+        main_layout.addLayout(menu_layout)
+
+
+
+
+        formul_layout = QHBoxLayout()
+
+        self.formulaire_widget = QWidget()
+
+ 
+        validation_layout_fournisseur = QGridLayout(self.formulaire_widget)
+        date_commande = QLabel(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        self.date_commande_value = QLabel("")
+        fournisseur_name = QLabel("Nom de fournisseur : ")
+        self.fournisseur_name_value = QLabel("")
+
+        statue_commande = QLabel("Statue de Commande")
+        self.statue_commande_value = QLabel("")
+
+        code_barre = QLabel('Code EAN 13 :')
+        self.code_barre_value = QLineEdit()
+        medicament_name = QLabel("Nom de medicament : ")
+        self.medicament_name_value = QLabel("")
+
+        quantite_commender = QLabel("Quantité")
+        self.quantite_commender_value = QSpinBox()
+        self.quantite_commender_value.setRange(1, 10000)
+
+        self.suivant_medicament = QLabel("Suivant >")
+        self.precedent_medicament = QLabel("< Precedent")
+
+
+
+
+
+        validation_layout_fournisseur.addWidget(fournisseur_name, 0,0)
+        validation_layout_fournisseur.addWidget(self.fournisseur_name_value, 0,1)
+        validation_layout_fournisseur.addWidget(date_commande, 1,0)
+        validation_layout_fournisseur.addWidget(self.date_commande_value, 1,1)
+        validation_layout_fournisseur.addWidget(statue_commande, 2,0)
+        validation_layout_fournisseur.addWidget(self.statue_commande_value, 2,1)  
+
+        validation_layout_fournisseur.addWidget(code_barre, 3,0)
+        validation_layout_fournisseur.addWidget(self.code_barre_value, 3,1)
+        validation_layout_fournisseur.addWidget(medicament_name, 4,0)
+        validation_layout_fournisseur.addWidget(self.medicament_name_value, 4,1) 
+        validation_layout_fournisseur.addWidget(quantite_commender, 6,0)
+        validation_layout_fournisseur.addWidget(self.quantite_commender_value, 6,1)  
+
+
+
+
+
+        self.prix_achat_medicament = QLineEdit()
+        self.prix_vente_medicament = QLineEdit()
+        self.prix_cons_medicament = QLineEdit()
+        self.date_expiration_medicament = QLineEdit()
+
+        self.quantite_maximal_medicament = QLineEdit()
+        self.quantite_minimal_medicament = QLineEdit()
+
+
+         # Ajout des labels et des champs dans le layout
+        validation_layout_fournisseur.addWidget(QLabel("Prix d'achat :"), 7, 0)
+        validation_layout_fournisseur.addWidget(self.prix_achat_medicament, 7, 1)
+
+        validation_layout_fournisseur.addWidget(QLabel("Prix de vente :"), 8, 0)
+        validation_layout_fournisseur.addWidget(self.prix_vente_medicament, 8, 1)
+
+        
+
+        validation_layout_fournisseur.addWidget(QLabel("Date d'expiration :"), 9, 0)
+        validation_layout_fournisseur.addWidget(self.date_expiration_medicament, 9, 1)
+
+        validation_layout_fournisseur.addWidget(QLabel("Quantité maximale :"), 10, 0)
+        validation_layout_fournisseur.addWidget(self.quantite_maximal_medicament, 10, 1)
+
+        validation_layout_fournisseur.addWidget(QLabel("Quantité minimale :"), 11, 0)
+        validation_layout_fournisseur.addWidget(self.quantite_minimal_medicament, 11, 1)
+
+
+
+
+        self.confirm_button = QPushButton("Confirmer l'ajout") 
+        self.confirm_button.clicked.connect(self.confirmation_ajout)
+
+        validation_layout_fournisseur.addWidget(self.confirm_button, 12, 1) 
+
+        formul_layout.addWidget(self.formulaire_widget) 
+
+        self.situation_widget = QWidget()
+        situation_layout = QVBoxLayout(self.situation_widget)
+
+        self.medicament_commande_list = QTableWidget(0, 3)
+
+        self.medicament_commande_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.medicament_commande_list.setHorizontalHeaderLabels(["Code EAN 13","Nom Medicament", "Quantité"])
+
+        situation_layout.addWidget(self.medicament_commande_list)
+
+        self.medicament_traiter_commande_list = QTableWidget(0, 3)
+        self.medicament_traiter_commande_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.medicament_traiter_commande_list.setHorizontalHeaderLabels(["Code EAN 13","Nom Medicament", "Quantité"])
         situation_layout.addWidget(self.medicament_traiter_commande_list)
 
 

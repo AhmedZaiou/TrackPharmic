@@ -13,7 +13,7 @@ class Vente_dash:
     def __init__(self, main_interface):
         self.main_interface = main_interface
         self.show_vente_interface()
-        self.client_info = None
+        self.client_info = {'ID_Client': 0, 'Nom': 'Anonyme', 'Prenom': 'Anonyme', 'CIN': 'Anonyme', 'Téléphone': '06666666666', 'Email': 'email@email.ext', 'Adresse': 'Anonyme', 'Max_Crédit': 0, 'Credit_Actuel': 0}
         self.producs_table = pd.DataFrame()
         self.last_key_time = time.time()
         self.barcode_delay_threshold = 0.1 
@@ -92,9 +92,7 @@ class Vente_dash:
         # Panier
         self.cart_table = QTableWidget(0, 8)
         self.cart_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        columns = ["Nom" , "caracteristique", "Code_EAN_13" , "Medicament_GENERIQUE", "Prix_Officine" ,
-                "Prix_Public_de_Vente" , "Prix_base_remboursement" , "Prix_Hospitalier" , "Substance_active_DCI" ,
-                "Classe_Therapeutique" ]
+        
         
         self.cart_table.setHorizontalHeaderLabels(["Code EAN 13", "Nom", "Caractéristique", "Stock", "Prix unité", "Quantité", "Date d'expiration", "Prix total"])
         main_layout.addWidget(self.cart_table)
@@ -184,9 +182,8 @@ class Vente_dash:
         print(text)
 
     def toggle_inputs(self):
-
         if self.checkbox.isChecked():
-            if self.client_info == None: 
+            if self.client_info['Nom'] == 'Anonyme' and self.client_info['Prenom'] == 'Anonyme' and self.client_info['CIN'] == 'Anonyme': 
                 QMessageBox.information(self.main_interface, "Merci de choisire un client avant d'activer l'option credit", "Merci de choisire un client avant d'activer l'option credit")
                 self.checkbox.setChecked(False)
             else:
@@ -200,8 +197,7 @@ class Vente_dash:
 
     def search_client(self):
         client_id = self.client_id_input.text()
-        if '_' not in client_id:
-            print('merci de remplire les informations du client dans la bare de recherche ')
+        if '_' not in client_id: 
             self.client_status_label.setText("None")
             self.client_cin_label.setText("None")
             self.client_max_credit.setText("None")
@@ -265,6 +261,7 @@ class Vente_dash:
         if  not self.producs_table.empty and code_barre_scanner in self.producs_table["Code_EAN_13"].values:
             self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Quantite'] += 1
             self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Prix_total'] += self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Prix_Public_de_Vente']
+            self.update_table()
         else:
             print(code_barre_scanner)
             medicament  = extraire_medicament_code_barre(code_barre_scanner)
@@ -275,9 +272,8 @@ class Vente_dash:
                 medicament_on_dtock = extraire_medicament_id_stock(medicament['ID_Medicament']) 
                 medicament = dict(medicament)  
 
-
                 if medicament_on_dtock is None:
-                    QMessageBox.information(self.main_interface, "stock vide", "Stock vide")
+                    QMessageBox.information(self.main_interface, "Stock vide", "Le stock de ce médicament est vide. Veuillez vérifier la disponibilité.")
                 else:  
                     if len(np.unique(medicament_on_dtock['Prix_Vente']))>1:
                         QMessageBox.information(self.main_interface, "Atention le prix de ce medicament à changer", "Atention le prix de ce medicament à changer, Merci de séparer les facture en cas de quantité superieur a 1")
@@ -298,14 +294,13 @@ class Vente_dash:
                     else:
                         self.producs_table = pd.concat([self.producs_table, df], ignore_index=True)
                     self.producs_table['Prix_total']=self.producs_table['Prix_total'].round(2)
-        self.update_table()
+                    self.update_table()
         
     
     def keyPressEvent(self, event): 
         key = event.text() 
         current_time = time.time()
-        if current_time - self.last_key_time < self.barcode_delay_threshold:
-            print("Saisie de code-barres en cours:", self.code_barre_scanner)   
+        if current_time - self.last_key_time < self.barcode_delay_threshold: 
             code_b = True
         self.last_key_time = current_time 
         
@@ -345,8 +340,11 @@ class Vente_dash:
         print("Mode Crédit activé.")
         # Logique supplémentaire pour le crédit peut être ajoutée ici
 
-    def cancel_sale(self):
-        print("Vente annulée.")
+    def cancel_sale(self): 
+        reply = QMessageBox.question(self.main_interface, "Annulation de vente", "Êtes-vous sûr de vouloir annuler la vente ?", QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            QMessageBox.information(self.main_interface, "Annulation de vente", "La vente a été annulée avec succès.")
+            self.main_interface = Vente_dash(self.main_interface)
 
     def confirm_sale(self):  
         now = datetime.now()
@@ -354,7 +352,7 @@ class Vente_dash:
         id_client = 0 if self.client_info is None else self.client_info['ID_Client']
         numero_facture = int(now.timestamp())
         id_salarie = self.main_interface.user_session['ID_Salarie']
-        # Générer la facture
+        # Générer la facture 
 
         message = "Pharmacie Hajra\n"
         message += "Adresse : 123, Rue Exemple, Ville, Pays\n"
@@ -384,7 +382,7 @@ class Vente_dash:
         else:
             to_pay_now = total_facture
         message +="Total facture : " + str(total_facture) + " Dh\n"
-        message += "Montant payé : " + to_pay_now + " Dh\n"
+        message += "Montant payé : " + str(to_pay_now) + " Dh\n"
         message += "Reste à payer : " + str(total_facture - int(to_pay_now)) + " Dh\n"
         message += "----------------------------------------\n"
         message += "Merci pour votre achat!\n" 

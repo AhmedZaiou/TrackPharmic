@@ -4,6 +4,7 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt, QStringListModel
 from datetime import datetime
+import time
 
 from Backend.Dataset.dataset import *
 
@@ -15,6 +16,11 @@ class Commande_dash:
         self.show_commande_interface()
         self.commande = []
         self.info_fourniseur = None
+        self.code_barre_scanner = "" 
+        self.last_key_time = time.time()
+        self.barcode_delay_threshold = 0.1 
+        self.main_interface.keyPressEvent = self.keyPressEvent
+        
     
 
     def create_menu_commande(self):
@@ -193,7 +199,23 @@ class Commande_dash:
         self.nom_medicament.clear()
         self.quantite_input.setValue(1)
 
+
+   
     
+    def ajouter_medi_to_commande_code(self, code_barre_scanner):
+
+        medicament  = extraire_medicament_code_barre(code_barre_scanner)
+        if medicament is None:
+            QMessageBox.information(self.main_interface, "Medicament non reconue", "Medicament non reconue")
+            return 
+        else:  
+            medicament = dict(medicament)  
+            self.commande.append([code_barre_scanner, medicament['Nom'], 1]) 
+            self.product_table.setRowCount(len(self.commande))
+            for row, product in enumerate(self.commande): 
+                for col, data in enumerate(product): 
+                    self.product_table.setItem(row, col, QTableWidgetItem(str(data))) 
+
     def confirmation_function(self):
         if self.info_fourniseur is None: 
             QMessageBox.information(self.main_interface, "Merci de sélectionner un fournisseur", "Merci de sélectionner un fournisseur avant de confirmer la commande.")
@@ -201,16 +223,29 @@ class Commande_dash:
         if len(self.commande) == 0: 
             QMessageBox.information(self.main_interface, "Merci de sélectionner des médicaments", "Merci de sélectionner des médicaments")
             return
-        
-        ajouter_commande(str(self.commande), self.info_fourniseur[0], datetime.now(), datetime.now(), "en cours", None, None, None, self.main_interface.user_session['ID_Salarie'], True) 
+        id_salarie = self.main_interface.user_session['ID_Salarie']
+        ajouter_commande(str(self.commande), self.info_fourniseur[0], datetime.now(), datetime.now(), "en cours", None, None, None, id_salarie, True) 
         
         QMessageBox.information(self.main_interface, "La commande a été enregistrée avec succès", "La commande a été enregistrée avec succès")
-        self.main_interface = Commande_dash(self.main_interface)
+        self.actualiser_commande()
         
         
     def annuler_fonction(self):
         self.main_interface = Commande_dash(self.main_interface)
 
+    def actualiser_commande(self):
+        self.commande = []
+        self.product_table.setRowCount(0)
+        self.barcode_input.clear()
+        self.nom_medicament.clear()
+        self.fournisseur_input.clear()
+        self.quantite_input.setValue(1)
+        self.info_fourniseur = None
+        self.fournisseur_status_label.setText(f"Fournisseur : ")
+        self.fournisseur_activite_label.setText(f"Email :  ")
+
+        self.fournisseur_max_credit.setText(f"Téléphone :  ")
+        self.fournisseur_credit_actuel.setText(f"Adresse :  ")
 
 
 
@@ -268,12 +303,10 @@ class Commande_dash:
         from fourniseur_interface import Fournisseur_dash
         self.main_interface = Fournisseur_dash(self) 
 
-    def process_barcode(self):
-        barcode = self.barcode_input.text()
-        if barcode: 
-            # Simuler l'ajout d'un produit au panier
-            self.add_product_to_cart(barcode)
-            self.barcode_input.clear()
+    def process_barcode(self, codebare):
+        if len(codebare) >= 13:
+            return codebare[-13:]
+        return ""
 
     
 
@@ -283,6 +316,28 @@ class Commande_dash:
         for row, product in enumerate(data): 
             for col, data in enumerate(product): 
                 self.cart_table.setItem(row, col, QTableWidgetItem(str(data)))
+    
+
+
+
+
+    def keyPressEvent(self, event): 
+        key = event.text() 
+        current_time = time.time()
+        if current_time - self.last_key_time < self.barcode_delay_threshold:  
+            code_b = True
+        self.last_key_time = current_time 
+        
+        if key == '\r' and code_b:  # Lorsque le lecteur envoie un saut de ligne  
+            self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+            if self.code_barre_scanner != "":
+                self.ajouter_medi_to_commande_code(self.code_barre_scanner)
+                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan                  
+                 
+        else:
+            self.code_barre_scanner += key  # Ajouter le caractère au code en cours 
+
+        
         
 
     

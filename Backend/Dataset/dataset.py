@@ -179,7 +179,7 @@ def extraire_medicament_id_stock(id_medicament):
         cursor = conn.cursor()
         cursor.execute("SELECT ID_Stock,ID_Medicament, ID_Commande,Prix_Achat,Prix_Vente, Date_Expiration, Quantite_Actuelle  FROM Stock WHERE ID_Medicament = ? order by Date_Expiration", (id_medicament,))
         list_results =  cursor.fetchall()
-        if list_results is None:
+        if list_results is None or len(list_results) == 0:
             return None
         else:
             dic = {}
@@ -500,7 +500,7 @@ def extraire_salarie_login(nom, password):
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Salaries WHERE Nom = ? and password = ? ", (nom,password))
-        return cursor.fetchone()
+        return dict(cursor.fetchone())
 
 # Fonction : extraire_tous_salaries
 def extraire_tous_salaries():
@@ -670,26 +670,28 @@ def extraire_pharma_nom_like(name):
 def create_table_echanges():
     with sqlite3.connect( dataset) as conn:
         cursor = conn.cursor()
+        cursor.execute("drop table if exists Echanges")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Echanges (
                 ID_Echange INTEGER PRIMARY KEY AUTOINCREMENT,
                 ID_Pharmacie INTEGER NOT NULL,
-                Liste_Produits TEXT NOT NULL,
+                ID_facture TEXT NOT NULL,
                 Date_Echange TEXT NOT NULL,
                 Total_Facture REAL NOT NULL,
-                Demandeur TEXT NOT NULL,
+                sens TEXT NOT NULL,
                 ID_Salarie INTEGER NOT NULL
             )
         """)
 
 # Fonction : ajouter_echange
-def ajouter_echange(id_pharmacie, liste_produits, date_echange, total_facture, demandeur, id_salarie):
+def ajouter_echange(id_pharmacie, ID_facture, date_echange, total_facture, sens, id_salarie):
+    create_table_echanges()
     with sqlite3.connect( dataset) as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO Echanges (ID_Pharmacie, Liste_Produits, Date_Echange, Total_Facture, Demandeur, ID_Salarie)
+            INSERT INTO Echanges (ID_Pharmacie, ID_facture, Date_Echange, Total_Facture, sens, ID_Salarie)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (id_pharmacie, liste_produits, date_echange, total_facture, demandeur, id_salarie))
+        """, (id_pharmacie, ID_facture, date_echange, total_facture, sens, id_salarie))
 
 # Fonction : supprimer_echange
 def supprimer_echange(id_echange):
@@ -698,14 +700,14 @@ def supprimer_echange(id_echange):
         cursor.execute("DELETE FROM Echanges WHERE ID_Echange = ?", (id_echange,))
 
 # Fonction : modifier_echange
-def modifier_echange(id_echange, id_pharmacie, liste_produits, date_echange, total_facture, demandeur, id_salarie):
+def modifier_echange(id_echange, id_pharmacie, ID_facture, date_echange, total_facture, sens, id_salarie):
     with sqlite3.connect( dataset) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Echanges SET
-                ID_Pharmacie = ?, Liste_Produits = ?, Date_Echange = ?, Total_Facture = ?, Demandeur = ?, ID_Salarie = ?
+                ID_Pharmacie = ?, ID_facture = ?, Date_Echange = ?, Total_Facture = ?, sens = ?, ID_Salarie = ?
             WHERE ID_Echange = ?
-        """, (id_pharmacie, liste_produits, date_echange, total_facture, demandeur, id_salarie, id_echange))
+        """, (id_pharmacie, ID_facture, date_echange, total_facture, sens, id_salarie, id_echange))
 
 # Fonction : extraire_echange
 def extraire_echange(id_echange):
@@ -904,3 +906,10 @@ def extraire_tous_commandes_table():
         cursor = conn.cursor()
         cursor.execute(request)
         return cursor.fetchall()
+
+def extraire_pharma_nom(nom):
+    with sqlite3.connect( dataset) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Pharmacies WHERE Nom = ?", (nom,))
+        return cursor.fetchone()

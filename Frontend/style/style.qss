@@ -54,17 +54,60 @@ background-color: white;
     margin-bottom: 20px; /* Espacement sous le titre */    
     
 }
-
-
-QLineEdit {
-    background-color: white;  /* Couleur de fond vert très clair */
-    border: 1px solid #65c87d; /* Bordure verte */
-    border-radius: 8px;        /* Coins arrondis */
-    padding: 8px;             /* Espacement intérieur */
-    font-size: 16px;          /* Taille de la police */
-    color: #155724;           /* Texte vert foncé */
-    font-family: Arial, sans-serif; /* Police simple et lisible */
+#logoTitle{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;  
 }
+
+
+#logoTitle img {
+    width: 24px;  
+    height: 24px;  
+    margin-right: 8px;  
+}
+#titlelogo{ 
+        font-size: 40px; /* Augmenter la taille du titre */
+        color: #155724; /* Couleur du texte */
+        text-align: center; /* Centrer le titre */
+        margin: 0; /* Supprimer les marges par défaut */
+        font-weight: bold; /* Texte en gras */
+        text-transform: uppercase; /* Mettre le texte en majuscules */
+        letter-spacing: 2px; /* Espacement entre les lettres */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Ombre légère */
+     
+    }
+#logo{
+    display: flex; /* Permet d'aligner le logo et le titre */
+    align-items: center; /* Centrer le contenu verticalement */
+    justify-content: center; /* Centrer le contenu horizontalement */
+    margin-bottom: 20px; /* Espacement sous le titre */
+    margin-right: 50px;
+}
+#loginframe{
+    border: 3px solid rgba(10, 13, 11, 0.1);
+    border-radius: 15px; /* Softer rounded corners */
+    box-shadow: 0px 4px 10px rgba(237, 249, 242, 0.1);
+    margin-bottom: 50px;
+}
+
+#loginframe label{
+    font-size: 16px; /* Adjust the font size */
+    color: #155724; /* Set the text color */
+    margin-bottom: 10px; /* Adjust the margin bottom */
+}
+#connexionlab{
+    font-size: 25px; /* Adjust the font size */
+    color: #155724; /* Set the text color */
+    margin-bottom: 10px; /* Adjust the margin bottom */ 
+}
+
+#profilewidget{ 
+        max-width: 300px;
+        float: right; 
+}
+
 
 QLineEdit:focus {
     border: 1px solid #65c87d; /* Bordure verte plus intense quand sélectionné */

@@ -29,6 +29,7 @@ def set_styles():
 
 
 
+profile_salarie = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/profilsalarie.png"
 
 app_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/pharmacie_bloc.png"
 

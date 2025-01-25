@@ -1,11 +1,12 @@
 
-from qtpy.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QAction, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame, QLabel, QLineEdit
+from qtpy.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QAction, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame, QLabel, QLineEdit,QMessageBox
 from qtpy.QtCore import Qt,QSize
 from qtpy.QtGui import QPixmap, QIcon 
 
 
 from Frontend.utils.utils import *
 from Backend.Dataset.dataset import *
+import os
 
 
 class MainInterface(QMainWindow):
@@ -22,12 +23,10 @@ class MainInterface(QMainWindow):
      
 
     def show_login_interface(self):
+        
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget) 
-
         self.central_widget.setObjectName("widgetGeneral")
-
-
         self.central_widget = QWidget()
         self.central_widget.setObjectName("widgetGeneral")  
 
@@ -46,16 +45,18 @@ class MainInterface(QMainWindow):
         pixmap = QPixmap(app_logo)  # Remplacez "path_to_logo_image" par le chemin de votre image
         pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)  # Réduire la taille du logo
         self.logo_label.setPixmap(pixmap)
+        self.logo_label.setObjectName("logo")
         self.main_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
         # Ajouter le titre de l'application
         self.title_label = QLabel("Titre de l'application")
-        self.title_label.setObjectName("title")
+        self.title_label.setObjectName("titlelogo")
 
         # Créer un widget pour contenir le logo et le titre
         logo_title_widget = QWidget()
         logo_title_layout = QHBoxLayout(logo_title_widget)
         logo_title_layout.addWidget(self.logo_label)
         logo_title_layout.addWidget(self.title_label)
+        logo_title_widget.setObjectName("logoTitle")
 
         self.main_layout.addWidget(logo_title_widget, alignment=Qt.AlignCenter)
 
@@ -100,7 +101,7 @@ class MainInterface(QMainWindow):
         password = self.password_entry.text() 
         self.user_session = extraire_salarie_login(login, password)
         if self.user_session is None:
-            print("mot de passe erreur") 
+            QMessageBox.information(self, "Erreur de connexion", "Mot de passe ou utilisateur incorrect")
 
         else: 
             self.show_main_interface()  
@@ -127,12 +128,15 @@ class MainInterface(QMainWindow):
         self.top_menu_layout = QHBoxLayout(self.top_menu_frame)
 
         profile_widget = QWidget()
+        profile_widget.setObjectName("profilewidget")
         profile_layout = QHBoxLayout(profile_widget)
 
         # Ajouter une image de profil
         profile_image = QLabel()
+        if not os.path.isfile(self.user_session['Photo']) :
+            self.user_session['Photo'] = profile_salarie
         pixmap = QPixmap(self.user_session['Photo'])  # Remplacez par le chemin de votre image
-        pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         profile_image.setPixmap(pixmap)
         profile_image.setAlignment(Qt.AlignCenter)
 
@@ -223,6 +227,7 @@ class MainInterface(QMainWindow):
 
         # Créer les menus (Menu horizontal en haut et menu latéral)
         self.create_menus()
+        self.acceuil_click()
     
     def keyPressEvent(self, event):
         """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
@@ -325,102 +330,4 @@ class MainInterface(QMainWindow):
             widget = self.content_layout.itemAt(i).widget()
             if widget:
                 widget.deleteLater()
-    
-
-
-    def show_main_interface_salarie(self):
-        # Widget central
-        self.central_widget = QWidget(self)
-        self.setCentralWidget(self.central_widget)  
-        self.central_widget.setObjectName("widgetGeneral")
-
-        # Layout principal
-        self.main_layout = QVBoxLayout(self.central_widget)
-
-        # Frame pour menu haut (vertical)
-        self.top_menu_frame = QFrame(self)
-        self.top_menu_frame.setFixedHeight(100)  # Hauteur du menu vertical
-        self.main_layout.addWidget(self.top_menu_frame)
-
-        self.top_menu_frame.setObjectName("topmenu")
-
-        # Layout pour menu haut
-        self.top_menu_layout = QHBoxLayout(self.top_menu_frame)
-
-        profile_widget = QWidget()
-        profile_layout = QHBoxLayout(profile_widget)
-        # Ajouter une image de profil
-        profile_image = QLabel()
-        pixmap = QPixmap(self.user_session['Photo'])  # Remplacez par le chemin de votre image
-        pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        profile_image.setPixmap(pixmap)
-        profile_image.setAlignment(Qt.AlignCenter)
-
-        # Ajouter un nom de profil
-        profile_name = QLabel(str(self.user_session['Nom']+" "+self.user_session['Prenom'])) 
-        profile_name.setAlignment(Qt.AlignCenter)
-        profile_name.setStyleSheet("font-size: 14px; font-weight: bold;")
-
-        # Ajouter l'image et le nom au layout
-        profile_layout.addWidget(profile_image)
-        profile_layout.addWidget(profile_name)
-
-        # Ajouter le widget de profil au menu gauche
-        self.top_menu_layout.addWidget(profile_widget)
-
-
-        # Ajouter des boutons dans le menu vertical du haut 
-        self.top_menu_layout.addWidget(QPushButton("Déconnexion"))
-
-
-        self.base_widget = QWidget()
-        self.base_layout = QHBoxLayout(self.base_widget)
-
-        # Frame pour menu gauche (vertical)
-        self.left_menu_frame = QFrame(self)
-        self.left_menu_frame.setFixedWidth(100)
-        self.base_layout.addWidget(self.left_menu_frame)
-        self.left_menu_frame.setObjectName("leftmenu")
-
-        # Layout pour menu gauche
-        self.left_menu_layout = QVBoxLayout(self.left_menu_frame)
-
-
-        acceuil_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/logoacceuil.png"
-        commande_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/commandelogo.png"
-        credit_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/creditlogo.png"
-        vente_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/ventelogo.svg"
-        client_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/ventelogo.svg"
-
-
-
-        self.acceuil_bouton = self.create_button_with_icon("", acceuil_logo)
-        self.commande_bouton = self.create_button_with_icon("", commande_logo)
-        self.credit_bouton = self.create_button_with_icon("", credit_logo)
-        self.vente_bouton = self.create_button_with_icon("", vente_logo)
-        self.client_bouton = self.create_button_with_icon("", client_logo)
-
-        self.acceuil_bouton.clicked.connect(self.acceuil_click)
-
-
-        # Ajouter des boutons dans le menu gauche
-        self.left_menu_layout.addWidget(self.acceuil_bouton)
-        self.left_menu_layout.addWidget(self.vente_bouton)
-        self.left_menu_layout.addWidget(self.commande_bouton)
-        self.left_menu_layout.addWidget(self.credit_bouton)
-        self.left_menu_layout.addWidget(self.client_bouton)
-
-        # Frame pour contenu principal
-        self.content_frame = QFrame(self)
-        self.base_layout.addWidget(self.content_frame)
-
-        # Layout pour contenu principal
-        self.content_layout = QVBoxLayout(self.content_frame)
-        self.content_layout.addWidget(QLabel("Contenu principal ici"))
-        self.content_frame.setObjectName("contentframe")
-
-        self.main_layout.addWidget(self.base_widget)
-
-        # Créer les menus (Menu horizontal en haut et menu latéral)
-        self.create_menus()
-    
+     
