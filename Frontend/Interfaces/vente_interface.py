@@ -75,6 +75,7 @@ class Vente_dash:
         # Zone d'entrée pour le code-barres
         barcode_layout = QHBoxLayout()
         self.barcode_input = QLineEdit()
+        self.barcode_input.setValidator(int_validator)
         self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
         self.barcode_input.returnPressed.connect(self.process_barcode_manuel) 
 
@@ -133,11 +134,13 @@ class Vente_dash:
         payment_layout.addWidget(self.checkbox)
         # Montant à payer
         self.amount_input = QLineEdit()
+        self.amount_input.setValidator(float_validator)
         self.amount_input.setPlaceholderText("Montant à payer maintenant")
         payment_layout.addWidget(self.amount_input) 
 
         self.rest_a_payer = QLabel("Réste à payer après :")
         self.rest_a_payer_value = QLineEdit()
+        self.rest_a_payer_value.setValidator(float_validator)
 
         payment_layout.addWidget(self.rest_a_payer) 
         payment_layout.addWidget(self.rest_a_payer_value) 
@@ -221,10 +224,8 @@ class Vente_dash:
         return ""
 
     def ajouter_panier(self): 
-        code = self.barcode_input.text()
-        print(len(code))
-        code = self.process_barcode(code) 
-        print(code)
+        code = self.barcode_input.text() 
+        code = self.process_barcode(code)  
         if len(code) == 13:
             self.add_medicament_to_vente(code)
 
@@ -262,15 +263,16 @@ class Vente_dash:
             self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Quantite'] += 1
             self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Prix_total'] += self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Prix_Public_de_Vente']
             self.update_table()
-        else:
-            print(code_barre_scanner)
+        else: 
             medicament  = extraire_medicament_code_barre(code_barre_scanner)
+            
             if medicament is None:
                 QMessageBox.information(self.main_interface, "Medicament non reconue", "Medicament non reconue")
                 return 
             else: 
                 medicament_on_dtock = extraire_medicament_id_stock(medicament['ID_Medicament']) 
-                medicament = dict(medicament)  
+                medicament = dict(medicament)    
+                print(medicament_on_dtock)
 
                 if medicament_on_dtock is None:
                     QMessageBox.information(self.main_interface, "Stock vide", "Le stock de ce médicament est vide. Veuillez vérifier la disponibilité.")
@@ -282,7 +284,7 @@ class Vente_dash:
                     medicament['Prix_Public_de_Vente'] = medicament_on_dtock['Prix_Vente'][0]
                     medicament['Prix_Vente'] = medicament_on_dtock['Prix_Vente']
                     medicament['Date_Expiration'] = medicament_on_dtock['Date_Expiration'][0]
-                    medicament['Quantite_Actuelle'] = medicament_on_dtock['Quantite_Actuelle']
+                    medicament['Quantite_Actuelle'] = medicament['stock_actuel']
                     medicament['ID_Commande'] = medicament_on_dtock['ID_Commande']
                     medicament['list_quantity'] = medicament_on_dtock['list_quantity']
                     medicament['Prix_Achat'] = medicament_on_dtock['Prix_Achat']
@@ -309,7 +311,6 @@ class Vente_dash:
             if self.code_barre_scanner != "":
                 self.add_medicament_to_vente(self.code_barre_scanner)
                 self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan                  
-                 
         else:
             self.code_barre_scanner += key  # Ajouter le caractère au code en cours 
 
@@ -387,6 +388,10 @@ class Vente_dash:
         message += "----------------------------------------\n"
         message += "Merci pour votre achat!\n" 
         message += "Date: " + now_str + "\n"
+        if total_facture - int(to_pay_now) + self.client_info['Credit_Actuel'] >  self.client_info['Max_Credit']:
+            QMessageBox.information(self.main_interface, "Credit insuffisant", "Pas possible de faire cette vente, le credit du client est insuffisant")
+            return
+
 
 
         self.producs_table.reset_index(drop=True) 
@@ -411,13 +416,13 @@ class Vente_dash:
                     quanti_rest_to_hand = quantite_vendue - quantite_traiter
                     if  quanti_rest_to_hand <= quanti:
                         totale = self.ajouter_vente_with_all_operation(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti_rest_to_hand, 
-                        id_client, numero_facture, id_salarie) 
+                        id_client, numero_facture, id_salarie, ID_Stock_item) 
                         self.total_facture+=totale
                         quantite_traiter += quanti_rest_to_hand 
                     else: 
                         quantite_traiter+=quanti
                         totale = self.ajouter_vente_with_all_operation(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, 
-                        id_client, numero_facture, id_salarie) 
+                        id_client, numero_facture, id_salarie, ID_Stock_item) 
                         self.total_facture+=totale
                     if quantite_traiter >= quantite_vendue:
                         break  
@@ -441,8 +446,9 @@ class Vente_dash:
             self.producs_table = pd.DataFrame()
 
 
-    def ajouter_vente_with_all_operation(self, id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, id_client, numero_facture, id_salarie):
-        ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, quanti * prix_vente_item, id_client, numero_facture, id_salarie) 
+    def ajouter_vente_with_all_operation(self, id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, id_client, numero_facture, id_salarie, ID_Stock_item):
+        ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, quanti * prix_vente_item, id_client, numero_facture, id_salarie, ID_Stock_item) 
+
         return quanti * prix_vente_item
         # todo : supprimer du stock 
     def ajouter_credit_with_all_operation(self, id_client, numero_facture, to_pay_now, total_facture, now_str, status, id_salarie):
@@ -450,48 +456,3 @@ class Vente_dash:
         ajouter_credit_client(id_client,  total_facture-int(to_pay_now))
 
 
-    
-
-        
-
-
-def confirm_sale_test(self):  
-        now = datetime.now()
-        now_str = now.strftime("%d/%m/%Y %H:%M:%S")
-
-        for index, items in self.producs_table.iterrows():
-            id_medicament = items['ID_Medicament']
-            id_commande_entre = items['ID_Commande']
-            prix_achat = items['Prix_Achat']
-            prix_v = items['Prix_Vente']
-            prix_vente = items['Prix_Public_de_Vente']
-            date_vente = now_str
-            quantite_vendue = items['Quantite'] 
-            quantite_list= items['list_quantity']  
-            total_facture = items['Prix_total']
-            ID_Stock = items['ID_Stock']
-            id_client = 0 if self.client_info is None else self.client_info['ID_Client']
-            numero_facture = int(now.timestamp())
-            id_salarie = self.main_interface.user_session['ID_Salarie']
-            quantite_traiter = 0
-            self.total_facture = 0
-            for idcommande_item, prix_achat_item, prix_vente_item, ID_Stock_item, quanti in zip(id_commande_entre, prix_achat, prix_v , ID_Stock, quantite_list) :
-                quanti_rest_to_hand = quantite_vendue - quantite_traiter
-                if  quanti_rest_to_hand <= quanti:
-                    totale = self.ajouter_vente_with_all_operation(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti_rest_to_hand, 
-                    id_client, numero_facture, id_salarie) 
-                    self.total_facture+=totale
-                    quantite_traiter += quanti_rest_to_hand 
-                else: 
-                    quantite_traiter+=quanti
-                    totale = self.ajouter_vente_with_all_operation(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, 
-                    id_client, numero_facture, id_salarie) 
-                    self.total_facture+=totale
-                if quantite_traiter >= quantite_vendue:
-                    break 
-        credit = False
-        if self.checkbox.isChecked():
-            credit = True
-            to_pay_now = self.amount_input.text()  
-            self.ajouter_credit_with_all_operation(id_client, numero_facture, to_pay_now, self.total_facture, now_str, 'in progresse', id_salarie)
-        

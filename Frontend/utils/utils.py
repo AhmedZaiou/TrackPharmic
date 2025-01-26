@@ -1,4 +1,5 @@
 from pathlib import Path 
+from qtpy.QtGui import QIntValidator, QDoubleValidator
 
 
 current_directory = Path(__file__).parent
@@ -27,7 +28,8 @@ def set_styles():
         print("Style file not found. Using default styles.")
 
 
-
+int_validator = QIntValidator()
+float_validator = QDoubleValidator() 
 
 profile_salarie = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/profilsalarie.png"
 
@@ -41,7 +43,7 @@ fournisseur_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Fronten
 kpi_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/kpi.png"
 acceuil_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/logoacceuil.png"
 commande_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/commandelogo.png"
-credit_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/creditlogo.png"
+credit_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/creditlogoa.png"
 vente_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/ventelogo.svg"
 client_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/clientlogo.png"
 echange_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/echangelogo.png"

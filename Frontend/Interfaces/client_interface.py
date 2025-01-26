@@ -6,6 +6,8 @@ from qtpy.QtCore import Qt
 from Backend.Dataset.dataset import *
 
 
+
+
 class Client_dash:
     def __init__(self, main_interface):
         self.main_interface = main_interface
@@ -25,7 +27,8 @@ class Client_dash:
         main_layout.addWidget(titre_page) 
         
         table_form_layout = QGridLayout() 
-
+        
+        
         # Créer les champs de saisie pour le formulaire sans 'self'
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Nom")
@@ -35,6 +38,7 @@ class Client_dash:
         self.cin_input.setPlaceholderText("CIN")
         self.telephone_input = QLineEdit()
         self.telephone_input.setPlaceholderText("Téléphone")
+        self.telephone_input.setValidator(int_validator)
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")
         self.address_input = QLineEdit()
@@ -113,6 +117,7 @@ class Client_dash:
         current_credit = self.current_credit_input.value()
         # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
         ajouter_client(name, surname, cin, telephone, email, address, max_credit, current_credit)
+        self.remplire_table()
         # Effacer les champs après soumission
         self.name_input.clear()
         self.surname_input.clear()

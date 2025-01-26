@@ -137,9 +137,15 @@ class Credit_dash:
     def remplire_table(self):
         all_credit = extraire_credit_with_id_client(self.id_client)
         all_paiment = extraire_paiment_with_id_client(self.id_client)
+        if len(all_credit) == 0:
+            all_credit = pd.DataFrame(columns=['Numero_Facture', "Reste_A_Payer", "Date_Dernier_Paiement"])
+        else:
+            all_credit = pd.DataFrame([dict(credit) for credit in all_credit])[['Numero_Facture', "Reste_A_Payer", "Date_Dernier_Paiement"]]
 
-        all_credit = pd.DataFrame([dict(credit) for credit in all_credit])[['Numero_Facture', "Reste_A_Payer", "Date_Dernier_Paiement"]]
-        all_paiment = pd.DataFrame([dict(pay) for pay in all_paiment])[['Numero_Facture', "Montant_Paye", "Date_Paiement"]]
+        if len(all_paiment) == 0:
+            all_paiment = pd.DataFrame(columns=['Numero_Facture', "Montant_Paye", "Date_Paiement"])
+        else:
+            all_paiment = pd.DataFrame([dict(pay) for pay in all_paiment])[['Numero_Facture', "Montant_Paye", "Date_Paiement"]]
         all_credit.rename(columns={'Reste_A_Payer':'Totale', "Date_Dernier_Paiement" : "Date"}, inplace=True)
         all_paiment.rename(columns={'Montant_Paye':'Totale', "Date_Paiement": "Date"},inplace=True)
         all_credit['Type'] = 'Credit'
@@ -155,10 +161,3 @@ class Credit_dash:
             self.list_factures.setItem(row, 1, QTableWidgetItem(element['Numero_Facture']))
             self.list_factures.setItem(row, 2, QTableWidgetItem(str(element['Totale'])))
             self.list_factures.setItem(row, 3, QTableWidgetItem(str(element['Date']))  )
-
-  
-
-
-
-    
- 

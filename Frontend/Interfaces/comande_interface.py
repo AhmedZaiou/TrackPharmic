@@ -95,6 +95,7 @@ class Commande_dash:
         # Zone d'entrée pour le code-barres
         barcode_layout = QGridLayout()
         self.barcode_input = QLineEdit()
+        self.barcode_input.setValidator(int_validator)
         self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
 
         self.nom_medicament = QLineEdit()
@@ -231,7 +232,10 @@ class Commande_dash:
         
         
     def annuler_fonction(self):
-        self.main_interface = Commande_dash(self.main_interface)
+        
+        confirmation = QMessageBox.question(self.main_interface, "Confirmation", "Êtes-vous sûr de vouloir annuler la commande ?", QMessageBox.Yes | QMessageBox.No)
+        if confirmation == QMessageBox.Yes:
+            self.main_interface = Commande_dash(self.main_interface) 
 
     def actualiser_commande(self):
         self.commande = []
@@ -271,7 +275,8 @@ class Commande_dash:
         
 
         # Panier
-        self.cart_table = QTableWidget(0, 8)
+        self.cart_table = QTableWidget(0, 6)
+        self.cart_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.cart_table.setHorizontalHeaderLabels(["Code commande", "Fournisseur", "Date de commande", "Noms des médicaments", "Statut commande", "Traiter"])
         main_layout.addWidget(self.cart_table)
 

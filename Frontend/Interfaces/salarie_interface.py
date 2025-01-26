@@ -11,6 +11,7 @@ class Salarie_dash:
         self.main_interface = main_interface
         self.show_vente_interface()
 
+
     def show_vente_interface(self):
         self.main_interface.clear_content_frame()
 
@@ -23,17 +24,7 @@ class Salarie_dash:
         titre_page.setObjectName("TitrePage")
         titre_page.setAlignment(Qt.AlignCenter) 
         main_layout.addWidget(titre_page)
-
-
         table_form_layout = QGridLayout()
-
-
-
-         
-
-
-
- 
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Nom")
         self.surname_input = QLineEdit()

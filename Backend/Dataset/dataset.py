@@ -1,7 +1,18 @@
  
 import sqlite3
 from Frontend.utils.utils import *
-from datetime import datetime
+from datetime import datetime, timedelta
+import os
+
+
+
+def supprimer_toute_base_donnees():  
+    if os.path.exists(dataset): 
+        os.remove(dataset)
+        print("File deleted successfully.")
+    else:
+        print("File does not exist.")
+
 
 # Fonction : create_table_medicament
 def create_table_medicament():
@@ -21,21 +32,21 @@ def create_table_medicament():
                 Substance_active_DCI TEXT,
                 Classe_Therapeutique TEXT,
                 min_stock INTEGER,
-                max_stock INTEGER
+                stock_actuel INTEGER
             )
         """)
 
 def ajouter_medicament(nom, caracteristique, code_ean_13, medicament_generique, prix_officine, prix_public_de_vente,
-                       prix_base_remboursement, prix_hospitalier, substance_active_dci, classe_therapeutique, min_stock, max_stock):
+                       prix_base_remboursement, prix_hospitalier, substance_active_dci, classe_therapeutique, min_stock, stock_actuel):
     with sqlite3.connect( dataset) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Medicament (
                 Nom, caracteristique, Code_EAN_13, Medicament_GENERIQUE, Prix_Officine, Prix_Public_de_Vente,
-                Prix_base_remboursement, Prix_Hospitalier, Substance_active_DCI, Classe_Therapeutique, min_stock, max_stock
+                Prix_base_remboursement, Prix_Hospitalier, Substance_active_DCI, Classe_Therapeutique, min_stock, stock_actuel
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
         """, (nom, caracteristique, code_ean_13, medicament_generique, prix_officine, prix_public_de_vente,
-              prix_base_remboursement, prix_hospitalier, substance_active_dci, classe_therapeutique, min_stock, max_stock))
+              prix_base_remboursement, prix_hospitalier, substance_active_dci, classe_therapeutique, min_stock, stock_actuel))
 
 
 def supprimer_medicament(id_medicament):
@@ -46,17 +57,17 @@ def supprimer_medicament(id_medicament):
 
 def modifier_medicament(id_medicament, nom, caracteristique, code_ean_13, medicament_generique, prix_officine,
                         prix_public_de_vente, prix_base_remboursement, prix_hospitalier, substance_active_dci,
-                        classe_therapeutique,  min_stock, max_stock):
+                        classe_therapeutique,  min_stock, stock_actuel):
     with sqlite3.connect( dataset) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Medicament SET
                 Nom = ?, caracteristique = ?, Code_EAN_13 = ?, Medicament_GENERIQUE = ?, Prix_Officine = ?,
                 Prix_Public_de_Vente = ?, Prix_base_remboursement = ?, Prix_Hospitalier = ?, Substance_active_DCI = ?,
-                Classe_Therapeutique = ?, min_stock = ?, max_stock = ?
+                Classe_Therapeutique = ?, min_stock = ?, stock_actuel = ?
             WHERE ID_Medicament = ?
         """, (nom, caracteristique, code_ean_13, medicament_generique, prix_officine, prix_public_de_vente,
-              prix_base_remboursement, prix_hospitalier, substance_active_dci, classe_therapeutique,  min_stock, max_stock,id_medicament))
+              prix_base_remboursement, prix_hospitalier, substance_active_dci, classe_therapeutique,  min_stock, stock_actuel,id_medicament))
 
 
 def extraire_medicament(id_medicament):
@@ -133,6 +144,7 @@ def create_table_stock():
             )
         """)
 
+
 # Fonction : ajouter_stock
 def ajouter_stock(id_medicament, id_commande, id_salarie, prix_achat, prix_vente, prix_conseille, date_achat, date_expiration,
                   stock_initial, quantite_actuelle, quantite_minimale, quantite_maximale,
@@ -149,6 +161,9 @@ def ajouter_stock(id_medicament, id_commande, id_salarie, prix_achat, prix_vente
         """, (id_medicament, id_commande, id_salarie, prix_achat, prix_vente, prix_conseille, date_achat, date_expiration, 
               date_reception, date_derniere_sortie,
               stock_initial, quantite_actuelle, quantite_minimale, quantite_maximale))
+    
+        cursor.execute("UPDATE medicament SET stock_actuel = stock_actuel + ? WHERE id_medicament = ?", (quantite_actuelle, id_medicament))
+        
 
 # Fonction : supprimer_stock
 def supprimer_stock(id_stock):
@@ -184,7 +199,7 @@ def extraire_medicament_id_stock(id_medicament):
         else:
             dic = {}
             dic['ID_Medicament'] = list_results[0]['ID_Medicament']
-            dic['Prix_Vente'] = [item['ID_Medicament'] for item in list_results]
+            dic['Prix_Vente'] = [item['Prix_Vente'] for item in list_results]
             dic['Date_Expiration'] = [item['Date_Expiration'] for item in list_results]
             dic['Quantite_Actuelle'] = sum([int(item['Quantite_Actuelle']) for item in list_results])
             dic['list_quantity'] = [int(item['Quantite_Actuelle']) for item in list_results]
@@ -205,9 +220,17 @@ def extraire_stock(id_stock):
 # Fonction : extraire_tous_stock
 def extraire_tous_stock():
     with sqlite3.connect( dataset) as conn:
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Stock")
         return cursor.fetchall()
+def extraire_medicament_quantite_minimale_sup_0():
+    with sqlite3.connect(dataset) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM medicament WHERE min_stock > 0")
+        result = cursor.fetchall()
+        return result
 
 
 
@@ -224,7 +247,7 @@ def create_table_ventes():
                 ID_Commande_Entre INTEGER NOT NULL,
                 Prix_Achat REAL,
                 Prix_Vente REAL,
-                Date_Vente TEXT,
+                Date_Vente Date,
                 Quantite_Vendue INTEGER,
                 Total_Facture REAL,
                 ID_Client INTEGER,
@@ -237,7 +260,7 @@ def create_table_ventes():
 
 # Fonction : ajouter_vente
 def ajouter_vente(id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture,
-                  id_client, numero_facture, id_salarie):
+                  id_client, numero_facture, id_salarie, ID_Stock_item):
     with sqlite3.connect( dataset) as conn:
         cursor = conn.cursor()
         cursor.execute("""
@@ -247,6 +270,8 @@ def ajouter_vente(id_medicament, id_commande_entre, prix_achat, prix_vente, date
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture,
               id_client, numero_facture, id_salarie))
+        cursor.execute("UPDATE stock SET Quantite_Actuelle = Quantite_Actuelle - ? WHERE ID_Stock = ?", (quantite_vendue, ID_Stock_item))
+        cursor.execute("UPDATE medicament SET stock_actuel = stock_actuel - ? WHERE id_medicament = ?", (quantite_vendue, id_medicament))
 
 # Fonction : supprimer_vente
 def supprimer_vente(id_vente):
@@ -375,6 +400,7 @@ def create_table_commandes():
                 FOREIGN KEY(ID_Fournisseur) REFERENCES Fournisseur(ID_Fournisseur)
             )
         """)
+    
 
 # Fonction : ajouter_commande
 def ajouter_commande(liste_produits, id_fournisseur, date_commande, date_reception_prev, statut_reception, 
@@ -913,3 +939,20 @@ def extraire_pharma_nom(nom):
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Pharmacies WHERE Nom = ?", (nom,))
         return cursor.fetchone()
+    
+
+
+
+
+
+
+def extraire_stock_expiration():
+    with sqlite3.connect(dataset) as conn:
+        conn.row_factory = sqlite3.Row
+        today = datetime.now().date()
+        two_months_later = today + timedelta(days=60)
+        query = "SELECT * FROM stock WHERE date_expiration <= ?"
+        cursor = conn.execute(query, (two_months_later,))
+        stock = cursor.fetchall()
+        return stock
+

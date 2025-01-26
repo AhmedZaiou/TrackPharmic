@@ -5,6 +5,7 @@ from qtpy.QtWidgets import (
 from qtpy.QtCore import Qt
 
 from Backend.Dataset.dataset import *
+from Frontend.utils.utils import *
 
 
 class Fournisseur_dash:
@@ -21,15 +22,11 @@ class Fournisseur_dash:
         # Widget central
         # Layout principal
         main_layout = QVBoxLayout(self.fournisseur_dash)
-
-        
- 
         form_layout = QGridLayout()
-
-
         self.nom_input = QLineEdit()
         self.nom_input.setPlaceholderText("Entrez le nom du fournisseur")
         self.telephone_input = QLineEdit()
+        self.telephone_input.setValidator(int_validator)
         self.telephone_input.setPlaceholderText("Entrez le numéro de téléphone du fournisseur")
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Entrez l'email du fournisseur")
@@ -49,8 +46,10 @@ class Fournisseur_dash:
         form_layout.addWidget(self.email_input , 2,1)
         form_layout.addWidget(QLabel("Adresse :"), 3,0)
         form_layout.addWidget(self.adresse_input , 3,1)
-        form_layout.addWidget(QLabel("Pays :"), 4,0)
-        form_layout.addWidget(self.pays_input , 4,1)
+        form_layout.addWidget(QLabel("Ville :"), 4,0)
+        form_layout.addWidget(self.ville_input , 4,1)
+        form_layout.addWidget(QLabel("Pays :"), 5,0)
+        form_layout.addWidget(self.pays_input , 5,1)
         
         self.add_button = QPushButton("Ajouter Fournisseur")
         self.add_button.clicked.connect(self.ajouter_fournisseur)
@@ -63,7 +62,7 @@ class Fournisseur_dash:
         self.table.setColumnCount(6)
 
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table.setHorizontalHeaderLabels(["Nom", "Téléphone", "Email", "Adresse", "Ville", "Pays"])
+        self.table.setHorizontalHeaderLabels(["Nom", "Téléphone", "Email", "Adresse", "Ville","Pays"])
         self.remplir_tableau() 
         main_layout.addWidget(self.table)
 
@@ -97,6 +96,7 @@ class Fournisseur_dash:
         self.adresse_input.clear()
         self.ville_input.clear()
         self.pays_input.clear()
+        self.remplir_tableau()
 
     
 

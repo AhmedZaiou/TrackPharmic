@@ -100,12 +100,13 @@ class MainInterface(QMainWindow):
         login = self.user_entry.text()
         password = self.password_entry.text() 
         self.user_session = extraire_salarie_login(login, password)
+        print(self.user_session )
         if self.user_session is None:
             QMessageBox.information(self, "Erreur de connexion", "Mot de passe ou utilisateur incorrect")
-
+        elif self.user_session['Grade'] == "admin":
+            self.show_main_interface()
         else: 
-            self.show_main_interface()  
-    
+            self.show_main_interface_salarie()  
 
     def show_main_interface(self):
         # Widget central
@@ -228,6 +229,131 @@ class MainInterface(QMainWindow):
         # Créer les menus (Menu horizontal en haut et menu latéral)
         self.create_menus()
         self.acceuil_click()
+    
+    
+    def show_main_interface_salarie(self):
+        # Widget central
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget)  
+        self.current_input = ""
+
+        self.central_widget.setObjectName("widgetGeneral")
+
+        
+        self.main_layout = QVBoxLayout(self.central_widget)
+
+        
+        self.top_menu_frame = QFrame(self)
+        self.top_menu_frame.setObjectName("topmenu")
+        self.top_menu_frame.setFixedHeight(100)  # Hauteur du menu vertical
+        self.main_layout.addWidget(self.top_menu_frame)
+
+        
+        self.top_menu_layout = QHBoxLayout(self.top_menu_frame)
+
+        profile_widget = QWidget()
+        profile_widget.setObjectName("profilewidget")
+        profile_layout = QHBoxLayout(profile_widget)
+
+        # Ajouter une image de profil
+        profile_image = QLabel()
+        if not os.path.isfile(self.user_session['Photo']) :
+            self.user_session['Photo'] = profile_salarie
+        pixmap = QPixmap(self.user_session['Photo'])  # Remplacez par le chemin de votre image
+        pixmap = pixmap.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        profile_image.setPixmap(pixmap)
+        profile_image.setAlignment(Qt.AlignCenter)
+
+        # Ajouter un nom de profil
+        profile_name = QLabel(str(self.user_session['Nom']+" "+self.user_session['Prenom'])) 
+        profile_name.setAlignment(Qt.AlignCenter)
+        profile_name.setStyleSheet("font-size: 14px; font-weight: bold; align: left;")
+
+        # Ajouter l'image et le nom au layout
+        profile_layout.addWidget(profile_image)
+        profile_layout.addWidget(profile_name)
+
+        # Ajouter le widget de profil au menu gauche
+        self.top_menu_layout.addWidget(profile_widget)
+
+        self.deconexion_bouton = self.create_button_with_icon("Déconnexion", deconexion_logo)
+        self.medicament_bouton = self.create_button_with_icon("Gestion des médicaments", medicament_logo)
+        self.fournisseur_bouton = self.create_button_with_icon("Gestion des fournisseurs", fournisseur_logo)
+
+        self.top_menu_layout.addWidget(self.fournisseur_bouton)
+        self.top_menu_layout.addWidget(self.medicament_bouton)
+  
+        # Ajouter des boutons dans le menu vertical du haut 
+        self.top_menu_layout.addWidget(self.deconexion_bouton)
+
+        self.fournisseur_bouton.clicked.connect(self.fournisseur_click)
+        self.medicament_bouton.clicked.connect(self.medicament_click) 
+        self.deconexion_bouton.clicked.connect(self.deconexion_click)
+
+
+        self.base_widget = QWidget()
+        self.base_layout = QHBoxLayout(self.base_widget)
+
+        # Frame pour menu gauche (vertical)
+        self.left_menu_frame = QFrame(self)
+        self.left_menu_frame.setFixedWidth(100)
+        self.base_layout.addWidget(self.left_menu_frame)
+        self.left_menu_frame.setObjectName("leftmenu")
+
+        # Layout pour menu gauche
+        self.left_menu_layout = QVBoxLayout(self.left_menu_frame)
+
+        self.acceuil_bouton = self.create_button_with_icon("Acceuil", acceuil_logo)
+        self.commande_bouton = self.create_button_with_icon("Gestion des commandes", commande_logo)
+        self.credit_bouton = self.create_button_with_icon("Gestion des crédits", credit_logo)
+        self.vente_bouton = self.create_button_with_icon("Gestion des ventes", vente_logo)
+        self.client_bouton = self.create_button_with_icon("Gestion des clients", client_logo)
+        self.echange_bouton = self.create_button_with_icon("Gestion des échanges", echange_logo)
+        self.stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
+        self.ferme_bouton = self.create_button_with_icon("Cloturé la caisse", ferme_logo)
+
+        self.acceuil_bouton.clicked.connect(self.acceuil_click)
+        self.commande_bouton.clicked.connect(self.commande_click)
+        self.credit_bouton.clicked.connect(self.credit_click)
+        self.vente_bouton.clicked.connect(self.vente_click)
+        self.client_bouton.clicked.connect(self.client_click)
+        self.echange_bouton.clicked.connect(self.echange_click)
+        self.stock_bouton.clicked.connect(self.stock_click)
+        self.ferme_bouton.clicked.connect(self.stock_click)
+
+
+        # Ajouter des boutons dans le menu gauche
+        self.left_menu_layout.addWidget(self.acceuil_bouton)
+        self.left_menu_layout.addWidget(self.vente_bouton)
+        self.left_menu_layout.addWidget(self.commande_bouton)
+        self.left_menu_layout.addWidget(self.credit_bouton)
+        self.left_menu_layout.addWidget(self.client_bouton)
+        self.left_menu_layout.addWidget(self.echange_bouton)
+        self.left_menu_layout.addWidget(self.stock_bouton)
+        self.left_menu_layout.addWidget(self.ferme_bouton)
+
+        # Frame pour contenu principal
+        self.content_frame = QFrame(self)
+        self.base_layout.addWidget(self.content_frame)
+
+        # Layout pour contenu principal
+        self.content_layout = QVBoxLayout(self.content_frame)
+        self.content_layout.addWidget(QLabel("Contenu principal ici"))
+        self.content_frame.setObjectName("contentframe")
+
+        self.main_layout.addWidget(self.base_widget)
+
+        # Créer les menus (Menu horizontal en haut et menu latéral)
+        self.create_menus()
+        self.acceuil_click()
+    
+    
+    
+    
+    
+    
+    
+    
     
     def keyPressEvent(self, event):
         """Gérer les entrées clavier, comme les données du lecteur de code-barres."""

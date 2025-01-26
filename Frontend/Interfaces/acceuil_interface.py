@@ -4,6 +4,8 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
+from Backend.Dataset.dataset import *
+
 
 class Acceuil_dash:
     def __init__(self, main_interface):
@@ -18,38 +20,33 @@ class Acceuil_dash:
         main_layout = QVBoxLayout(self.vente_dash)
 
 
+        
+
+
         # Premier widget: Tableau des médicaments avec date d'expiration < 2 mois
         widget_medicament_expiration = QWidget()
+        label_titre = QLabel("Liste des médicaments avec date d'expiration < 2 mois") 
         widget_medicament_expiration_layout = QVBoxLayout(widget_medicament_expiration)
         self.table_widget_medicament_expiration = QTableWidget()
-        self.table_widget_medicament_expiration.setColumnCount(3)
+        self.table_widget_medicament_expiration.setColumnCount(4)
         self.table_widget_medicament_expiration.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_widget_medicament_expiration.setHorizontalHeaderLabels(["Nom médicament", "Date expiration", "Quantité"])
+        self.table_widget_medicament_expiration.setHorizontalHeaderLabels(["Code médicament","Nom médicament", "Date expiration", "Quantité"])
         self.populate_table() 
+        widget_medicament_expiration_layout.addWidget(label_titre)
         widget_medicament_expiration_layout.addWidget(self.table_widget_medicament_expiration)
         main_layout.addWidget(widget_medicament_expiration)
-
-        # Deuxième widget: Liste des commandes en cours
-        widget_commend_en_cours = QWidget()
-        widget_commend_en_cours_layout = QVBoxLayout(widget_commend_en_cours)
-        self.table_widget_commend_en_cours = QTableWidget()
-        self.table_widget_commend_en_cours.setColumnCount(4)
-        self.table_widget_commend_en_cours.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_widget_commend_en_cours.setHorizontalHeaderLabels(["Date commande", "Fournisseur", "Status", "Quantité"])
-        self.populate_commande_table()
-        widget_commend_en_cours_layout.addWidget(self.table_widget_commend_en_cours)
-        main_layout.addWidget(widget_commend_en_cours)
-
+ 
         # Troisième widget: Médicaments avec disponibilité de stock < min stock
         widget_disponibilite = QWidget()
+        label_titre_disponibilite = QLabel("Liste des médicaments avec disponibilité de stock < min stock")
         widget_disponibilite_layout = QVBoxLayout(widget_disponibilite)
         self.table_widget_disponibilite = QTableWidget()
         self.table_widget_disponibilite.setColumnCount(3)
         self.table_widget_disponibilite.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_widget_disponibilite.setHorizontalHeaderLabels(["Nom médicament", "Quantité", "Min Quantité"])
+        self.table_widget_disponibilite.setHorizontalHeaderLabels(["Code médicament","Nom médicament", "Quantité", "Min Quantité"])
         self.populate_disponibilite_table() 
 
-
+        widget_disponibilite_layout.addWidget(label_titre_disponibilite)
         widget_disponibilite_layout.addWidget(self.table_widget_disponibilite)
         main_layout.addWidget(widget_disponibilite)
 
@@ -67,18 +64,14 @@ class Acceuil_dash:
 
 
     def populate_table(self):
-            # Clear existing data
-            self.table_widget_medicament_expiration.setRowCount(0)
+        data = extraire_stock_expiration()  
+        self.table_widget_medicament_expiration.setRowCount(len(data))
+        for index, element in enumerate(data):
+            dict_element = dict(element)
+            self.table_widget_medicament_expiration.setItem(index, 0, QTableWidgetItem(str(dict_element['ID_Medicament'])))
+            self.table_widget_medicament_expiration.setItem(index, 1, QTableWidgetItem(str(dict_element['ID_Medicament'])))
+            self.table_widget_medicament_expiration.setItem(index, 2, QTableWidgetItem(str(dict_element['Date_Expiration'])))
+            self.table_widget_medicament_expiration.setItem(index, 3, QTableWidgetItem(str(dict_element['Quantite_Actuelle'])))
 
-            # Get the data for the table (replace with your own data retrieval logic)
-            data = []#get_medicament_expiration_data()
-
-            # Populate the table with data
-            for row, item in enumerate(data):
-                self.table_widget_medicament_expiration.insertRow(row)
-                for col, value in enumerate(item):
-                    self.table_widget_medicament_expiration.setItem(row, col, QTableWidgetItem(str(value)))
-    def populate_commande_table(self):
-        pass
     def populate_disponibilite_table(self):
-        pass
+            pass

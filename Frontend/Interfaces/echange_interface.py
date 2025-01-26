@@ -64,9 +64,8 @@ class Echange_dash:
         self.name_pharma.setCompleter(self.completer_pharma)
 
         self.medicament_code = QLineEdit()
+        self.medicament_code.setValidator(int_validator)
         self.medicament_code.setPlaceholderText("Scanner medicament")
-        self.quantite = QLineEdit()
-        self.prix = QLineEdit()
  
 
         # Créer un bouton pour soumettre le formulaire
@@ -244,6 +243,7 @@ class Echange_dash:
         self.name_input = QLineEdit() 
         self.name_input.setPlaceholderText("Nom")
         self.telephone_input = QLineEdit()
+        self.telephone_input.setValidator(int_validator)
         self.telephone_input.setPlaceholderText("Téléphone")
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")
@@ -300,6 +300,7 @@ class Echange_dash:
         address = self.address_input.text() 
         # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
         ajouter_pharmacie(name, address, telephone, email, 0, 0) 
+        self.remplire_table()
         # Effacer les champs après soumission
         self.name_input.clear() 
         self.telephone_input.clear()
