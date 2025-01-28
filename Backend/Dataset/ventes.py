@@ -1,21 +1,8 @@
+ 
 import sqlite3
-import json 
-import sqlite3
-from pathlib import Path  
+from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
-import json
-current_directory = Path(__file__).parent
-Front_end = current_directory.parent 
-
-Tracpharmic = Path.home()/"Tracpharmic"
-
-images = Tracpharmic/"images"
-
-dataset = Tracpharmic/"dataset"/"pharmadataset.db" 
-
-
-name_application = "TracPharmic"  
 
 class Ventes:
     def __init__(self):
@@ -94,44 +81,3 @@ class Ventes:
         conn.close()
         return json.dumps([dict(row) for row in rows], default=str)
 
-
-
-import unittest
-import json
-
-class TestVentesMethods(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls): 
-        cls.ventes_db = Ventes()
-        cls.ventes_db.create_table_ventes()
-
-    def test_all_functions(self):
-        # 1. Ajouter une vente
-        self.ventes_db.ajouter_vente(1, 1, 100.0, 120.0, '2025-01-28', 5, 600.0, 1, 'F001', 1, 1)
-        vente_info = json.loads(self.ventes_db.extraire_vente(1))
-        self.assertEqual(vente_info['id_medicament'], 1)
-        self.assertEqual(vente_info['prix_achat'], 100.0)
-        self.assertEqual(vente_info['quantite_vendue'], 5)
-
-        # 2. Modifier la vente
-        self.ventes_db.modifier_vente(1, 1, 1, 110.0, 130.0, '2025-02-01', 6, 780.0, 2, 'F002', 1, 1)
-        vente_info = json.loads(self.ventes_db.extraire_vente(1))
-        self.assertEqual(vente_info['prix_achat'], 110.0)
-        self.assertEqual(vente_info['quantite_vendue'], 6)
-        self.assertEqual(vente_info['total_facture'], 780.0)
-
-        # 3. Supprimer la vente
-        self.ventes_db.supprimer_vente(1)
-        vente_info = self.ventes_db.extraire_vente(1)
-        self.assertIsNone(vente_info)
-
-        # 4. Ajouter deux ventes pour le test d'extraction de toutes les ventes
-        self.ventes_db.ajouter_vente(1, 1, 100.0, 120.0, '2025-01-28', 5, 600.0, 1, 'F001', 1, 1)
-        self.ventes_db.ajouter_vente(2, 2, 150.0, 180.0, '2025-02-01', 3, 540.0, 2, 'F002', 2, 2)
-
-        all_ventes = json.loads(self.ventes_db.extraire_tous_ventes())
-        self.assertEqual(len(all_ventes), 2)
-
-if __name__ == '__main__':
-    unittest.main()

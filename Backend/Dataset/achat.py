@@ -1,21 +1,8 @@
+ 
 import sqlite3
-import json 
-import sqlite3
-from pathlib import Path  
+from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
-import json
-current_directory = Path(__file__).parent
-Front_end = current_directory.parent 
-
-Tracpharmic = Path.home()/"Tracpharmic"
-
-images = Tracpharmic/"images"
-
-dataset = Tracpharmic/"dataset"/"pharmadataset.db" 
-
-
-name_application = "TracPharmic"  
 
 class Achats:
     def __init__(self):

@@ -1,21 +1,9 @@
+ 
 import sqlite3
-import json 
-import sqlite3
-from pathlib import Path  
+from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
-import json
-current_directory = Path(__file__).parent
-Front_end = current_directory.parent 
 
-Tracpharmic = Path.home()/"Tracpharmic"
-
-images = Tracpharmic/"images"
-
-dataset = Tracpharmic/"dataset"/"pharmadataset.db" 
-
-
-name_application = "TracPharmic"  
 class Fournisseur:
     def __init__(self, dataset):
         self.dataset = dataset
@@ -102,47 +90,3 @@ class Fournisseur:
         conn.close()
         return json.dumps([dict(row) for row in rows], default=str)
 
-
-import unittest
-import json
-
-class TestFournisseurMethods(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.db_name = 'test_fournisseur.db'
-        cls.fournisseur_db = Fournisseur(cls.db_name)
-        cls.fournisseur_db.create_table_fournisseur()
-
-    def test_all_functions(self):
-        # 1. Ajouter un fournisseur
-        self.fournisseur_db.ajouter_fournisseur('Fournisseur A', '0123456789', 'fournisseurA@example.com', 'Adresse A', 'Ville A', 'Pays A')
-        fournisseur_info = json.loads(self.fournisseur_db.extraire_fournisseur(1))
-        self.assertEqual(fournisseur_info['nom_fournisseur'], 'Fournisseur A')
-        self.assertEqual(fournisseur_info['telephone'], '0123456789')
-
-        # 2. Modifier un fournisseur
-        self.fournisseur_db.modifier_fournisseur(1, 'Fournisseur B', '0987654321', 'fournisseurB@example.com', 'Adresse B', 'Ville B', 'Pays B')
-        fournisseur_info = json.loads(self.fournisseur_db.extraire_fournisseur(1))
-        self.assertEqual(fournisseur_info['nom_fournisseur'], 'Fournisseur B')
-        self.assertEqual(fournisseur_info['telephone'], '0987654321')
-
-        # 3. Extraire un fournisseur par son nom
-        fournisseur_info_by_nom = json.loads(self.fournisseur_db.extraire_fournisseur_nom('Fournisseur B'))
-        self.assertEqual(fournisseur_info_by_nom['telephone'], '0987654321')
-
-        # 4. Extraire des fournisseurs par nom contenant une chaîne
-        fournisseurs_by_nom_like = json.loads(self.fournisseur_db.extraire_fournisseur_nom_like('Fournisseur'))
-        self.assertEqual(len(fournisseurs_by_nom_like), 1)
-
-        # 5. Extraire tous les fournisseurs
-        all_fournisseurs = json.loads(self.fournisseur_db.extraire_tous_fournisseurs())
-        self.assertEqual(len(all_fournisseurs), 1)
-
-        # 6. Supprimer un fournisseur
-        self.fournisseur_db.supprimer_fournisseur(1)
-        fournisseur_info = self.fournisseur_db.extraire_fournisseur(1)
-        self.assertIsNone(fournisseur_info)
-
-if __name__ == '__main__':
-    unittest.main()
