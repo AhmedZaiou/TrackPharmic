@@ -955,9 +955,5 @@ def extraire_stock_expiration():
         cursor = conn.execute(query, (two_months_later,))
         stock = cursor.fetchall()
         return stock
+ 
 
-
-
-
-
-        

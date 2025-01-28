@@ -956,3 +956,285 @@ def extraire_stock_expiration():
         stock = cursor.fetchall()
         return stock
 
+
+
+
+
+
+
+
+
+        # Fonction : supprimer_toute_base_donnees
+        # Fonctionalité : Supprime toutes les données de la base de données.
+
+        # Fonction : create_table_medicament
+        # Fonctionalité : Crée la table "medicament" dans la base de données.
+
+        # Fonction : ajouter_medicament
+        # Fonctionalité : Ajoute un médicament à la base de données.
+
+        # Fonction : supprimer_medicament
+        # Fonctionalité : Supprime un médicament de la base de données.
+
+        # Fonction : modifier_medicament
+        # Fonctionalité : Modifie les informations d'un médicament dans la base de données.
+
+        # Fonction : extraire_medicament
+        # Fonctionalité : Extrait les informations d'un médicament de la base de données en fonction de son ID.
+
+        # Fonction : extraire_medicament_code_barre
+        # Fonctionalité : Extrait les informations d'un médicament de la base de données en fonction de son code barre.
+
+        # Fonction : extraire_medicament_code_barre_like
+        # Fonctionalité : Extrait les informations des médicaments de la base de données dont le code barre contient une certaine chaîne de caractères.
+
+        # Fonction : extraire_medicament_nom_like
+        # Fonctionalité : Extrait les informations des médicaments de la base de données dont le nom contient une certaine chaîne de caractères.
+
+        # Fonction : extraire_tous_medicament
+        # Fonctionalité : Extrait toutes les informations des médicaments de la base de données.
+
+        # Fonction : extraire_medicament_quantite_minimale_sup_0
+        # Fonctionalité : Extrait les informations des médicaments de la base de données dont la quantité minimale est supérieure à 0.
+
+
+
+
+
+
+        # Fonction : create_table_stock
+        # Fonctionalité : Crée la table "stock" dans la base de données.
+
+        # Fonction : ajouter_stock
+        # Fonctionalité : Ajoute un stock à la base de données.
+
+        # Fonction : supprimer_stock
+        # Fonctionalité : Supprime un stock de la base de données.
+
+        # Fonction : modifier_stock
+        # Fonctionalité : Modifie les informations d'un stock dans la base de données.
+
+        # Fonction : extraire_medicament_id_stock
+        # Fonctionalité : Extrait les informations d'un médicament de la base de données en fonction de son ID de stock.
+
+        # Fonction : extraire_stock
+        # Fonctionalité : Extrait les informations d'un stock de la base de données en fonction de son ID.
+
+        # Fonction : extraire_tous_stock
+        # Fonctionalité : Extrait toutes les informations des stocks de la base de données.
+
+        
+
+
+
+
+
+
+
+        
+        # Fonction : create_table_ventes
+        # Fonctionalité : Crée la table "ventes" dans la base de données.
+
+        # Fonction : ajouter_vente
+        # Fonctionalité : Ajoute une vente à la base de données.
+
+        # Fonction : supprimer_vente
+        # Fonctionalité : Supprime une vente de la base de données.
+
+        # Fonction : modifier_vente
+        # Fonctionalité : Modifie les informations d'une vente dans la base de données.
+
+        # Fonction : extraire_vente
+        # Fonctionalité : Extrait les informations d'une vente de la base de données en fonction de son ID.
+
+        # Fonction : extraire_tous_ventes
+        # Fonctionalité : Extrait toutes les informations des ventes de la base de données.
+
+        # Fonction : create_table_achats
+        # Fonctionalité : Crée la table "achats" dans la base de données.
+
+        # Fonction : ajouter_achat
+        # Fonctionalité : Ajoute un achat à la base de données.
+
+        # Fonction : supprimer_achat
+        # Fonctionalité : Supprime un achat de la base de données.
+
+        # Fonction : modifier_achat
+        # Fonctionalité : Modifie les informations d'un achat dans la base de données.
+
+        # Fonction : extraire_achat
+        # Fonctionalité : Extrait les informations d'un achat de la base de données en fonction de son ID.
+
+        # Fonction : extraire_tous_achats
+        # Fonctionalité : Extrait toutes les informations des achats de la base de données.
+
+        # Fonction : create_table_commandes
+        # Fonctionalité : Crée la table "commandes" dans la base de données.
+
+        # Fonction : ajouter_commande
+        # Fonctionalité : Ajoute une commande à la base de données.
+
+        # Fonction : supprimer_commande
+        # Fonctionalité : Supprime une commande de la base de données.
+
+        # Fonction : modifier_commande
+        # Fonctionalité : Modifie les informations d'une commande dans la base de données.
+
+        # Fonction : complet_commande
+        # Fonctionalité : Marque une commande comme complète dans la base de données.
+
+        # Fonction : extraire_commande
+        # Fonctionalité : Extrait les informations d'une commande de la base de données en fonction de son ID.
+
+        # Fonction : extraire_tous_commandes
+        # Fonctionalité : Extrait toutes les informations des commandes de la base de données.
+
+        # Fonction : create_table_salaries
+        # Fonctionalité : Crée la table "salaries" dans la base de données.
+
+        # Fonction : ajouter_salarie
+        # Fonctionalité : Ajoute un salarié à la base de données.
+
+        # Fonction : supprimer_salarie
+        # Fonctionalité : Supprime un salarié de la base de données.
+
+        # Fonction : modifier_salarie
+        # Fonctionalité : Modifie les informations d'un salarié dans la base de données.
+
+        # Fonction : extraire_salarie
+        # Fonctionalité : Extrait les informations d'un salarié de la base de données en fonction de son ID.
+
+        # Fonction : extraire_salarie_login
+        # Fonctionalité : Extrait les informations d'un salarié de la base de données en fonction de son nom et de son mot de passe.
+
+        # Fonction : extraire_tous_salaries
+        # Fonctionalité : Extrait toutes les informations des salariés de la base de données.
+
+        # Fonction : create_table_clients
+        # Fonctionalité : Crée la table "clients" dans la base de données.
+
+        # Fonction : ajouter_client
+        # Fonctionalité : Ajoute un client à la base de données.
+
+        # Fonction : supprimer_client
+        # Fonctionalité : Supprime un client de la base de données.
+
+        # Fonction : modifier_client
+        # Fonctionalité : Modifie les informations d'un client dans la base de données.
+
+        # Fonction : ajouter_credit_client
+        # Fonctionalité : Ajoute du crédit à un client dans la base de données.
+
+        # Fonction : extraire_client
+        # Fonctionalité : Extrait les informations d'un client de la base de données en fonction de son ID.
+
+        # Fonction : extraire_client_id
+        # Fonctionalité : Extrait les informations d'un client de la base de données en fonction de son ID.
+
+        # Fonction : extraire_client_info
+        # Fonctionalité : Extrait les informations d'un client de la base de données en fonction de son nom, prénom et CIN.
+
+        # Fonction : extraire_client_nom_like
+        # Fonctionalité : Extrait les informations des clients de la base de données dont le nom contient une certaine chaîne de caractères.
+
+        # Fonction : extraire_tous_clients
+        # Fonctionalité : Extrait toutes les informations des clients de la base de données.
+
+        # Fonction : extraire_tous_client_with_credit
+        # Fonctionalité : Extrait toutes les informations des clients de la base de données ayant du crédit.
+
+        # Fonction : create_table_pharmacies
+        # Fonctionalité : Crée la table "pharmacies" dans la base de données.
+
+        # Fonction : ajouter_pharmacie
+        # Fonctionalité : Ajoute une pharmacie à la base de données.
+
+        # Fonction : modifier_pharmacie
+        # Fonctionalité : Modifie les informations d'une pharmacie dans la base de données.
+
+        # Fonction : extraire_tous_pharma
+        # Fonctionalité : Extrait toutes les informations des pharmacies de la base de données.
+
+        # Fonction : extraire_pharma_nom_like
+        # Fonctionalité : Extrait les informations des pharmacies de la base de données dont le nom contient une certaine chaîne de caractères.
+
+        # Fonction : create_table_echanges
+        # Fonctionalité : Crée la table "echanges" dans la base de données.
+
+        # Fonction : ajouter_echange
+        # Fonctionalité : Ajoute un échange à la base de données.
+
+        # Fonction : supprimer_echange
+        # Fonctionalité : Supprime un échange de la base de données.
+
+        # Fonction : modifier_echange
+        # Fonctionalité : Modifie les informations d'un échange dans la base de données.
+
+        # Fonction : extraire_echange
+        # Fonctionalité : Extrait les informations d'un échange de la base de données en fonction de son ID.
+
+        # Fonction : extraire_tous_echanges
+        # Fonctionalité : Extrait toutes les informations des échanges de la base de données.
+
+        # Fonction : create_table_credit
+        # Fonctionalité : Crée la table "credit" dans la base de données.
+
+        # Fonction : ajouter_credit
+        # Fonctionalité : Ajoute un crédit à la base de données.
+
+        # Fonction : supprimer_credit
+        # Fonctionalité : Supprime un crédit de la base de données.
+
+        # Fonction : modifier_credit
+        # Fonctionalité : Modifie les informations d'un crédit dans la base de données.
+
+        # Fonction : extraire_credit
+        # Fonctionalité : Extrait les informations d'un crédit de la base de données en fonction de son ID.
+
+        # Fonction : extraire_tous_credits
+        # Fonctionalité : Extrait toutes les informations des crédits de la base de données.
+
+        # Fonction : extraire_credit_with_id_client
+        # Fonctionalité : Extrait les informations des crédits de la base de données en fonction de l'ID du client.
+
+        # Fonction : create_table_payment
+        # Fonctionalité : Crée la table "payment" dans la base de données.
+
+        # Fonction : ajouter_payment
+        # Fonctionalité : Ajoute un paiement à la base de données.
+
+        # Fonction : extraire_paiment_with_id_client
+        # Fonctionalité : Extrait les informations des paiements de la base de données en fonction de l'ID du client.
+
+        # Fonction : create_table_fournisseur
+        # Fonctionalité : Crée la table "fournisseur" dans la base de données.
+
+        # Fonction : ajouter_fournisseur
+        # Fonctionalité : Ajoute un fournisseur à la base de données.
+
+        # Fonction : supprimer_fournisseur
+        # Fonctionalité : Supprime un fournisseur de la base de données.
+
+        # Fonction : modifier_fournisseur
+        # Fonctionalité : Modifie les informations d'un fournisseur dans la base de données.
+
+        # Fonction : extraire_fournisseur
+        # Fonctionalité : Extrait les informations d'un fournisseur de la base de données en fonction de son ID.
+
+        # Fonction : extraire_fournisseur_nom
+        # Fonctionalité : Extrait les informations d'un fournisseur de la base de données en fonction de son nom.
+
+        # Fonction : extraire_fournisseur_nom_like
+        # Fonctionalité : Extrait les informations des fournisseurs de la base de données dont le nom contient une certaine chaîne de caractères.
+
+        # Fonction : extraire_tous_fournisseurs
+        # Fonctionalité : Extrait toutes les informations des fournisseurs de la base de données.
+
+        # Fonction : extraire_tous_commandes_table
+        # Fonctionalité : Extrait toutes les informations des commandes de la base de données dont le statut de réception n'est pas "Complet".
+
+        # Fonction : extraire_pharma_nom
+        # Fonctionalité : Extrait les informations d'une pharmacie de la base de données en fonction de son nom.
+
+        # Fonction : extraire_stock_expiration
+        # Fonctionalité : Extrait les informations des stocks de la base de données dont la date d'expiration est proche.
