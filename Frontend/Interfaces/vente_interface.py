@@ -373,22 +373,22 @@ class Vente_dash:
         message += "----------------------------------------\n"
         message += "Produit\t\tQuantité\tPrix unitaire\tPrix total\n"
         message += "----------------------------------------\n"
-        total_facture = 0
+        total_facture_calculer = 0
         for index, items in self.producs_table.iterrows():
             message += f"{items['Code_EAN_13']}\t\t{items['Quantite']}\t\t{items['Prix_Public_de_Vente']} Dh\t\t{items['Prix_total']} Dh\n"
-            total_facture += items['Prix_total']
+            total_facture_calculer += items['Prix_total']
 
         if self.checkbox.isChecked():  
             to_pay_now = self.amount_input.text() 
         else:
-            to_pay_now = total_facture
-        message +="Total facture : " + str(total_facture) + " Dh\n"
+            to_pay_now = total_facture_calculer
+        message +="Total facture : " + str(total_facture_calculer) + " Dh\n"
         message += "Montant payé : " + str(to_pay_now) + " Dh\n"
-        message += "Reste à payer : " + str(total_facture - int(to_pay_now)) + " Dh\n"
+        message += "Reste à payer : " + str(total_facture_calculer - int(to_pay_now)) + " Dh\n"
         message += "----------------------------------------\n"
         message += "Merci pour votre achat!\n" 
         message += "Date: " + now_str + "\n"
-        if total_facture - int(to_pay_now) + self.client_info['Credit_Actuel'] >  self.client_info['Max_Credit']:
+        if total_facture_calculer - int(to_pay_now) + self.client_info['Credit_Actuel'] >  self.client_info['Max_Credit']:
             QMessageBox.information(self.main_interface, "Credit insuffisant", "Pas possible de faire cette vente, le credit du client est insuffisant")
             return
 
@@ -426,9 +426,10 @@ class Vente_dash:
                         self.total_facture+=totale
                     if quantite_traiter >= quantite_vendue:
                         break  
+            
             if self.checkbox.isChecked(): 
                 to_pay_now = self.amount_input.text()  
-                self.ajouter_credit_with_all_operation(id_client, numero_facture, to_pay_now, self.total_facture, now_str, 'in progresse', id_salarie)
+                self.ajouter_credit_with_all_operation(id_client, numero_facture, to_pay_now, total_facture_calculer, now_str, 'in progresse', id_salarie)
             
         
             QMessageBox.information(self.main_interface, "Confirmation de vente", "Vente confirmée avec succès!")

@@ -106,19 +106,6 @@ def get_medicament_vendu():
     return result
 
 
-"""# get statistics générales
-print(get_statistique())
-
-# get statistics par salarié
-data = get_stat_salarie()
-for i in data:
-    print(dict(i)) 
-
-# extraire les medicaments vendus pour la journée
-data = get_medicament_vendu()
-for i in data:
-    print(dict(i)) 
- """
 
 
 
@@ -155,7 +142,10 @@ def get_medicament_vendu_mois():
     conn = sqlite3.connect(dataset)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute('''SELECT ID_Medicament, SUM(Quantite_Vendue) as NumberProducts, SUM(Total_Facture) as TotalMoney, SUM(Prix_Achat) as TotalCost FROM Ventes WHERE strftime('%m/%Y', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ? GROUP BY ID_Medicament''', (datetime.now().date().strftime('%m/%Y'),))
+    cursor.execute('''SELECT ID_Medicament, SUM(Quantite_Vendue) as NumberProducts, 
+                   SUM(Total_Facture) as TotalMoney, SUM(Prix_Achat) as TotalCost 
+                   FROM Ventes 
+                   WHERE strftime('%m/%Y', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ? GROUP BY ID_Medicament''', (datetime.now().date().strftime('%m/%Y'),))
 
     result = cursor.fetchall()
     conn.close()
@@ -163,16 +153,7 @@ def get_medicament_vendu_mois():
 
 
 
-"""
-print("1.  ",get_statistique_mois())
-# get statistics par salarié
-data = get_stat_salarie_mois()
-for i in data:
-    print("2.    ",dict(i)) 
-# extraire les medicaments vendus pour la journée
-data = get_medicament_vendu_mois() 
-for i in data:
-    print(dict(i)) """
+
 
 
 
@@ -213,7 +194,8 @@ def get_statistique_stock():
         conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute('''SELECT COUNT(ID_Stock) as numberStock, SUM(Quantite_Actuelle) as NumberProducts, SUM(Prix_Achat) as totalAchat, SUM(Prix_Vente) as totalVente FROM Stock''')
+        cursor.execute('''SELECT COUNT(ID_Stock) as numberStock, SUM(Quantite_Actuelle) as NumberProducts, 
+                       SUM(Prix_Achat) as totalAchat, SUM(Prix_Vente) as totalVente FROM Stock''')
         result = cursor.fetchone()
         conn.close()
         return dict(result)
@@ -236,14 +218,163 @@ def get_medicament_expirant():
     return result 
 
 
+# get medicament qui il s'ont une quantité inférieur à la quantité minimale
+def get_medicament_faible_medicament():
+    # Connect to the database
+    conn = sqlite3.connect(dataset)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('''SELECT ID_Medicament, stock_actuel , min_stock  
+                    FROM Medicament 
+                    WHERE stock_actuel < min_stock ''')
+    result = cursor.fetchall()
+    conn.close()
+    return result
+
+# get all possibl statistic for credit 
+"""CREATE TABLE IF NOT EXISTS Credit (
+                ID_Credit INTEGER PRIMARY KEY AUTOINCREMENT,
+                ID_Client INTEGER NOT NULL,
+                Numero_Facture TEXT NOT NULL,
+                Montant_Paye REAL NOT NULL,
+                Reste_A_Payer REAL NOT NULL,
+                Date_Dernier_Paiement TEXT,
+                Statut TEXT NOT NULL,
+                ID_Salarie INTEGER NOT NULL,
+                FOREIGN KEY (ID_Client) REFERENCES Clients(ID_Client)
+            )
+            
+            
+            CREATE TABLE IF NOT EXISTS Payment (
+                ID_Payment INTEGER PRIMARY KEY AUTOINCREMENT,
+                ID_Client INTEGER NOT NULL,
+                Numero_Facture TEXT NOT NULL,
+                Montant_Paye REAL NOT NULL, 
+                Date_Paiement TEXT, 
+                ID_Salarie INTEGER NOT NULL
+            )
+            
+            
+             CREATE TABLE IF NOT EXISTS Echanges (
+                ID_Echange INTEGER PRIMARY KEY AUTOINCREMENT,
+                ID_Pharmacie INTEGER NOT NULL,
+                ID_facture TEXT NOT NULL,
+                Date_Echange TEXT NOT NULL,
+                Total_Facture REAL NOT NULL,
+                sens TEXT NOT NULL,
+                ID_Salarie INTEGER NOT NULL
+            )
+            
+            
+            CREATE TABLE IF NOT EXISTS Commandes (
+                ID_Commande INTEGER PRIMARY KEY AUTOINCREMENT,
+                Liste_Produits TEXT,
+                ID_Fournisseur INTEGER NOT NULL,
+                Date_Commande TEXT,
+                Date_Reception_Prevue TEXT,
+                Statut_Reception TEXT,
+                Receptionniste TEXT,
+                Produits_Reçus TEXT,
+                Date_Reception TEXT,
+                ID_Salarie INTEGER,
+                Status_Incl BOOLEAN,
+                FOREIGN KEY(ID_Fournisseur) REFERENCES Fournisseur(ID_Fournisseur)
+            )"""
+def get_statistique_credit():
+    # Connect to the database
+    conn = sqlite3.connect(dataset)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('''SELECT COUNT(ID_Credit) as numberCredit, SUM(Montant_Paye) as totalPaye, SUM(Reste_A_Payer) as totalReste FROM Credit''')
+    result = cursor.fetchone()
+    conn.close()
+    return dict(result)
+
+# get statistics par salarié pour le credit
+     
 
 
-print("1.  ",get_statistique_stock())
-
-print("2.  ",[ dict(i) for i in get_medicament_expirant()])
 
 
 
 
 
 
+
+
+
+# Situation caisse aujourdhui
+
+def get_situation_caisse(): 
+    # get statistics générales
+    statistics = get_statistique()
+    print("Statistics générales pour la journée:")
+    print(statistics)
+    print()
+
+    # get statistics par salarié
+    salaries = get_stat_salarie()
+    print("Statistics par salarié pour la journée:")
+    for salary in salaries:
+        print(dict(salary))
+    print()
+
+    # extraire les medicaments vendus pour la journée
+    medicaments = get_medicament_vendu()
+    print("Medicaments vendus pour la journée:")
+    for medicament in medicaments:
+        print(dict(medicament))
+    print()
+
+    # get statistics générales pour le mois
+    statistics_mois = get_statistique_mois()
+    print("Statistics générales pour le mois:")
+    print(statistics_mois)
+    print()
+
+    # get statistics par salarié pour le mois
+    salaries_mois = get_stat_salarie_mois()
+    print("Statistics par salarié pour le mois:")
+    for salary_mois in salaries_mois:
+        print(dict(salary_mois))
+    print()
+
+    # extraire les medicaments vendus pour le mois
+    medicaments_mois = get_medicament_vendu_mois()
+    print("Medicaments vendus pour le mois:")
+    for medicament_mois in medicaments_mois:
+        print(dict(medicament_mois))
+    print()
+
+    # get statistics générales pour le stock
+    statistics_stock = get_statistique_stock()
+    print("Statistics générales pour le stock:")
+    print(statistics_stock)
+    print()
+
+    # get les medicament avec leur quentité qui expirand dans les deux mois prochaines
+    medicaments_expirant = get_medicament_expirant()
+    print("Medicaments expirant dans les deux mois prochaines:")
+    for medicament_expirant in medicaments_expirant:
+        print(dict(medicament_expirant))
+    print()
+
+    # get medicament qui il s'ont une quantité inférieur à la quantité minimale
+    medicaments_faible = get_medicament_faible_medicament()
+    print("Medicaments avec une quantité inférieure à la quantité minimale:")
+    for medicament_faible in medicaments_faible:
+        print(dict(medicament_faible))
+    print()
+
+
+
+get_situation_caisse()
+
+
+
+
+
+
+def fermeture_de_caisse():
+     pass
+    
