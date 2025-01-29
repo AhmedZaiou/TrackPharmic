@@ -4,12 +4,10 @@ from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
 
-class Stock:
-    def __init__(self):
-        self.db_name = dataset
-
-    def create_table_stock(self):
-        conn = sqlite3.connect(self.db_name)
+class Stock: 
+    @staticmethod
+    def create_table_stock():
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         query = '''
         CREATE TABLE IF NOT EXISTS Stock (
@@ -37,10 +35,11 @@ class Stock:
         conn.commit()
         conn.close()
 
-    def ajouter_stock(self, id_medicament, id_commande, id_salarie, prix_achat, prix_vente,
+    @staticmethod
+    def ajouter_stock(  id_medicament, id_commande, id_salarie, prix_achat, prix_vente,
                       prix_conseille, date_achat, date_expiration, stock_initial, quantite_actuelle,
                       quantite_minimale, quantite_maximale, date_reception, date_derniere_sortie):
-        conn = sqlite3.connect(self.db_name)
+        conn =  sqlite3.connect(dataset)
         cursor = conn.cursor()
         query = '''
         INSERT INTO Stock (id_medicament, id_commande, id_salarie, prix_achat, prix_vente, prix_conseille,
@@ -54,18 +53,20 @@ class Stock:
         conn.commit()
         conn.close()
 
-    def supprimer_stock(self, id_stock):
-        conn = sqlite3.connect(self.db_name)
+    @staticmethod
+    def supprimer_stock(  id_stock):
+        conn =  sqlite3.connect(dataset)
         cursor = conn.cursor()
         query = "DELETE FROM Stock WHERE id_stock = ?;"
         cursor.execute(query, (id_stock,))
         conn.commit()
         conn.close()
 
-    def modifier_stock(self, id_stock, id_medicament, id_commande, id_salarie, prix_achat, prix_vente,
+    @staticmethod
+    def modifier_stock(  id_stock, id_medicament, id_commande, id_salarie, prix_achat, prix_vente,
                        prix_conseille, date_achat, date_expiration, stock_initial, quantite_actuelle,
                        quantite_minimale, quantite_maximale, date_reception, date_derniere_sortie):
-        conn = sqlite3.connect(self.db_name)
+        conn =  sqlite3.connect(dataset)
         cursor = conn.cursor()
         query = '''
         UPDATE Stock SET
@@ -79,46 +80,75 @@ class Stock:
                                quantite_maximale, date_reception, date_derniere_sortie, id_stock))
         conn.commit()
         conn.close()
+    
+    @staticmethod
+    def effectuer_vente_stock(  id_stock, quantite_vendu):
+        conn =  sqlite3.connect(dataset)
+        cursor = conn.cursor()
+        query = '''
+        UPDATE Stock SET  quantite_actuelle = quantite_actuelle - ?
+        WHERE id_stock = ?;
+        '''
+        cursor.execute(query, ( quantite_vendu, id_stock))
+        cursor.execute("DELETE FROM Stock WHERE quantite_actuelle = 0;")
+        conn.commit()
+        conn.close()
 
-    def extraire_medicament_id_stock(self, id_stock):
-        conn = sqlite3.connect(self.db_name)
+    @staticmethod
+    def extraire_medicament_id_stock( id_medicament):
+        conn =  sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        query = "SELECT * FROM Stock WHERE id_medicament = ?;"
+        cursor.execute(query, (id_medicament,))
+        row = cursor.fetchall()
+        conn.close()
+        if row is None or len(row) == 0:
+            return None 
+        else:
+            dic = {}
+            dic['id_medicament'] = row[0]['id_medicament']
+            dic['prix_vente'] = [item['prix_vente'] for item in row]
+            dic['date_expiration'] = [item['date_expiration'] for item in row]
+            dic['quantite_actuelle'] = sum([int(item['quantite_actuelle']) for item in row])
+            dic['list_quantity'] = [int(item['quantite_actuelle']) for item in row]
+            dic['id_commande'] = [item['id_commande'] for item in row]
+            dic['id_stock'] = [item['ID_Stock'] for item in row]
+            dic['prix_achat'] = [item['prix_achat'] for item in row]
+            return dic 
+
+    @staticmethod
+    def extraire_stock(  id_stock):
+        conn =  sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         query = "SELECT * FROM Stock WHERE id_stock = ?;"
         cursor.execute(query, (id_stock,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row), default=str) if row else None
+        return  dict(row)  if row else None
 
-    def extraire_stock(self, id_stock):
-        conn = sqlite3.connect(self.db_name)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        query = "SELECT * FROM Stock WHERE id_stock = ?;"
-        cursor.execute(query, (id_stock,))
-        row = cursor.fetchone()
-        conn.close()
-        return json.dumps(dict(row), default=str) if row else None
-
-    def extraire_tous_stock(self):
-        conn = sqlite3.connect(self.db_name)
+    @staticmethod
+    def extraire_tous_stock():
+        conn =  sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         query = "SELECT * FROM Stock;"
         cursor.execute(query)
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
 
-    def extraire_medicament_quantite_minimale_sup_0(self):
-        conn = sqlite3.connect(self.db_name)
+    @staticmethod
+    def extraire_medicament_quantite_minimale_sup_0():
+        conn =  sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         query = "SELECT * FROM Stock WHERE quantite_minimale > 0;"
         cursor.execute(query)
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
 
 
 

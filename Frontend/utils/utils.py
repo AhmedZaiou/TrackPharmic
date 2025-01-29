@@ -50,3 +50,18 @@ echange_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/im
 stock_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/stocklogo.png"
 medicament_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/medicamentlogo.png"
 ferme_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/ferme.png"
+retour_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/retour.png"
+
+
+
+
+
+# Informations de connexion Gmail
+smtp_server = "smtp.gmail.com"
+smtp_port = 587
+smtp_user = "pharmacieapplication@gmail.com"  # Remplace par ton email
+smtp_password = "adck kohd tuqu iomh"  # Utiliser un mot de passe d'application
+
+# Définition de l'expéditeur et du destinataire
+sender_email = smtp_user
+receiver_email = "zaiou.ahm@gmail.com"

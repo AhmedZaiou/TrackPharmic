@@ -3,13 +3,13 @@ import sqlite3
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
+import json
 
-class Achats:
-    def __init__(self):
-        self.dataset = dataset
+class Achats: 
 
-    def create_table_achats(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_achats ():
+        conn = sqlite3.connect( dataset)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Achats (
@@ -30,8 +30,9 @@ class Achats:
         conn.commit()
         conn.close()
 
-    def ajouter_achat(self, id_medicament, id_fournisseur, quantite_achetee, prix_achat_unitaire, prix_vente_unitaire, date_achat, date_expiration, id_salarie):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_achat( id_medicament, id_fournisseur, quantite_achetee, prix_achat_unitaire, prix_vente_unitaire, date_achat, date_expiration, id_salarie):
+        conn = sqlite3.connect( dataset)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Achats (id_medicament, id_fournisseur, quantite_achetee, prix_achat_unitaire, prix_vente_unitaire, date_achat, date_expiration, id_salarie)
@@ -40,15 +41,17 @@ class Achats:
         conn.commit()
         conn.close()
 
-    def supprimer_achat(self, id_achat):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def supprimer_achat( id_achat):
+        conn = sqlite3.connect( dataset)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Achats WHERE id_achat = ?", (id_achat,))
         conn.commit()
         conn.close()
 
-    def modifier_achat(self, id_achat, id_medicament, id_fournisseur, quantite_achetee, prix_achat_unitaire, prix_vente_unitaire, date_achat, date_expiration, id_salarie):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def modifier_achat( id_achat, id_medicament, id_fournisseur, quantite_achetee, prix_achat_unitaire, prix_vente_unitaire, date_achat, date_expiration, id_salarie):
+        conn = sqlite3.connect( dataset)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Achats
@@ -58,8 +61,9 @@ class Achats:
         conn.commit()
         conn.close()
 
-    def extraire_achat(self, id_achat):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_achat( id_achat):
+        conn = sqlite3.connect( dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Achats WHERE id_achat = ?", (id_achat,))
@@ -67,8 +71,9 @@ class Achats:
         conn.close()
         return json.dumps(dict(row), default=str) if row else None
 
-    def extraire_tous_achats(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_tous_achats ():
+        conn = sqlite3.connect( dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Achats")

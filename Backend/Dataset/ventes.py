@@ -3,13 +3,16 @@ import sqlite3
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
+import json
 
 class Ventes:
-    def __init__(self):
-        self.dataset = dataset
+    @staticmethod
+    def __init__():
+        dataset = dataset
 
-    def create_table_ventes(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_ventes():
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Ventes (
@@ -35,8 +38,10 @@ class Ventes:
         conn.commit()
         conn.close()
 
-    def ajouter_vente(self, id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture, id_client, numero_facture, id_salarie, id_stock_item):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_vente(id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture, id_client, numero_facture, id_salarie, id_stock_item):
+        Ventes.create_table_ventes()
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Ventes (id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture, id_client, numero_facture, id_salarie, id_stock_item)
@@ -45,15 +50,17 @@ class Ventes:
         conn.commit()
         conn.close()
 
-    def supprimer_vente(self, id_vente):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def supprimer_vente(  id_vente):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Ventes WHERE id_vente = ?", (id_vente,))
         conn.commit()
         conn.close()
 
-    def modifier_vente(self, id_vente, id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture, id_client, numero_facture, id_salarie, id_stock_item):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def modifier_vente(  id_vente, id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture, id_client, numero_facture, id_salarie, id_stock_item):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Ventes
@@ -63,8 +70,9 @@ class Ventes:
         conn.commit()
         conn.close()
 
-    def extraire_vente(self, id_vente):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_vente(  id_vente):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Ventes WHERE id_vente = ?", (id_vente,))
@@ -72,8 +80,9 @@ class Ventes:
         conn.close()
         return json.dumps(dict(row), default=str) if row else None
 
-    def extraire_tous_ventes(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_tous_ventes():
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Ventes")

@@ -3,13 +3,14 @@ import sqlite3
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
+import json
 
-class Medicament:
-    def __init__(self):
-        self.dataset = dataset
+class Medicament: 
 
-    def supprimer_toute_base_donnees(self):
-        conn = sqlite3.connect(self.dataset)
+
+    @staticmethod
+    def supprimer_toute_base_donnees():
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("PRAGMA writable_schema = 1;")
@@ -18,8 +19,9 @@ class Medicament:
         conn.commit()
         conn.close()
 
-    def create_table_medicament(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_medicament():
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("""
@@ -42,8 +44,9 @@ class Medicament:
         conn.commit()
         conn.close()
 
-    def ajouter_medicament(self, nom, caracteristique, code_ean_13, generique, prix_officine, prix_public, prix_remboursement, prix_hospitalier, substance_active, classe_therapeutique, min_stock, stock_actuel):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_medicament(  nom, caracteristique, code_ean_13, generique, prix_officine, prix_public, prix_remboursement, prix_hospitalier, substance_active, classe_therapeutique, min_stock, stock_actuel):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("""
@@ -53,16 +56,18 @@ class Medicament:
         conn.commit()
         conn.close()
 
-    def supprimer_medicament(self, id_medicament):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def supprimer_medicament(  id_medicament):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Medicament WHERE ID_Medicament = ?;", (id_medicament,))
         conn.commit()
         conn.close()
 
-    def modifier_medicament(self, id_medicament, **kwargs):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def modifier_medicament(  id_medicament, **kwargs):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         columns = [f"{key} = ?" for key in kwargs.keys()]
@@ -72,57 +77,63 @@ class Medicament:
         conn.commit()
         conn.close()
 
-    def extraire_medicament(self, id_medicament):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_medicament(  id_medicament):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Medicament WHERE ID_Medicament = ?;", (id_medicament,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row) if row else None, default=str)
+        return dict(row) if row else None
 
-    def extraire_medicament_code_barre(self, code_barre):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_medicament_code_barre(  code_barre):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Medicament WHERE Code_EAN_13 = ?;", (code_barre,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row) if row else None, default=str)
+        return dict(row) if row else None
 
-    def extraire_medicament_code_barre_like(self, pattern):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_medicament_code_barre_like(  pattern):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Medicament WHERE Code_EAN_13 LIKE ?;", (f"%{pattern}%",))
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return [dict(row) for row in rows]
 
-    def extraire_medicament_nom_like(self, pattern):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_medicament_nom_like(  pattern):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Medicament WHERE Nom LIKE ?;", (f"%{pattern}%",))
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return [dict(row) for row in rows]
 
-    def extraire_tous_medicament(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_tous_medicament():
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Medicament;")
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return [dict(row) for row in rows]
 
-    def extraire_medicament_quantite_minimale_sup_0(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_medicament_quantite_minimale_sup_0():
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Medicament WHERE Min_Stock > 0;")
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return [dict(row) for row in rows]
 

@@ -5,11 +5,13 @@ from datetime import datetime, timedelta
 import os
 
 class Echanges:
-    def __init__(self):
-        self.dataset = dataset
+    @staticmethod
+    def __init__():
+        dataset = dataset
 
-    def create_table_echanges(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_echanges():
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Echanges (
@@ -28,8 +30,9 @@ class Echanges:
         conn.commit()
         conn.close()
 
-    def ajouter_echange(self, id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_echange(  id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Echanges (id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie)
@@ -38,15 +41,17 @@ class Echanges:
         conn.commit()
         conn.close()
 
-    def supprimer_echange(self, id_echange):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def supprimer_echange(  id_echange):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Echanges WHERE id_echange = ?", (id_echange,))
         conn.commit()
         conn.close()
 
-    def modifier_echange(self, id_echange, id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def modifier_echange(  id_echange, id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Echanges
@@ -56,8 +61,9 @@ class Echanges:
         conn.commit()
         conn.close()
 
-    def extraire_echange(self, id_echange):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_echange(  id_echange):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Echanges WHERE id_echange = ?", (id_echange,))
@@ -65,8 +71,9 @@ class Echanges:
         conn.close()
         return json.dumps(dict(row), default=str) if row else None
 
-    def extraire_tous_echanges(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_tous_echanges():
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Echanges")

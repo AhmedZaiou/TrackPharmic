@@ -482,7 +482,7 @@ def create_table_salaries():
                 Type_Contrat TEXT NOT NULL, 
                 Date_Embauche TEXT NOT NULL,
                 Grade TEXT NOT NULL,
-                password TEXT NOT NULL
+                password_hash TEXT NOT NULL
             )
         """)
 

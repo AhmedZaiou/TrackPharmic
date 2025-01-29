@@ -3,9 +3,10 @@ from qtpy.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QAction, 
 from qtpy.QtCore import Qt,QSize
 from qtpy.QtGui import QPixmap, QIcon 
 
-
 from Frontend.utils.utils import *
+from Backend.Dataset.salarie import Salaries
 from Backend.Dataset.dataset import *
+from Backend.Comptabilite.cloturecaisse import *
 import os
 
 
@@ -20,6 +21,44 @@ class MainInterface(QMainWindow):
         #self.show_main_interface()
         self.show_login_interface()
         self.setFocusPolicy(Qt.StrongFocus)
+        #self.create_database()
+    
+
+
+    def create_database(self):
+        import json
+        from Backend.Dataset.achat import Achats  # Assurez-vous que l'import est correct
+        from Backend.Dataset.client import Clients  # Assurez-vous de l'existence des classes appropriées
+        from Backend.Dataset.commande import Commandes
+        from Backend.Dataset.credit import Credit
+        from Backend.Dataset.echanges import Echanges
+        from Backend.Dataset.fournisseur import Fournisseur
+        from Backend.Dataset.medicament import Medicament
+        from Backend.Dataset.salarie import Salaries
+        from Backend.Dataset.stock import Stock
+        from Backend.Dataset.payment import Payment
+        from Backend.Dataset.pharmacie import Pharmacies
+        from Backend.Dataset.ventes import Ventes
+
+        
+        Medicament.supprimer_toute_base_donnees()
+
+        Clients.create_table_clients()
+        Stock.create_table_stock()
+        Commandes.create_table_commandes()
+        Credit.create_table_credit()
+        Echanges.create_table_echanges()
+        Achats.create_table_achats()
+        Fournisseur.create_table_fournisseur()
+        Medicament.create_table_medicament()
+        Payment.create_table_payment()
+        Pharmacies.create_table_pharmacies()
+        Ventes.create_table_ventes()
+        Salaries.create_table_salaries()
+        Salaries.ajouter_salarie( "user", "prenom", "cin", "telephone", "email", "adresse", "photo", "salaire", "type_contrat", "date_embauche", "admin", "user")
+
+
+
      
 
     def show_login_interface(self):
@@ -99,11 +138,10 @@ class MainInterface(QMainWindow):
     def login(self):
         login = self.user_entry.text()
         password = self.password_entry.text() 
-        self.user_session = extraire_salarie_login(login, password)
-        print(self.user_session )
+        self.user_session = Salaries.extraire_salarie_login(login, password) 
         if self.user_session is None:
             QMessageBox.information(self, "Erreur de connexion", "Mot de passe ou utilisateur incorrect")
-        elif self.user_session['Grade'] == "admin":
+        elif self.user_session['grade'] == "admin":
             self.show_main_interface()
         else: 
             self.show_main_interface_salarie()  
@@ -134,15 +172,15 @@ class MainInterface(QMainWindow):
 
         # Ajouter une image de profil
         profile_image = QLabel()
-        if not os.path.isfile(self.user_session['Photo']) :
-            self.user_session['Photo'] = profile_salarie
-        pixmap = QPixmap(self.user_session['Photo'])  # Remplacez par le chemin de votre image
+        if not os.path.isfile(self.user_session['photo']) :
+            self.user_session['photo'] = profile_salarie
+        pixmap = QPixmap(self.user_session['photo'])  # Remplacez par le chemin de votre image
         pixmap = pixmap.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         profile_image.setPixmap(pixmap)
         profile_image.setAlignment(Qt.AlignCenter)
 
         # Ajouter un nom de profil
-        profile_name = QLabel(str(self.user_session['Nom']+" "+self.user_session['Prenom'])) 
+        profile_name = QLabel(str(self.user_session['nom']+" "+self.user_session['prenom'])) 
         profile_name.setAlignment(Qt.AlignCenter)
         profile_name.setStyleSheet("font-size: 14px; font-weight: bold; align: left;")
 
@@ -159,8 +197,12 @@ class MainInterface(QMainWindow):
         self.medicament_bouton = self.create_button_with_icon("Gestion des médicaments", medicament_logo)
         self.fournisseur_bouton = self.create_button_with_icon("Gestion des fournisseurs", fournisseur_logo)
 
+        self.list_stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
+
         self.top_menu_layout.addWidget(self.fournisseur_bouton)
         self.top_menu_layout.addWidget(self.medicament_bouton)
+
+        self.top_menu_layout.addWidget(self.list_stock_bouton )
 
         self.top_menu_layout.addWidget(self.salarie_bouton)
         self.top_menu_layout.addWidget(self.kpi_bouton)
@@ -190,6 +232,7 @@ class MainInterface(QMainWindow):
         self.commande_bouton = self.create_button_with_icon("Gestion des commandes", commande_logo)
         self.credit_bouton = self.create_button_with_icon("Gestion des crédits", credit_logo)
         self.vente_bouton = self.create_button_with_icon("Gestion des ventes", vente_logo)
+        self.retour_bouton = self.create_button_with_icon("Gestion des retours", retour_logo)
         self.client_bouton = self.create_button_with_icon("Gestion des clients", client_logo)
         self.echange_bouton = self.create_button_with_icon("Gestion des échanges", echange_logo)
         self.stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
@@ -199,15 +242,19 @@ class MainInterface(QMainWindow):
         self.commande_bouton.clicked.connect(self.commande_click)
         self.credit_bouton.clicked.connect(self.credit_click)
         self.vente_bouton.clicked.connect(self.vente_click)
+        self.retour_bouton.clicked.connect(self.retour_click)
         self.client_bouton.clicked.connect(self.client_click)
         self.echange_bouton.clicked.connect(self.echange_click)
         self.stock_bouton.clicked.connect(self.stock_click)
-        self.ferme_bouton.clicked.connect(self.stock_click)
+        self.ferme_bouton.clicked.connect(self.cloture_clic)
+
+        self.list_stock_bouton.clicked.connect(self.list_stock_click)
 
 
         # Ajouter des boutons dans le menu gauche
         self.left_menu_layout.addWidget(self.acceuil_bouton)
         self.left_menu_layout.addWidget(self.vente_bouton)
+        self.left_menu_layout.addWidget(self.retour_bouton)
         self.left_menu_layout.addWidget(self.commande_bouton)
         self.left_menu_layout.addWidget(self.credit_bouton)
         self.left_menu_layout.addWidget(self.client_bouton)
@@ -279,9 +326,11 @@ class MainInterface(QMainWindow):
         self.deconexion_bouton = self.create_button_with_icon("Déconnexion", deconexion_logo)
         self.medicament_bouton = self.create_button_with_icon("Gestion des médicaments", medicament_logo)
         self.fournisseur_bouton = self.create_button_with_icon("Gestion des fournisseurs", fournisseur_logo)
+        self.list_stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
 
         self.top_menu_layout.addWidget(self.fournisseur_bouton)
         self.top_menu_layout.addWidget(self.medicament_bouton)
+        self.top_menu_layout.addWidget(self.list_stock_bouton )
   
         # Ajouter des boutons dans le menu vertical du haut 
         self.top_menu_layout.addWidget(self.deconexion_bouton)
@@ -289,6 +338,7 @@ class MainInterface(QMainWindow):
         self.fournisseur_bouton.clicked.connect(self.fournisseur_click)
         self.medicament_bouton.clicked.connect(self.medicament_click) 
         self.deconexion_bouton.clicked.connect(self.deconexion_click)
+        self.list_stock_bouton.clicked.connect(self.list_stock_click)
 
 
         self.base_widget = QWidget()
@@ -307,6 +357,7 @@ class MainInterface(QMainWindow):
         self.commande_bouton = self.create_button_with_icon("Gestion des commandes", commande_logo)
         self.credit_bouton = self.create_button_with_icon("Gestion des crédits", credit_logo)
         self.vente_bouton = self.create_button_with_icon("Gestion des ventes", vente_logo)
+        self.retour_bouton = self.create_button_with_icon("Gestion des retours", retour_logo)
         self.client_bouton = self.create_button_with_icon("Gestion des clients", client_logo)
         self.echange_bouton = self.create_button_with_icon("Gestion des échanges", echange_logo)
         self.stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
@@ -319,12 +370,14 @@ class MainInterface(QMainWindow):
         self.client_bouton.clicked.connect(self.client_click)
         self.echange_bouton.clicked.connect(self.echange_click)
         self.stock_bouton.clicked.connect(self.stock_click)
-        self.ferme_bouton.clicked.connect(self.stock_click)
+        self.ferme_bouton.clicked.connect(self.cloture_clic)
+        self.retour_bouton.clicked.connect(self.retour_click)
 
 
         # Ajouter des boutons dans le menu gauche
         self.left_menu_layout.addWidget(self.acceuil_bouton)
         self.left_menu_layout.addWidget(self.vente_bouton)
+        self.left_menu_layout.addWidget(self.retour_bouton)
         self.left_menu_layout.addWidget(self.commande_bouton)
         self.left_menu_layout.addWidget(self.credit_bouton)
         self.left_menu_layout.addWidget(self.client_bouton)
@@ -380,6 +433,9 @@ class MainInterface(QMainWindow):
     def echange_click(self):
         from .echange_interface import Echange_dash
         self.main_interface = Echange_dash(self) 
+    def cloture_clic(self):  
+        caisse = Caisse()
+        caisse.fermeture_de_caisse()
         
     def medicament_click(self):
         from .medicament_interface import Medicament_dash
@@ -393,6 +449,9 @@ class MainInterface(QMainWindow):
     def vente_click(self):
         from .vente_interface import Vente_dash
         self.main_interface = Vente_dash(self)
+    def retour_click(self):
+        from .retour_interface import Retour_dash
+        self.main_interface = Retour_dash(self)
     def compta_click(self):
         from .compta_interface import Compta_dash
         self.main_interface = Compta_dash(self)
@@ -402,8 +461,14 @@ class MainInterface(QMainWindow):
     def medicament_click(self):
         from .medicament_interface import Medicament_dash
         self.main_interface = Medicament_dash(self)
+    def list_stock_click(self):
+        from .stock_element_interface import List_stock_dash
+        self.main_interface = List_stock_dash(self)
     def deconexion_click(self): 
         self.close() 
+    
+
+    
     
     def create_button_with_icon(self, text, icon_path):
         # Créer un bouton avec une image

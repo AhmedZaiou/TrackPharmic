@@ -4,7 +4,7 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
-from Backend.Dataset.dataset import *
+from Backend.Dataset.fournisseur import Fournisseur
 from Frontend.utils.utils import *
 
 
@@ -70,14 +70,18 @@ class Fournisseur_dash:
 
     def remplir_tableau(self):
         # Exemple de données fictives
-        fournisseurs = extraire_tous_fournisseurs() 
+        fournisseurs = Fournisseur.extraire_tous_fournisseurs() 
 
         self.table.setRowCount(len(fournisseurs))
 
+        for row, fournisseur in enumerate(fournisseurs): 
+                self.table.setItem(row, 0, QTableWidgetItem(fournisseur['nom_fournisseur']))
+                self.table.setItem(row, 1, QTableWidgetItem(fournisseur['telephone']))
+                self.table.setItem(row, 2, QTableWidgetItem(fournisseur['email']))
+                self.table.setItem(row, 3, QTableWidgetItem(fournisseur['adresse']))
+                self.table.setItem(row, 4, QTableWidgetItem(fournisseur['ville']))
+                self.table.setItem(row, 5, QTableWidgetItem(fournisseur['pays']))
 
-        for row, fournisseur in enumerate(fournisseurs):
-            for col, data in enumerate(fournisseur[1:]):
-                self.table.setItem(row, col, QTableWidgetItem(data))
 
 
 
@@ -89,7 +93,7 @@ class Fournisseur_dash:
         adresse = self.adresse_input.text()
         ville = self.ville_input.text()
         pays = self.pays_input.text()
-        ajouter_fournisseur(nom, telephone, email, adresse, ville, pays) 
+        Fournisseur.ajouter_fournisseur(nom, telephone, email, adresse, ville, pays) 
         self.nom_input.clear()
         self.telephone_input.clear()
         self.email_input.clear()

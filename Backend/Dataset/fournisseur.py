@@ -3,13 +3,16 @@ import sqlite3
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
+import json
 
 class Fournisseur:
-    def __init__(self, dataset):
-        self.dataset = dataset
+    @staticmethod
+    def __init__(  dataset):
+        dataset = dataset
 
-    def create_table_fournisseur(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_fournisseur():
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Fournisseur (
@@ -26,8 +29,9 @@ class Fournisseur:
         conn.commit()
         conn.close()
 
-    def ajouter_fournisseur(self, nom_fournisseur, telephone, email, adresse, ville, pays):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_fournisseur(  nom_fournisseur, telephone, email, adresse, ville, pays):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Fournisseur (nom_fournisseur, telephone, email, adresse, ville, pays)
@@ -36,15 +40,17 @@ class Fournisseur:
         conn.commit()
         conn.close()
 
-    def supprimer_fournisseur(self, id_fournisseur):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def supprimer_fournisseur(  id_fournisseur):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Fournisseur WHERE id_fournisseur = ?", (id_fournisseur,))
         conn.commit()
         conn.close()
 
-    def modifier_fournisseur(self, id_fournisseur, nom_fournisseur, telephone, email, adresse, ville, pays):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def modifier_fournisseur(  id_fournisseur, nom_fournisseur, telephone, email, adresse, ville, pays):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Fournisseur
@@ -54,39 +60,53 @@ class Fournisseur:
         conn.commit()
         conn.close()
 
-    def extraire_fournisseur(self, id_fournisseur):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_fournisseur(  id_fournisseur):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Fournisseur WHERE id_fournisseur = ?", (id_fournisseur,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row), default=str) if row else None
+        return dict(row) if row else None
 
-    def extraire_fournisseur_nom(self, nom_fournisseur):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_fournisseur_nom(  nom_fournisseur):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Fournisseur WHERE nom_fournisseur = ?", (nom_fournisseur,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row), default=str) if row else None
+        return dict(row) if row else None
 
-    def extraire_fournisseur_nom_like(self, nom_fournisseur_like):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_fournisseur_nom_like(  nom_fournisseur_like):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Fournisseur WHERE nom_fournisseur LIKE ?", ('%' + nom_fournisseur_like + '%',))
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return [dict(row) for row in rows]
 
-    def extraire_tous_fournisseurs(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_tous_fournisseurs():
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Fournisseur")
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return [dict(row) for row in rows]
+    
+    @staticmethod
+    def extraire_fournisseur_nom(nom):
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Fournisseur WHERE Nom_Fournisseur = ?", (nom,))
+        row = cursor.fetchone()
+        conn.close()
+        return dict(row) if row else None 
 

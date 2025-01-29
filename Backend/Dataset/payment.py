@@ -5,11 +5,13 @@ from datetime import datetime, timedelta
 import os
 
 class Payment:
-    def __init__(self, dataset):
-        self.dataset = dataset
+    @staticmethod
+    def __init__(  dataset):
+        dataset = dataset
 
-    def create_table_payment(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_payment():
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Payment (
@@ -26,8 +28,9 @@ class Payment:
         conn.commit()
         conn.close()
 
-    def ajouter_payment(self, id_client, numero_facture, montant_paye, date_paiement, id_salarie):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_payment(  id_client, numero_facture, montant_paye, date_paiement, id_salarie):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Payment (id_client, numero_facture, montant_paye, date_paiement, id_salarie)
@@ -36,14 +39,15 @@ class Payment:
         conn.commit()
         conn.close()
 
-    def extraire_payment_with_id_client(self, id_client):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_payment_with_id_client(  id_client):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Payment WHERE id_client = ?", (id_client,))
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
 
 
 

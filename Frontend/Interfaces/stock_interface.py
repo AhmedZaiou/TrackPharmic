@@ -6,7 +6,12 @@ from qtpy.QtCore import Qt, QDate
 import ast
 from datetime import datetime
 import time
-from Backend.Dataset.dataset import *
+from Backend.Dataset.stock import Stock
+from Backend.Dataset.medicament import Medicament
+from Backend.Dataset.commande import Commandes
+from Backend.Dataset.fournisseur import Fournisseur
+
+from Frontend.utils.utils import *
 
 
 class Stock_dash:
@@ -317,21 +322,21 @@ class Stock_dash:
         self.main_interface.content_layout.addWidget(self.vente_dash)
     
     def remplir_tableau_stock(self):
-            medicaments = extraire_medicament_quantite_minimale_sup_0()
+            medicaments = Medicament.extraire_medicament_quantite_minimale_sup_0()
             medicaments = [ dict(item) for item in medicaments]
             self.medicament_stock_list.setRowCount(len(medicaments))
             for row, medicament in enumerate(medicaments):  
                 code_ean = QTableWidgetItem(str(medicament['Code_EAN_13']))
                 nom_medicament = QTableWidgetItem(str(medicament['Nom']))
-                quantite = QTableWidgetItem(str(medicament['stock_actuel']))
-                quantite_minimal = QTableWidgetItem(str(medicament['min_stock']))
+                quantite = QTableWidgetItem(str(medicament['Stock_Actuel']))
+                quantite_minimal = QTableWidgetItem(str(medicament['Min_Stock']))
                 self.medicament_stock_list.setItem(row, 0, code_ean)
                 self.medicament_stock_list.setItem(row, 1, nom_medicament)
                 self.medicament_stock_list.setItem(row, 2, quantite)
                 self.medicament_stock_list.setItem(row, 3, quantite_minimal)
 
     def remplire_medicament_deja_traiter(self):
-        id_commande = self.commande_current["ID_Commande"]
+        id_commande = self.commande_current["id_commande"]
         self.medicament_traiter_commande_list.setRowCount(len(self.commande_deja_traiter_list))
         for id,item in  enumerate(self.commande_deja_traiter_list):
             self.medicament_traiter_commande_list.setItem(id, 0, QTableWidgetItem(str(item[0])))
@@ -339,7 +344,7 @@ class Stock_dash:
             self.medicament_traiter_commande_list.setItem(id, 2, QTableWidgetItem(str(item[2])))
     
     def finaliser_commande(self):
-        complet_commande(self.commande_current['ID_Commande'], self.main_interface.user_session['ID_Salarie'])
+        Commandes.complet_commande(self.commande_current['id_commande'])
 
 
 
@@ -365,7 +370,7 @@ class Stock_dash:
         self.remplire_medicament_deja_traiter() 
         now = datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S") 
-        ajouter_stock(self.medicament_search['ID_Medicament'], self.commande_current['ID_Commande'], self.main_interface.user_session['ID_Salarie'], prix_achat_medicament, prix_vente_medicament, prix_vente_medicament, now, date_expiration_medicament,
+        Stock.ajouter_stock(self.medicament_search['ID_Medicament'], self.commande_current['id_commande'], self.main_interface.user_session['id_salarie'], prix_achat_medicament, prix_vente_medicament, prix_vente_medicament, now, date_expiration_medicament,
                   quantite_commender_value, quantite_commender_value, quantite_minimal_medicament, 0,
                   now, now) 
         
@@ -386,7 +391,7 @@ class Stock_dash:
         now = now.strftime("%Y-%m-%d %H:%M:%S")
         reply = QMessageBox.question(self.main_interface, "Confirmation de l'échange", "Confirmer l'ajout ?", QMessageBox.Yes, QMessageBox.Cancel)
         if reply == QMessageBox.Yes: 
-            ajouter_stock(self.medicament_search['ID_Medicament'], "0", self.main_interface.user_session['ID_Salarie'], prix_achat_medicament, prix_vente_medicament, prix_vente_medicament, now, date_expiration_medicament,
+            Stock.ajouter_stock(self.medicament_search['ID_Medicament'], "0", self.main_interface.user_session['id_salarie'], prix_achat_medicament, prix_vente_medicament, prix_vente_medicament, now, date_expiration_medicament,
               quantite_commender_value, quantite_commender_value, quantite_minimal_medicament, 0,
               now, now)
                           
@@ -407,26 +412,27 @@ class Stock_dash:
 
 
     def charger_carte_table(self):
-        self.commande_en_cours  = extraire_tous_commandes_table()  
+        self.commande_en_cours  = Commandes.extraire_tous_commandes_table()  
         self.cart_table.setRowCount(len(self.commande_en_cours ))
-        for row, product in enumerate(self.commande_en_cours):  
-            product = dict(product) 
-            self.cart_table.setItem(row, 0, QTableWidgetItem(str(product['ID_Commande']))) 
-            self.cart_table.setItem(row, 1, QTableWidgetItem(str(product['ID_Fournisseur']))) 
-            self.cart_table.setItem(row, 2, QTableWidgetItem(str(product['Date_Commande']))) 
+        for row, product in enumerate(self.commande_en_cours):   
+            self.cart_table.setItem(row, 0, QTableWidgetItem(str(product['id_commande']))) 
+            fournissuer = Fournisseur.extraire_fournisseur(product['id_fournisseur'])
+
+            self.cart_table.setItem(row, 1, QTableWidgetItem(str(fournissuer['nom_fournisseur']))) 
+            self.cart_table.setItem(row, 2, QTableWidgetItem(str(product['date_commande']))) 
             self.cart_table.setItem(row, 3, QTableWidgetItem(str(product['Liste_Produits']))) 
-            self.cart_table.setItem(row, 4, QTableWidgetItem(str(product['Statut_Reception'])))  
+            self.cart_table.setItem(row, 4, QTableWidgetItem(str(product['statut_reception'])))  
 
 
     def commande_select(self, row, column):
         self.show_add_stock_interface()
 
         self.commande_current = dict(self.commande_en_cours[row])
-        self.fournisseur_selectionner = extraire_fournisseur(self.commande_current['ID_Fournisseur'])
+        self.fournisseur_selectionner = Fournisseur.extraire_fournisseur(self.commande_current['id_fournisseur'])
 
-        self.fournisseur_name_value.setText(str(self.fournisseur_selectionner[1]))
-        self.date_commande_value.setText(str(self.commande_current['Date_Commande']))
-        self.statue_commande_value.setText(str(self.commande_current['Statut_Reception']))
+        self.fournisseur_name_value.setText(str(self.fournisseur_selectionner['nom_fournisseur']))
+        self.date_commande_value.setText(str(self.commande_current['date_commande']))
+        self.statue_commande_value.setText(str(self.commande_current['statut_reception']))
 
         self.list_product_commande = ast.literal_eval(self.commande_current['Liste_Produits'])
 
@@ -467,13 +473,13 @@ class Stock_dash:
             self.code_barre_scanner += key  # Ajouter le caractère au code en cours 
 
     def remplir_medicament_ajout(self, code_barre_scanner):
-        self.medicament_search = extraire_medicament_code_barre(code_barre_scanner)  
+        self.medicament_search = Medicament.extraire_medicament_code_barre(code_barre_scanner)  
         if self.medicament_search is None:
             QMessageBox.warning(self.main_interface, "Erreur", "Le medicament n'exsiste pas, voulez vous l'ajouter ?")
         else:
             self.medicament_search = dict(self.medicament_search)
-            self.quantite_minimal_medicament_ajout.setText(str(self.medicament_search["min_stock"] ) ) 
-            self.prix_vente_medicament_ajout.setText(str(self.medicament_search["Prix_Public_de_Vente"] ))
+            self.quantite_minimal_medicament_ajout.setText(str(self.medicament_search["Min_Stock"] ) ) 
+            self.prix_vente_medicament_ajout.setText(str(self.medicament_search["Prix_Public_De_Vente"] ))
 
     def keyPressEvent(self, event): 
         key = event.text()  
@@ -492,13 +498,13 @@ class Stock_dash:
 
      
     def remplir_medicament_cases(self, code_barre_scanner):
-        self.medicament_search = extraire_medicament_code_barre(code_barre_scanner)  
+        self.medicament_search = Medicament.extraire_medicament_code_barre(code_barre_scanner)  
         if self.medicament_search is None:
             QMessageBox.warning(self.main_interface, "Erreur", "Le medicament n'exsiste pas, voulez vous l'ajouter ?")
         else:
             self.medicament_search = dict(self.medicament_search) 
-            self.quantite_minimal_medicament.setText(str(self.medicament_search["min_stock"] ) ) 
-            self.prix_vente_medicament.setText(str(self.medicament_search["Prix_Public_de_Vente"] ))
+            self.quantite_minimal_medicament.setText(str(self.medicament_search["Min_Stock"] ) ) 
+            self.prix_vente_medicament.setText(str(self.medicament_search["Prix_Public_De_Vente"] ))
 
 
 

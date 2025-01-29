@@ -3,7 +3,7 @@ from qtpy.QtWidgets import (
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox, QHeaderView
 )
 from qtpy.QtCore import Qt
-from Backend.Dataset.dataset import *
+from Backend.Dataset.salarie import Salaries
 
 
 class Salarie_dash:
@@ -105,15 +105,15 @@ class Salarie_dash:
     
 
     def remplire_table(self):
-        all_salaries = extraire_tous_salaries()
+        all_salaries = Salaries.extraire_tous_salaries() 
         self.list_client.setRowCount(len(all_salaries))
-        for index,element in enumerate(all_salaries):
-            dict_element = dict(element)
-            self.list_client.setItem(index, 0, QTableWidgetItem(str(dict_element['Nom']))) 
-            self.list_client.setItem(index, 1, QTableWidgetItem(str(dict_element['Prenom']))) 
-            self.list_client.setItem(index, 2, QTableWidgetItem(str(dict_element['CIN']))) 
-            self.list_client.setItem(index, 3, QTableWidgetItem(str(dict_element['Telephone']))) 
-            self.list_client.setItem(index, 4, QTableWidgetItem(str(dict_element['Email'])))  
+        for index, element in enumerate(all_salaries): 
+            print(element)
+            self.list_client.setItem(index, 0, QTableWidgetItem(str(element['nom']))) 
+            self.list_client.setItem(index, 1, QTableWidgetItem(str(element['prenom']))) 
+            self.list_client.setItem(index, 2, QTableWidgetItem(str(element['cin']))) 
+            self.list_client.setItem(index, 3, QTableWidgetItem(str(element['telephone']))) 
+            self.list_client.setItem(index, 4, QTableWidgetItem(str(element['email'])))  
 
     def add_client(self):
         # Récupérer les valeurs des champs
@@ -130,7 +130,7 @@ class Salarie_dash:
         grade = self.grade.text()
         password = self.password.text()
         # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
-        ajouter_salarie(name, surname, cin,telephone, email, address, photo, salaire, type_contrat, date_embauche, grade,password)
+        Salaries.ajouter_salarie(name, surname, cin,telephone, email, address, photo, salaire, type_contrat, date_embauche, grade,password)
         # Effacer les champs après soumission
         self.name_input.clear()
         self.surname_input.clear()

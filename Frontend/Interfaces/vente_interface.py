@@ -3,7 +3,16 @@ from qtpy.QtWidgets import (
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
 )
 from qtpy.QtCore import Qt, QStringListModel
-from Backend.Dataset.dataset import *
+from Backend.Dataset.medicament import Medicament
+from Backend.Dataset.stock import Stock
+from Backend.Dataset.ventes import Ventes
+from Backend.Dataset.credit import Credit
+
+from Backend.Dataset.client import Clients
+from Frontend.utils.utils import *
+
+from  datetime import datetime
+
 import pandas as pd
 import numpy as np
 import time
@@ -13,7 +22,7 @@ class Vente_dash:
     def __init__(self, main_interface):
         self.main_interface = main_interface
         self.show_vente_interface()
-        self.client_info = {'ID_Client': 0, 'Nom': 'Anonyme', 'Prenom': 'Anonyme', 'CIN': 'Anonyme', 'Téléphone': '06666666666', 'Email': 'email@email.ext', 'Adresse': 'Anonyme', 'Max_Crédit': 0, 'Credit_Actuel': 0}
+        self.client_info = {'id_client': 0, 'nom': 'Anonyme', 'prenom': 'Anonyme', 'cin': 'Anonyme', 'telephone': '06666666666', 'email': 'email@email.ext', 'Adresse': 'Anonyme', 'max_credit': 0, 'credit_actuel': 0}
         self.producs_table = pd.DataFrame()
         self.last_key_time = time.time()
         self.barcode_delay_threshold = 0.1 
@@ -174,8 +183,8 @@ class Vente_dash:
             self.updateCompleter_fournisseur(text)
     
     def updateCompleter_fournisseur(self, text): 
-        results = extraire_client_nom_like(text)  
-        results = ["_".join(res) for res in results]
+        results = Clients.extraire_client_nom_like(text)   
+        results = ["_".join(res.values()) for res in results]
         model = QStringListModel(results)  
         self.completer_client.setModel(model) 
     
@@ -185,8 +194,8 @@ class Vente_dash:
         print(text)
 
     def toggle_inputs(self):
-        if self.checkbox.isChecked():
-            if self.client_info['Nom'] == 'Anonyme' and self.client_info['Prenom'] == 'Anonyme' and self.client_info['CIN'] == 'Anonyme': 
+        if self.checkbox.isChecked():  
+            if self.client_info['nom'] == 'Anonyme' and self.client_info['prenom'] == 'Anonyme' and self.client_info['cin'] == 'Anonyme': 
                 QMessageBox.information(self.main_interface, "Merci de choisire un client avant d'activer l'option credit", "Merci de choisire un client avant d'activer l'option credit")
                 self.checkbox.setChecked(False)
             else:
@@ -209,11 +218,11 @@ class Vente_dash:
             self.client_info = None
         else:
             nom,prenom,cin = client_id.split('_') 
-            self.client_info = dict(extraire_client_info(nom,prenom,cin))
-            self.client_status_label.setText(f"{self.client_info['Nom']} {self.client_info['Prenom']} ")
-            self.client_cin_label.setText(f"{self.client_info['CIN']}")
-            self.client_max_credit.setText(f"{self.client_info['Max_Credit']} Dh")
-            self.client_credit_actuel.setText(f"{self.client_info['Credit_Actuel']} Dh")
+            self.client_info = Clients.extraire_client_info(nom,prenom,cin)
+            self.client_status_label.setText(f"{self.client_info['nom']} {self.client_info['prenom']} ")
+            self.client_cin_label.setText(f"{self.client_info['cin']}")
+            self.client_max_credit.setText(f"{self.client_info['max_credit']} Dh")
+            self.client_credit_actuel.setText(f"{self.client_info['credit_actuel']} Dh")
 
 
 
@@ -234,14 +243,14 @@ class Vente_dash:
         for row, product in self.producs_table.iterrows():   
             self.cart_table.setItem(row, 0, QTableWidgetItem(str(product['Code_EAN_13']))) 
             self.cart_table.setItem(row, 1, QTableWidgetItem(str(product['Nom']))) 
-            self.cart_table.setItem(row, 2, QTableWidgetItem(str(product['caracteristique']))) 
-            self.cart_table.setItem(row, 3, QTableWidgetItem(str(product['Quantite_Actuelle']))) 
+            self.cart_table.setItem(row, 2, QTableWidgetItem(str(product['Caracteristique']))) 
+            self.cart_table.setItem(row, 3, QTableWidgetItem(str(product['quantite_actuelle']))) 
             self.cart_table.setItem(row, 4, QTableWidgetItem(str(product['Prix_Public_de_Vente']))) 
             line_edit = QSpinBox()
             line_edit.setValue(product['Quantite'])
             line_edit.editingFinished.connect(lambda row=row: self.update_quantity(row, line_edit.text()))
             self.cart_table.setCellWidget(row, 5, line_edit) 
-            self.cart_table.setItem(row, 6, QTableWidgetItem(str(product['Date_Expiration']))) 
+            self.cart_table.setItem(row, 6, QTableWidgetItem(str(product['date_expiration']))) 
             self.cart_table.setItem(row, 7, QTableWidgetItem(str(product['Prix_total'])))  
         
         self.subtotal_label.setText(f"Sous-total : {self.producs_table['Prix_total'].sum()} Dh") 
@@ -264,31 +273,32 @@ class Vente_dash:
             self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Prix_total'] += self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Prix_Public_de_Vente']
             self.update_table()
         else: 
-            medicament  = extraire_medicament_code_barre(code_barre_scanner)
+            medicament  = Medicament.extraire_medicament_code_barre(code_barre_scanner)
             
             if medicament is None:
                 QMessageBox.information(self.main_interface, "Medicament non reconue", "Medicament non reconue")
                 return 
             else: 
-                medicament_on_dtock = extraire_medicament_id_stock(medicament['ID_Medicament']) 
-                medicament = dict(medicament)    
+                medicament_on_dtock = Stock.extraire_medicament_id_stock(medicament['ID_Medicament']) 
+                #medicament = dict(medicament)  
+                print(medicament)  
                 print(medicament_on_dtock)
 
                 if medicament_on_dtock is None:
                     QMessageBox.information(self.main_interface, "Stock vide", "Le stock de ce médicament est vide. Veuillez vérifier la disponibilité.")
                 else:  
-                    if len(np.unique(medicament_on_dtock['Prix_Vente']))>1:
+                    if len(np.unique(medicament_on_dtock['prix_vente']))>1:
                         QMessageBox.information(self.main_interface, "Atention le prix de ce medicament à changer", "Atention le prix de ce medicament à changer, Merci de séparer les facture en cas de quantité superieur a 1")
                     
                     medicament["Quantite"]  = 1
-                    medicament['Prix_Public_de_Vente'] = medicament_on_dtock['Prix_Vente'][0]
-                    medicament['Prix_Vente'] = medicament_on_dtock['Prix_Vente']
-                    medicament['Date_Expiration'] = medicament_on_dtock['Date_Expiration'][0]
-                    medicament['Quantite_Actuelle'] = medicament['stock_actuel']
-                    medicament['ID_Commande'] = medicament_on_dtock['ID_Commande']
+                    medicament['Prix_Public_de_Vente'] = medicament_on_dtock['prix_vente'][0]
+                    medicament['prix_vente'] = medicament_on_dtock['prix_vente']
+                    medicament['date_expiration'] = medicament_on_dtock['date_expiration'][0]
+                    medicament['quantite_actuelle'] = medicament['Stock_Actuel']
+                    medicament['id_commande'] = medicament_on_dtock['id_commande']
                     medicament['list_quantity'] = medicament_on_dtock['list_quantity']
-                    medicament['Prix_Achat'] = medicament_on_dtock['Prix_Achat']
-                    medicament['ID_Stock'] = medicament_on_dtock['ID_Stock']
+                    medicament['prix_achat'] = medicament_on_dtock['prix_achat']
+                    medicament['id_stock'] = medicament_on_dtock['id_stock']
                     medicament["Prix_total"]  = medicament["Quantite"] * medicament['Prix_Public_de_Vente']
                     df = pd.DataFrame([medicament])
                     if self.producs_table.empty :
@@ -350,9 +360,9 @@ class Vente_dash:
     def confirm_sale(self):  
         now = datetime.now()
         now_str = now.strftime("%d/%m/%Y %H:%M:%S")
-        id_client = 0 if self.client_info is None else self.client_info['ID_Client']
+        id_client = 0 if self.client_info is None else self.client_info['id_client']
         numero_facture = int(now.timestamp())
-        id_salarie = self.main_interface.user_session['ID_Salarie']
+        id_salarie = self.main_interface.user_session['id_salarie']
         # Générer la facture 
 
         message = "Pharmacie Hajra\n"
@@ -360,12 +370,12 @@ class Vente_dash:
         message += "Téléphone : +212 123 456 789\n"
         message += "Bonjour,\n"
         message += "Facture n°: " + str(numero_facture) + "\n"
-        message += "Agent : " + str(self.main_interface.user_session['ID_Salarie'])+ "\n"
+        message += "Agent : " + str(self.main_interface.user_session['id_salarie'])+ "\n"
         message += "----------------------------------------\n"
         message += "Détails du client:\n"
-        message += "Nom : " + self.client_info['Nom'] + " " + self.client_info['Prenom'] + "\n"
-        message += "CIN : " + self.client_info['CIN'] + "\n" 
-        message += "Credit Actuel : " + str(self.client_info['Credit_Actuel']) + " Dh\n"
+        message += "Nom : " + self.client_info['nom'] + " " + self.client_info['prenom'] + "\n" 
+        message += "CIN : " + self.client_info['cin'] + "\n" 
+        message += "Credit Actuel : " + str(self.client_info['credit_actuel']) + " Dh\n"
         message += "----------------------------------------\n"
 
         message += "Détails de la vente:\n"
@@ -388,7 +398,7 @@ class Vente_dash:
         message += "----------------------------------------\n"
         message += "Merci pour votre achat!\n" 
         message += "Date: " + now_str + "\n"
-        if total_facture_calculer - int(to_pay_now) + self.client_info['Credit_Actuel'] >  self.client_info['Max_Credit']:
+        if total_facture_calculer - int(to_pay_now) + self.client_info['credit_actuel'] >  self.client_info['max_credit']:
             QMessageBox.information(self.main_interface, "Credit insuffisant", "Pas possible de faire cette vente, le credit du client est insuffisant")
             return
 
@@ -401,15 +411,15 @@ class Vente_dash:
         if reply == QMessageBox.Yes:
             for index, items in self.producs_table.iterrows():
                 id_medicament = items['ID_Medicament']
-                id_commande_entre = items['ID_Commande']
-                prix_achat = items['Prix_Achat']
-                prix_v = items['Prix_Vente']
+                id_commande_entre = items['id_commande']
+                prix_achat = items['prix_achat']
+                prix_v = items['prix_vente']
                 prix_vente = items['Prix_Public_de_Vente']
                 date_vente = now_str
                 quantite_vendue = items['Quantite'] 
                 quantite_list= items['list_quantity']  
                 total_facture = items['Prix_total']
-                ID_Stock = items['ID_Stock']
+                ID_Stock = items['id_stock']
                 quantite_traiter = 0
                 self.total_facture = 0
                 for idcommande_item, prix_achat_item, prix_vente_item, ID_Stock_item, quanti in zip(id_commande_entre, prix_achat, prix_v , ID_Stock, quantite_list) :
@@ -448,12 +458,12 @@ class Vente_dash:
 
 
     def ajouter_vente_with_all_operation(self, id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, id_client, numero_facture, id_salarie, ID_Stock_item):
-        ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, quanti * prix_vente_item, id_client, numero_facture, id_salarie, ID_Stock_item) 
-
+        Ventes.ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, quanti * prix_vente_item, id_client, numero_facture, id_salarie, ID_Stock_item) 
+        Stock.effectuer_vente_stock(  ID_Stock_item, quanti)
         return quanti * prix_vente_item
         # todo : supprimer du stock 
     def ajouter_credit_with_all_operation(self, id_client, numero_facture, to_pay_now, total_facture, now_str, status, id_salarie):
-        ajouter_credit(id_client, numero_facture, to_pay_now,  total_facture-int(to_pay_now), now_str, status, id_salarie)
-        ajouter_credit_client(id_client,  total_facture-int(to_pay_now))
+        Credit.ajouter_credit(id_client, numero_facture, to_pay_now,  total_facture-int(to_pay_now), now_str, status, id_salarie)
+        Clients.ajouter_credit_client(id_client,  total_facture-int(to_pay_now))
 
 

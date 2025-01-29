@@ -5,11 +5,13 @@ from datetime import datetime, timedelta
 import os
 
 class Credit:
-    def __init__(self):
-        self.dataset = dataset
+    @staticmethod
+    def __init__():
+        dataset = dataset
 
-    def create_table_credit(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_credit():
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Credit (
@@ -28,8 +30,9 @@ class Credit:
         conn.commit()
         conn.close()
 
-    def ajouter_credit(self, id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_credit(  id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Credit (id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie)
@@ -38,15 +41,17 @@ class Credit:
         conn.commit()
         conn.close()
 
-    def supprimer_credit(self, id_credit):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def supprimer_credit(  id_credit):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Credit WHERE id_credit = ?", (id_credit,))
         conn.commit()
         conn.close()
 
-    def modifier_credit(self, id_credit, id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def modifier_credit(  id_credit, id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Credit
@@ -56,35 +61,39 @@ class Credit:
         conn.commit()
         conn.close()
 
-    def extraire_credit(self, id_credit):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_credit(  id_credit):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Credit WHERE id_credit = ?", (id_credit,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row), default=str) if row else None
+        return  dict(row)  if row else None
 
-    def extraire_tous_credits(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_tous_credits():
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Credit")
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
 
-    def extraire_credit_with_id_client(self, id_client):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_credit_with_id_client(  id_client):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Credit WHERE id_client = ?", (id_client,))
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
 
-    def create_table_payment(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_payment():
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Payment (

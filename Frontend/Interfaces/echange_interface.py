@@ -4,7 +4,13 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt, QStringListModel
 
-from Backend.Dataset.dataset import *
+from Backend.Dataset.echanges import Echanges
+from Backend.Dataset.pharmacie import Pharmacies
+from Backend.Dataset.stock import Stock
+from Backend.Dataset.ventes import Ventes
+from Backend.Dataset.medicament import Medicament
+from datetime import datetime
+from Frontend.utils.utils import *
 import pandas as pd
 import time
 import numpy as np
@@ -105,7 +111,7 @@ class Echange_dash:
         now = datetime.now()
         now_str = now.strftime("%d/%m/%Y %H:%M:%S")
         numero_facture = int(now.timestamp())
-        id_salarie = self.main_interface.user_session['ID_Salarie']
+        id_salarie = self.main_interface.user_session['id_salarie']
 
 
 
@@ -116,7 +122,7 @@ class Echange_dash:
         if self.name_pharma.text() == "":
             QMessageBox.information(self.main_interface, "Aucune pharmacie", "Aucune pharmacie n'a été sélectionnée")
             return
-        pharma = extraire_pharma_nom(self.name_pharma.text().split("_")[0])
+        pharma = Pharmacies.extraire_pharma_nom(self.name_pharma.text().split("_")[0])
         if pharma is None:
             QMessageBox.information(self.main_interface, "Pharmacie non trouvée", "Pharmacie non trouvée")
             return
@@ -131,7 +137,7 @@ class Echange_dash:
         message += "Téléphone : +212 123 456 789\n"
         message += "Bonjour,\n"
         message += "Facture n°: " + str(numero_facture) + "\n"
-        message += "Agent : " + str(self.main_interface.user_session['ID_Salarie'])+ "\n"
+        message += "Agent : " + str(self.main_interface.user_session['id_salarie'])+ "\n"
         message += "----------------------------------------\n"
         message += "Détails de l'échange:\n"
         message += "Pharmacie : " + self.name_pharma.text() + "\n"
@@ -144,7 +150,7 @@ class Echange_dash:
         for index, items in self.producs_table.iterrows():
             quantite_vendue = items['Quantite']
             quantite_traiter = 0  
-            for  prix_achat_item, quanti in zip( items['Prix_Achat'], items['list_quantity']  ) :
+            for  prix_achat_item, quanti in zip( items['prix_achat'], items['list_quantity']  ) :
                     quanti_rest_to_hand = quantite_vendue - quantite_traiter
                     if  quanti_rest_to_hand <= quanti:
                         message += f"{items['Code_EAN_13']}\t\t{quanti_rest_to_hand}\t\t{prix_achat_item} Dh\t\t{quanti_rest_to_hand*prix_achat_item} Dh\n" 
@@ -168,29 +174,31 @@ class Echange_dash:
                     QMessageBox.Yes, QMessageBox.Cancel)
         if reply == QMessageBox.Yes:
             for index, items in self.producs_table.iterrows():
+                
+
                 id_medicament = items['ID_Medicament']
-                id_commande_entre = items['ID_Commande']
-                prix_achat = items['Prix_Achat']
-                prix_v = items['Prix_Vente']
+                id_commande_entre = items['id_commande']
+                prix_achat = items['prix_achat']
+                prix_v = items['prix_vente']
                 prix_vente = items['Prix_Public_de_Vente']
                 date_vente = now_str
                 quantite_vendue = items['Quantite'] 
                 quantite_list= items['list_quantity']  
                 total_facture = items['Prix_total']
-                ID_Stock = items['ID_Stock'] 
+                ID_Stock = items['id_stock']
                 quantite_traiter = 0
                 self.total_facture = 0
                 for idcommande_item, prix_achat_item, prix_vente_item, ID_Stock_item, quanti in zip(id_commande_entre, prix_achat, prix_v , ID_Stock, quantite_list) :
                     quanti_rest_to_hand = quantite_vendue - quantite_traiter
                     if  quanti_rest_to_hand <= quanti:
-                        ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_achat_item, date_vente, quanti_rest_to_hand, quanti_rest_to_hand * prix_achat_item, pharma['ID_Pharmacie'], numero_facture, id_salarie) 
-                        ajouter_echange(pharma['ID_Pharmacie'], numero_facture, date_vente, quanti_rest_to_hand * prix_achat_item, evoyer, id_salarie)
+                        Ventes.ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_achat_item, date_vente, quanti_rest_to_hand, quanti_rest_to_hand * prix_achat_item, pharma['id_pharmacie'], numero_facture, id_salarie, ID_Stock_item) 
+                        Echanges.ajouter_echange(pharma['id_pharmacie'], numero_facture, date_vente, quanti_rest_to_hand * prix_achat_item, evoyer, id_salarie)
                         self.total_facture+=quanti_rest_to_hand * prix_achat_item
                         quantite_traiter += quanti_rest_to_hand 
                     else:
                         quantite_traiter+=quanti
-                        ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_achat_item, date_vente, quanti, quanti * prix_achat_item, pharma['ID_Pharmacie'], numero_facture, id_salarie) 
-                        ajouter_echange(pharma['ID_Pharmacie'], numero_facture, date_vente, quanti * prix_achat_item, evoyer, id_salarie)
+                        Ventes.ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_achat_item, date_vente, quanti, quanti * prix_achat_item, pharma['id_pharmacie'], numero_facture, id_salarie, ID_Stock_item) 
+                        Echanges.ajouter_echange(pharma['id_pharmacie'], numero_facture, date_vente, quanti * prix_achat_item, evoyer, id_salarie)
                         self.total_facture+=quanti * prix_achat_item
                     if quantite_traiter >= quantite_vendue:
                         break  
@@ -209,8 +217,8 @@ class Echange_dash:
             self.updateCompleter_pharma(text)
 
     def updateCompleter_pharma(self, text): 
-        results = extraire_pharma_nom_like(text)   
-        results = ["_".join(res) for res in results]
+        results = Pharmacies.extraire_pharma_nom_like(text)   
+        results = [res["nom"] for res in results]
         model = QStringListModel(results)  
         self.completer_pharma.setModel(model) 
 
@@ -281,16 +289,15 @@ class Echange_dash:
 
 
     def remplire_table(self):
-        all_client = extraire_tous_pharma()
+        all_client = Pharmacies.extraire_tous_pharma()
         self.list_client.setRowCount(len(all_client))
-        for index,element in enumerate(all_client):
-            dict_element = dict(element)
-            self.list_client.setItem(index, 0, QTableWidgetItem(str(dict_element['Nom']))) 
-            self.list_client.setItem(index, 1, QTableWidgetItem(str(dict_element['telephone']))) 
-            self.list_client.setItem(index, 2, QTableWidgetItem(str(dict_element['email']))) 
-            self.list_client.setItem(index, 3, QTableWidgetItem(str(dict_element['adresse']))) 
-            self.list_client.setItem(index, 4, QTableWidgetItem(str(dict_element['outvalue']))) 
-            self.list_client.setItem(index, 5, QTableWidgetItem(str(dict_element['invalue']))) 
+        for index,element in enumerate(all_client): 
+            self.list_client.setItem(index, 0, QTableWidgetItem(str(element['nom']))) 
+            self.list_client.setItem(index, 1, QTableWidgetItem(str(element['telephone']))) 
+            self.list_client.setItem(index, 2, QTableWidgetItem(str(element['email']))) 
+            self.list_client.setItem(index, 3, QTableWidgetItem(str(element['adresse']))) 
+            self.list_client.setItem(index, 4, QTableWidgetItem(str(element['outvalue']))) 
+            self.list_client.setItem(index, 5, QTableWidgetItem(str(element['invalue']))) 
 
     def add_pharma(self):
         # Récupérer les valeurs des champs
@@ -299,7 +306,7 @@ class Echange_dash:
         email = self.email_input.text()
         address = self.address_input.text() 
         # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
-        ajouter_pharmacie(name, address, telephone, email, 0, 0) 
+        Pharmacies.ajouter_pharmacie(name, address, telephone, email, 0, 0) 
         self.remplire_table()
         # Effacer les champs après soumission
         self.name_input.clear() 
@@ -340,30 +347,30 @@ class Echange_dash:
             self.producs_table.loc[self.producs_table['Code_EAN_13'] == code_barre_scanner, 'Quantite'] += 1
             self.update_table()
         else: 
-            medicament  = extraire_medicament_code_barre(code_barre_scanner)
+            medicament  = Medicament.extraire_medicament_code_barre(code_barre_scanner)
             if medicament is None:
                 QMessageBox.information(self.main_interface, "Medicament non reconue", "Medicament non reconue")
                 return 
             else: 
-                medicament_on_dtock = extraire_medicament_id_stock(medicament['ID_Medicament']) 
+                medicament_on_dtock = Stock.extraire_medicament_id_stock(medicament['ID_Medicament']) 
                 medicament = dict(medicament)  
 
                 if medicament_on_dtock is None:
                     QMessageBox.information(self.main_interface, "Stock vide", "Le stock de ce médicament est vide. Veuillez vérifier la disponibilité.")
                 else:  
-                    if len(np.unique(medicament_on_dtock['Prix_Vente']))>1:
+                    if len(np.unique(medicament_on_dtock['prix_vente']))>1:
                         QMessageBox.information(self.main_interface, "Atention le prix de ce medicament à changer", "Atention le prix de ce medicament à changer, Merci de séparer les facture en cas de quantité superieur a 1")
                     
                     medicament["Quantite"]  = 1
-                    medicament['Prix_Public_de_Vente'] = medicament_on_dtock['Prix_Achat'][0]
-                    medicament['Prix_Vente'] = medicament_on_dtock['Prix_Vente']
-                    medicament['Date_Expiration'] = medicament_on_dtock['Date_Expiration'][0]
-                    medicament['Quantite_Actuelle'] = medicament_on_dtock['Quantite_Actuelle']
-                    medicament['ID_Commande'] = medicament_on_dtock['ID_Commande']
+                    medicament['Prix_Public_de_Vente'] = medicament_on_dtock['prix_achat'][0]
+                    medicament['prix_vente'] = medicament_on_dtock['prix_vente']
+                    medicament['date_expiration'] = medicament_on_dtock['date_expiration'][0]
+                    medicament['quantite_actuelle'] = medicament['Stock_Actuel']
+                    medicament['id_commande'] = medicament_on_dtock['id_commande']
                     medicament['list_quantity'] = medicament_on_dtock['list_quantity']
-                    medicament['Prix_Achat'] = medicament_on_dtock['Prix_Achat']
-                    medicament['ID_Stock'] = medicament_on_dtock['ID_Stock']
-                    medicament["Prix_total"]  = medicament["Quantite"] * medicament['Prix_Achat']
+                    medicament['prix_achat'] = medicament_on_dtock['prix_achat']
+                    medicament['id_stock'] = medicament_on_dtock['id_stock']
+                    medicament["Prix_total"]  = medicament["Quantite"] * medicament['prix_achat']
                     df = pd.DataFrame([medicament])
                     if self.producs_table.empty :
                         self.producs_table = df 
@@ -380,7 +387,7 @@ class Echange_dash:
             line_edit.setValue(product['Quantite'])
             line_edit.editingFinished.connect(lambda row=row: self.update_quantity(row, line_edit.text()))
             self.list_medicaments.setCellWidget(row, 2, line_edit) 
-            self.list_medicaments.setItem(row, 3, QTableWidgetItem(str(product['Prix_Achat'][0])))  
+            self.list_medicaments.setItem(row, 3, QTableWidgetItem(str(product['prix_achat'][0])))  
     
     def update_quantity(self, row, new_value): 
         new_quantity = int(new_value) 

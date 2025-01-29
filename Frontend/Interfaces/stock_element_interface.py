@@ -4,10 +4,10 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
-from Backend.Dataset.dataset import *
+from Backend.Dataset.stock import Stock
 
 
-class Acceuil_dash:
+class List_stock_dash:
     def __init__(self, main_interface):
         self.main_interface = main_interface
         self.show_vente_interface()
@@ -25,7 +25,7 @@ class Acceuil_dash:
 
         # Premier widget: Tableau des médicaments avec date d'expiration < 2 mois
         widget_medicament_expiration = QWidget()
-        label_titre = QLabel("Liste des médicaments avec date d'expiration < 2 mois") 
+        label_titre = QLabel("Liste des médicaments existe dans le stock") 
         widget_medicament_expiration_layout = QVBoxLayout(widget_medicament_expiration)
         self.table_widget_medicament_expiration = QTableWidget()
         self.table_widget_medicament_expiration.setColumnCount(4)
@@ -35,20 +35,7 @@ class Acceuil_dash:
         widget_medicament_expiration_layout.addWidget(label_titre)
         widget_medicament_expiration_layout.addWidget(self.table_widget_medicament_expiration)
         main_layout.addWidget(widget_medicament_expiration)
- 
-        # Troisième widget: Médicaments avec disponibilité de stock < min stock
-        widget_disponibilite = QWidget()
-        label_titre_disponibilite = QLabel("Liste des médicaments avec disponibilité de stock < min stock")
-        widget_disponibilite_layout = QVBoxLayout(widget_disponibilite)
-        self.table_widget_disponibilite = QTableWidget()
-        self.table_widget_disponibilite.setColumnCount(3)
-        self.table_widget_disponibilite.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table_widget_disponibilite.setHorizontalHeaderLabels(["Code médicament","Nom médicament", "Quantité", "Min Quantité"])
-        self.populate_disponibilite_table() 
-
-        widget_disponibilite_layout.addWidget(label_titre_disponibilite)
-        widget_disponibilite_layout.addWidget(self.table_widget_disponibilite)
-        main_layout.addWidget(widget_disponibilite)
+   
 
         # Quatrième widget: Nombre de ventes effectuées aujourd'hui
         widget_statistique = QWidget()
@@ -64,14 +51,13 @@ class Acceuil_dash:
 
 
     def populate_table(self):
-        data = extraire_stock_expiration()  
+        data = Stock.extraire_tous_stock()  
         self.table_widget_medicament_expiration.setRowCount(len(data))
-        for index, element in enumerate(data):
-            dict_element = dict(element)
-            self.table_widget_medicament_expiration.setItem(index, 0, QTableWidgetItem(str(dict_element['id_medicament'])))
-            self.table_widget_medicament_expiration.setItem(index, 1, QTableWidgetItem(str(dict_element['id_medicament'])))
-            self.table_widget_medicament_expiration.setItem(index, 2, QTableWidgetItem(str(dict_element['date_expiration'])))
-            self.table_widget_medicament_expiration.setItem(index, 3, QTableWidgetItem(str(dict_element['quantite_actuelle'])))
+        for index, element in enumerate(data): 
+            self.table_widget_medicament_expiration.setItem(index, 0, QTableWidgetItem(str(element['id_medicament'])))
+            self.table_widget_medicament_expiration.setItem(index, 1, QTableWidgetItem(str(element['id_medicament'])))
+            self.table_widget_medicament_expiration.setItem(index, 2, QTableWidgetItem(str(element['date_expiration'])))
+            self.table_widget_medicament_expiration.setItem(index, 3, QTableWidgetItem(str(element['quantite_actuelle'])))
 
     def populate_disponibilite_table(self):
             pass

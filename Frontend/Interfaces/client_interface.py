@@ -1,9 +1,10 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QGridLayout,QDoubleSpinBox,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QGridLayout,QDoubleSpinBox,QMessageBox,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox, QHeaderView
 )
 from qtpy.QtCore import Qt
-from Backend.Dataset.dataset import *
+from Backend.Dataset.client import Clients
+from Frontend.utils.utils import *
 
 
 
@@ -94,16 +95,16 @@ class Client_dash:
     
 
     def remplire_table(self):
-        all_client = extraire_tous_clients()
+        all_client = Clients.extraire_tous_clients()
         self.list_client.setRowCount(len(all_client))
         for index,element in enumerate(all_client):
             dict_element = dict(element)
-            self.list_client.setItem(index, 0, QTableWidgetItem(str(dict_element['Nom']))) 
-            self.list_client.setItem(index, 1, QTableWidgetItem(str(dict_element['Prenom']))) 
-            self.list_client.setItem(index, 2, QTableWidgetItem(str(dict_element['CIN']))) 
-            self.list_client.setItem(index, 3, QTableWidgetItem(str(dict_element['Telephone']))) 
-            self.list_client.setItem(index, 4, QTableWidgetItem(str(dict_element['Credit_Actuel']))) 
-            self.list_client.setItem(index, 5, QTableWidgetItem(str(dict_element['Max_Credit']))) 
+            self.list_client.setItem(index, 0, QTableWidgetItem(str(dict_element['id_client']))) 
+            self.list_client.setItem(index, 1, QTableWidgetItem(str(dict_element['nom']))) 
+            self.list_client.setItem(index, 2, QTableWidgetItem(str(dict_element['prenom']))) 
+            self.list_client.setItem(index, 3, QTableWidgetItem(str(dict_element['cin']))) 
+            self.list_client.setItem(index, 4, QTableWidgetItem(str(dict_element['credit_actuel']))) 
+            self.list_client.setItem(index, 5, QTableWidgetItem(str(dict_element['max_credit']))) 
 
     def add_client(self):
         # Récupérer les valeurs des champs
@@ -116,7 +117,12 @@ class Client_dash:
         max_credit = self.max_credit_input.value()
         current_credit = self.current_credit_input.value()
         # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
-        ajouter_client(name, surname, cin, telephone, email, address, max_credit, current_credit)
+        try:
+            Clients.ajouter_client(name, surname, cin, telephone, email, address, max_credit, current_credit)
+        except Exception as e:
+            QMessageBox.warning(self.client_dash, "Erreur", "Le CIN existe déjà.")
+            print(e)
+            return
         self.remplire_table()
         # Effacer les champs après soumission
         self.name_input.clear()

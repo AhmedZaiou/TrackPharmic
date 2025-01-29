@@ -5,7 +5,8 @@ from qtpy.QtWidgets import (
 from qtpy.QtCore import Qt
 
 
-from Backend.Dataset.dataset import *
+from Backend.Dataset.medicament import Medicament
+from Frontend.utils.utils import *
 
 
 class Medicament_dash:
@@ -155,7 +156,7 @@ class Medicament_dash:
         if key == '\r' :  # Lorsque le lecteur envoie un saut de ligne
             if len(self.code_barre_scanner ) == 13:
                 self.code_ean_input.setText(self.code_barre_scanner)
-                self.medicament_search = extraire_medicament_code_barre(self.code_barre_scanner)
+                self.medicament_search = Medicament.extraire_medicament_code_barre(self.code_barre_scanner)
                 self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan 
                 if self.medicament_search  is not None: 
                     reply = QMessageBox.question(self.main_interface, "Confirmation", "Le médicament existe déjà, voulez-vous le modifier ?", QMessageBox.Yes | QMessageBox.No)
@@ -167,17 +168,17 @@ class Medicament_dash:
 
     def modifier_medicament_inter(self, code_ean): 
         self.show_modifier_interface()
-        self.code_ean_input.setText(self.medicament_search['Code_EAN_13']) 
+        self.code_ean_input.setText(str(self.medicament_search['Code_EAN_13'])) 
         self.nom_input.setText(self.medicament_search['Nom'])
-        self.caracteristique_input.setText(self.medicament_search['caracteristique'])
-        self.generique_input.setText(self.medicament_search['Medicament_GENERIQUE'])
+        self.caracteristique_input.setText(self.medicament_search['Caracteristique'])
+        self.generique_input.setText(self.medicament_search['Medicament_Generique'])
         self.prix_officine_input.setText(str(self.medicament_search['Prix_Officine']))
-        self.prix_public_input.setText(str(self.medicament_search['Prix_Public_de_Vente']))
-        self.prix_remboursement_input.setText(str(self.medicament_search['Prix_base_remboursement']))
+        self.prix_public_input.setText(str(self.medicament_search['Prix_Public_De_Vente']))
+        self.prix_remboursement_input.setText(str(self.medicament_search['Prix_Base_Remboursement']))
         self.prix_hospitalier_input.setText(str(self.medicament_search['Prix_Hospitalier']))
-        self.substance_input.setText(self.medicament_search['Substance_active_DCI'])
+        self.substance_input.setText(self.medicament_search['Substance_Active_DCI'])
         self.classe_input.setText(self.medicament_search['Classe_Therapeutique'])
-        self.min_input.setText(str(self.medicament_search['min_stock'])) 
+        self.min_input.setText(str(self.medicament_search['Min_Stock'])) 
 
     
 
@@ -204,17 +205,15 @@ class Medicament_dash:
 
         try:
 
-            ajouter_medicament(nom, caracteristique, code_ean, generique, prix_officine, prix_public, 
+            Medicament.ajouter_medicament(nom, caracteristique, code_ean, generique, prix_officine, prix_public, 
                   prix_remboursement, prix_hospitalier, substance, classe, min_v, 0)
             
             # Message de succès
             QMessageBox.information(self.main_interface, "Succès", "Médicament ajouté avec succès.")
             self.show_ajouter_interface()
 
-        except sqlite3.IntegrityError:
-            QMessageBox.warning(self.main_interface, "Erreur", "Un médicament avec ce code EAN-13 existe déjà.")
         except Exception as e:
-            QMessageBox.critical(self.main_interface, "Erreur", f"Une erreur est survenue : {str(e)}")
+            QMessageBox.warning(self.main_interface, "Erreur", "Un médicament avec ce code EAN-13 existe déjà.") 
 
     def clear_fields(self):
         self.nom_input.clear()
@@ -364,18 +363,29 @@ class Medicament_dash:
 
         try:
 
-            modifier_medicament(self.medicament_search['ID_Medicament'],nom, caracteristique, code_ean, generique, prix_officine, prix_public, 
-                  prix_remboursement, prix_hospitalier, substance, classe, min_v, 0)
-            self.show_ajouter_interface()
-            
+            medicament_data = {
+                'Nom': nom,
+                'Caracteristique': caracteristique,
+                'Code_EAN_13': code_ean,
+                'Medicament_Generique': generique,
+                'Prix_Officine': prix_officine,
+                'Prix_Public_De_Vente': prix_public,
+                'Prix_Base_Remboursement': prix_remboursement,
+                'Prix_Hospitalier': prix_hospitalier,
+                'Substance_Active_DCI': substance,
+                'Classe_Therapeutique': classe,
+                'Min_Stock': min_v,
+                'Stock_Actuel': 0
+            }
+
+            Medicament.modifier_medicament(self.medicament_search['ID_Medicament'], **medicament_data)
             # Message de succès
             QMessageBox.information(self.main_interface, "Succès", "Médicament modifié avec succès.")
             self.clear_fields()
+            self.show_ajouter_interface()
 
-        except sqlite3.IntegrityError:
-            QMessageBox.warning(self.main_interface, "Erreur", "Un médicament avec ce code EAN-13 existe déjà.")
         except Exception as e:
-            QMessageBox.critical(self.main_interface, "Erreur", f"Une erreur est survenue : {str(e)}")
+            QMessageBox.warning(self.main_interface, "Erreur", "Un médicament avec ce code EAN-13 existe déjà.") 
 
     
 

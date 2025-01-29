@@ -6,9 +6,12 @@ from qtpy.QtCore import Qt, QStringListModel
 from datetime import datetime
 import time
 
-from Backend.Dataset.dataset import *
+from Backend.Dataset.commande import Commandes
+from Backend.Dataset.fournisseur import Fournisseur
+from Backend.Dataset.medicament import Medicament
 
 
+from Frontend.utils.utils import *
 
 class Commande_dash:
     def __init__(self, main_interface):
@@ -90,6 +93,9 @@ class Commande_dash:
         fournisseur_layout.addWidget(self.fournisseur_max_credit,2,0)
         fournisseur_layout.addWidget(self.fournisseur_credit_actuel, 2,1)
 
+        self.inclure_checkbox = QCheckBox("Important")
+        fournisseur_layout.addWidget(self.inclure_checkbox,3,0) 
+
         add_commande_layout.addLayout(fournisseur_layout)
 
         # Zone d'entrée pour le code-barres
@@ -151,13 +157,13 @@ class Commande_dash:
         self.main_interface.content_layout.addWidget(self.principale_dash_add)
     
     def selectionner_fournisseur(self, text):
-        data = extraire_fournisseur_nom(text)
+        data = Fournisseur.extraire_fournisseur_nom(text) 
 
-        self.fournisseur_status_label.setText(f"Fournisseur : {data[1]}")
-        self.fournisseur_activite_label.setText(f"Email : {data[2]}")
+        self.fournisseur_status_label.setText(f"Fournisseur : {data['nom_fournisseur']}")
+        self.fournisseur_activite_label.setText(f"Email : {data['email']}")
 
-        self.fournisseur_max_credit.setText(f"Téléphone : {data[3]}")
-        self.fournisseur_credit_actuel.setText(f"Adresse : {data[4]}")
+        self.fournisseur_max_credit.setText(f"Téléphone : {data['telephone']}")
+        self.fournisseur_credit_actuel.setText(f"Adresse : {data['adresse']}")
         self.info_fourniseur = data
 
 
@@ -166,8 +172,8 @@ class Commande_dash:
             self.updateCompleter_fournisseur(text)
 
     def updateCompleter_fournisseur(self, text): 
-        results = extraire_fournisseur_nom_like(text)  
-        results = [item[0] for item in results] 
+        results = Fournisseur.extraire_fournisseur_nom_like(text)  
+        results = [item['nom_fournisseur'] for item in results] 
         model = QStringListModel(results)  
         self.completer_fournisseur.setModel(model) 
 
@@ -177,7 +183,7 @@ class Commande_dash:
             self.updateCompleter(text)
     
     def updateCompleter(self, text): 
-        results = extraire_medicament_nom_like(text)
+        results = Medicament.extraire_medicament_nom_like(text)
         model = QStringListModel(results)  
         self.completer.setModel(model) 
     
@@ -205,7 +211,7 @@ class Commande_dash:
     
     def ajouter_medi_to_commande_code(self, code_barre_scanner):
 
-        medicament  = extraire_medicament_code_barre(code_barre_scanner)
+        medicament  = Medicament.extraire_medicament_code_barre(code_barre_scanner)
         if medicament is None:
             QMessageBox.information(self.main_interface, "Medicament non reconue", "Medicament non reconue")
             return 
@@ -224,9 +230,12 @@ class Commande_dash:
         if len(self.commande) == 0: 
             QMessageBox.information(self.main_interface, "Merci de sélectionner des médicaments", "Merci de sélectionner des médicaments")
             return
-        id_salarie = self.main_interface.user_session['ID_Salarie']
-        ajouter_commande(str(self.commande), self.info_fourniseur[0], datetime.now(), datetime.now(), "en cours", None, None, None, id_salarie, True) 
-        
+        id_salarie = self.main_interface.user_session['id_salarie']
+        if self.inclure_checkbox.isChecked:
+            Commandes.ajouter_commande(str(self.commande), self.info_fourniseur['id_fournisseur'], datetime.now(), datetime.now(), "en cours", None, None, None, id_salarie, True)  
+        else:
+            Commandes.ajouter_commande(str(self.commande), self.info_fourniseur['id_fournisseur'], datetime.now(), datetime.now(), "en cours", None, None, None, id_salarie, True)  
+
         QMessageBox.information(self.main_interface, "La commande a été enregistrée avec succès", "La commande a été enregistrée avec succès")
         self.actualiser_commande()
         
@@ -316,11 +325,17 @@ class Commande_dash:
     
 
     def charger_carte_table(self):
-        data = extraire_tous_commandes_table() 
-        self.cart_table.setRowCount(len(data))
-        for row, product in enumerate(data): 
-            for col, data in enumerate(product): 
-                self.cart_table.setItem(row, col, QTableWidgetItem(str(data)))
+        data = Commandes.extraire_tous_commandes_table() 
+        self.cart_table.setRowCount(len(data)) 
+        for row, product in enumerate(data):  
+                self.cart_table.setItem(row, 0, QTableWidgetItem(str(product['id_commande'])))
+                fournissuer = Fournisseur.extraire_fournisseur(product['id_fournisseur'])
+                self.cart_table.setItem(row, 1, QTableWidgetItem(fournissuer['nom_fournisseur']))
+                self.cart_table.setItem(row, 2, QTableWidgetItem(product['date_commande']))
+                self.cart_table.setItem(row, 3, QTableWidgetItem(product['Liste_Produits']))
+                self.cart_table.setItem(row, 3, QTableWidgetItem(product['statut_reception']))
+                self.cart_table.setItem(row, 3, QTableWidgetItem(product['status_incl']))
+
     
 
 

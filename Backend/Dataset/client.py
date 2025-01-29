@@ -5,12 +5,11 @@ from datetime import datetime, timedelta
 import os
 
 
-class Clients:
-    def __init__(self):
-        self.dataset = dataset
+class Clients: 
 
-    def create_table_clients(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def create_table_clients( ):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Clients (
@@ -29,8 +28,9 @@ class Clients:
         conn.commit()
         conn.close()
 
-    def ajouter_client(self, nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_client(  nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Clients (nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel)
@@ -39,15 +39,17 @@ class Clients:
         conn.commit()
         conn.close()
 
-    def supprimer_client(self, id_client):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def supprimer_client(  id_client):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Clients WHERE id_client = ?", (id_client,))
         conn.commit()
         conn.close()
 
-    def modifier_client(self, id_client, nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def modifier_client(  id_client, nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Clients
@@ -57,8 +59,9 @@ class Clients:
         conn.commit()
         conn.close()
 
-    def ajouter_credit_client(self, id_client, montant_credit):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def ajouter_credit_client(  id_client, montant_credit):
+        conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Clients
@@ -68,56 +71,62 @@ class Clients:
         conn.commit()
         conn.close()
 
-    def extraire_client(self, id_client):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_client(  id_client):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Clients WHERE id_client = ?", (id_client,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row), default=str) if row else None
+        return  dict(row)  if row else None
 
-    def extraire_client_id(self, id_client):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_client_id(  id_client):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Clients WHERE id_client = ?", (id_client,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row), default=str) if row else None
+        return  dict(row)  if row else None
 
-    def extraire_client_info(self, nom, prenom, cin):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_client_info(  nom, prenom, cin):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Clients WHERE nom = ? AND prenom = ? AND cin = ?", (nom, prenom, cin))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row), default=str) if row else None
+        return  dict(row)  if row else None
 
-    def extraire_client_nom_like(self, nom_part):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_client_nom_like(  nom_part):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Clients WHERE nom LIKE ?", ('%' + nom_part + '%',))
+        cursor.execute("SELECT nom, prenom, cin FROM Clients WHERE nom LIKE ?", ('%' + nom_part + '%',))
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
 
-    def extraire_tous_clients(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_tous_clients( ):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Clients")
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
 
-    def extraire_tous_client_with_credit(self):
-        conn = sqlite3.connect(self.dataset)
+    @staticmethod
+    def extraire_tous_client_with_credit( ):
+        conn = sqlite3.connect(dataset)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Clients WHERE credit_actuel > 0")
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
