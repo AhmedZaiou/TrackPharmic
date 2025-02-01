@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import os 
 import json
 
+from Backend.Dataset.salarie import Salaries
+
 class Commandes:
     @staticmethod
     def __init__():
@@ -107,6 +109,133 @@ class Commandes:
         conn.close()
         return [dict(row) for row in rows]
     
+    @staticmethod
+    def get_commandes_jour():
+        # Connect to the database
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Commande) = ?''', (datetime.now().date().strftime('%d/%m/%Y'),))
+        result = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in result]
     
+    @staticmethod
+    def get_commandes_recues_jour():
+        # Connect to the database
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Reception) = ?''', (datetime.now().date().strftime('%d/%m/%Y'),))
+        result = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in result]
+    
+    @staticmethod
+    def get_commandes_jour_salarie(salarie):
+        # Connect to the database
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Commande) = ? AND ID_Salarie = ?''', (datetime.now().date().strftime('%d/%m/%Y'), salarie))
+        result = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in result]
+    
+    
+    @staticmethod
+    def get_commandes_recues_jour_salarie(salarie):
+        # Connect to the database
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Reception) = ? AND ID_Salarie = ?''', (datetime.now().date().strftime('%d/%m/%Y'), salarie))
+        result = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in result]
+    
+
+    @staticmethod
+    def statistic_commande_salarie(salarie):
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
         
+        date_jour = datetime.now().date().strftime('%d/%m/%Y')
+        
+        # Nombre total de commandes passées par le salarié aujourd'hui
+        cursor.execute('''SELECT COUNT(*) as total FROM Commandes 
+                        WHERE strftime('%d/%m/%Y', Date_Commande) = ? 
+                        AND ID_Salarie = ?''', (date_jour, salarie))
+        total_commandes = cursor.fetchone()["total"]
+        
+        # Nombre de commandes reçues par le salarié aujourd'hui
+        cursor.execute('''SELECT COUNT(*) as recues FROM Commandes 
+                        WHERE strftime('%d/%m/%Y', Date_Reception) = ? 
+                        AND ID_Salarie = ?''', (date_jour, salarie))
+        commandes_recues = cursor.fetchone()["recues"]
+        
+        # Nombre de commandes en attente de réception
+        commandes_en_attente = total_commandes - commandes_recues
+        
+        conn.close()
+        
+        return {
+            "salarie": salarie,
+            "date": date_jour,
+            "total_commandes": total_commandes,
+            "commandes_recues": commandes_recues,
+            "commandes_en_attente": commandes_en_attente
+        }
+    
+    @staticmethod
+    def statistic_commande_generale():
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        date_jour = datetime.now().date().strftime('%d/%m/%Y')
+        
+        # Nombre total de commandes passées aujourd'hui
+        cursor.execute('''SELECT COUNT(*) as total FROM Commandes 
+                        WHERE strftime('%d/%m/%Y', Date_Commande) = ?''', (date_jour,))
+        total_commandes = cursor.fetchone()["total"]
+        
+        # Nombre de commandes reçues aujourd'hui
+        cursor.execute('''SELECT COUNT(*) as recues FROM Commandes 
+                        WHERE strftime('%d/%m/%Y', Date_Reception) = ?''', (date_jour,))
+        commandes_recues = cursor.fetchone()["recues"]
+        
+        # Nombre de commandes en attente de réception
+        commandes_en_attente = total_commandes - commandes_recues
+        
+        conn.close()
+        
+        return {
+            "date": date_jour,
+            "total_commandes": total_commandes,
+            "commandes_recues": commandes_recues,
+            "commandes_en_attente": commandes_en_attente
+        }
+
+
+    
+    @staticmethod
+    def cloture_journee():
+        commande_cloture  = {}
+        commande_cloture['statistique general'] = Commandes.statistic_commande_generale()
+        commande_cloture['statistique par salarie'] = [] 
+        salaries, noms, prenoms = Salaries.get_salaries() 
+        for salarie,nom,prenom in zip(salaries, noms, prenoms):
+            performance = {"salarie":str(nom) + " "+ str(prenom)}
+            performance["statistique"] = Commandes.statistic_commande_salarie(salarie)
+            commande_cloture['statistique par salarie'].append(performance)
+        return commande_cloture
+
+
+
+
+
+
+
 

@@ -152,3 +152,82 @@ class Stock:
 
 
 
+
+    @staticmethod
+    def get_situation_stock():
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT id_medicament, quantite_actuelle FROM Stock")
+        result = cursor.fetchall()
+        conn.close()
+        return {row['id_medicament']: row['quantite_actuelle'] for row in result}
+    
+    @staticmethod
+    def calculer_total_achat_vente():
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+        cursor.execute("SELECT SUM(prix_achat) AS total_achat, SUM(prix_vente) AS total_vente FROM Stock")
+        result = cursor.fetchone()
+        conn.close()
+
+        return result['total_achat'], result['total_vente']
+    
+
+    def cloture_journee():
+        today = datetime.now().strftime('%Y-%m-%d')
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+
+        # Total des achats et ventes pour la journée
+        cursor.execute("""
+            SELECT SUM(prix_achat) AS total_achat, SUM(prix_vente) AS total_vente 
+            FROM Stock 
+            WHERE date_reception = ? OR date_derniere_sortie = ?
+        """, (today, today))
+        result = cursor.fetchone() 
+        total_achat = result[0]
+        total_vente = result[0]
+
+        # Quantités totales en stock aujourd'hui
+        cursor.execute("""
+            SELECT SUM(quantite_actuelle) AS total_quantite 
+            FROM Stock 
+            WHERE date_reception = ? OR date_derniere_sortie = ?
+        """, (today, today))
+        result = cursor.fetchone() 
+        total_quantite = result[0]
+
+        # Quantités minimales non respectées aujourd'hui
+        cursor.execute("""
+            SELECT COUNT(*) AS count 
+            FROM Stock 
+            WHERE quantite_actuelle < quantite_minimale 
+            AND (date_reception = ? OR date_derniere_sortie = ?)
+        """, (today, today))
+        result = cursor.fetchone() 
+        quantites_minimales_non_respectees = result[0]
+
+        
+
+        # Médicaments proches de la date d'expiration aujourd'hui
+        cursor.execute("""
+            SELECT COUNT(*) AS count 
+            FROM Stock 
+            WHERE date_expiration <= DATE('now', '+30 days') 
+            AND (date_reception = ? OR date_derniere_sortie = ?)
+        """, (today, today))
+        result = cursor.fetchone() 
+        medicaments_proches_expiration = result[0]
+
+        
+
+        conn.close()
+
+        return {
+            "Total des achats pour la journée": total_achat,
+            "Total des ventes pour la journée": total_vente,
+            "Quantités totales en stock aujourd'hui": total_quantite,
+            "Quantités minimales non respectées aujourd'hui": quantites_minimales_non_respectees, 
+            "Nombre Médicaments proches de la date d'expiration aujourd'hui": medicaments_proches_expiration
+        }

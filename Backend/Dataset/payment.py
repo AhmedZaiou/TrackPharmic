@@ -8,6 +8,7 @@ class Payment:
     @staticmethod
     def __init__(  dataset):
         dataset = dataset
+        
 
     @staticmethod
     def create_table_payment():
@@ -48,6 +49,79 @@ class Payment:
         rows = cursor.fetchall()
         conn.close()
         return  [dict(row) for row in rows] 
+    
+    @staticmethod
+    def get_total_paiement():
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+        cursor.execute('''SELECT SUM(montant_paye) as totalPaiement FROM Payment''')
+        result = cursor.fetchone()
+         
+        conn.close()
+        return result[0] if result else 0
+    
 
+    @staticmethod
+    def get_total_paiement_salarie(salarie):
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+        cursor.execute('''SELECT SUM(montant_paye) as totalPaiement FROM Payment WHERE id_salarie = ?''', (salarie,))
+        result = cursor.fetchone() 
+        conn.close()
+        return result[0] if result else 0
+    
+    @staticmethod
+    def cloture_journee():
+        # Connexion à la base de données
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
 
+        # Obtenir la date actuelle au format YYYY-MM-DD
+        today = datetime.today().strftime('%Y-%m-%d')
 
+        # Total des paiements effectués aujourd'hui
+        cursor.execute("""
+            SELECT SUM(montant_paye) as total_paiements
+            FROM Payment
+            WHERE date_paiement = ?
+        """, (today,))
+        total_paiements = cursor.fetchone()[0]
+
+        # Total des paiements effectués aujourd'hui par salarié
+        cursor.execute("""
+            SELECT id_salarie, SUM(montant_paye) as total_paiements_salarie
+            FROM Payment
+            WHERE date_paiement = ?
+            GROUP BY id_salarie
+        """, (today,))
+        paiements_salaries = cursor.fetchall()
+
+        # Nombre total de paiements effectués aujourd'hui
+        cursor.execute("""
+            SELECT COUNT(id_payment) as total_paiements_count
+            FROM Payment
+            WHERE date_paiement = ?
+        """, (today,))
+        total_paiements_count = cursor.fetchone()[0]
+
+        # Total des paiements effectués aujourd'hui par client
+        cursor.execute("""
+            SELECT id_client, SUM(montant_paye) as total_paiements_client
+            FROM Payment
+            WHERE date_paiement = ?
+            GROUP BY id_client
+        """, (today,))
+        paiements_clients = cursor.fetchall()
+
+        # Clôture de la connexion
+        conn.close()
+
+        # Préparer les résultats sous forme de dictionnaire
+        statistiques = {
+            "Total des paiements effectués aujourd'hui en Dhs": total_paiements if total_paiements else 0.0,
+            "Nombre total de paiements effectués aujourd'hui": total_paiements_count if total_paiements_count else 0,
+            "Total des paiements effectués aujourd'hui par salarié": [{"id_salarie": row[0], "total_paiements_salarie": row[1]} for row in paiements_salaries],
+            "Total des paiements effectués aujourd'hui par client": [{"id_client": row[0], "total_paiements_client": row[1]} for row in paiements_clients]
+        }
+
+        return statistiques

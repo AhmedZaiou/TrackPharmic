@@ -39,6 +39,7 @@ class MainInterface(QMainWindow):
         from Backend.Dataset.payment import Payment
         from Backend.Dataset.pharmacie import Pharmacies
         from Backend.Dataset.ventes import Ventes
+        from Backend.Dataset.retour import Retour
 
         
         Medicament.supprimer_toute_base_donnees()
@@ -55,6 +56,7 @@ class MainInterface(QMainWindow):
         Pharmacies.create_table_pharmacies()
         Ventes.create_table_ventes()
         Salaries.create_table_salaries()
+        Retour.create_table_retours()
         Salaries.ajouter_salarie( "user", "prenom", "cin", "telephone", "email", "adresse", "photo", "salaire", "type_contrat", "date_embauche", "admin", "user")
 
 
@@ -304,15 +306,15 @@ class MainInterface(QMainWindow):
 
         # Ajouter une image de profil
         profile_image = QLabel()
-        if not os.path.isfile(self.user_session['Photo']) :
-            self.user_session['Photo'] = profile_salarie
-        pixmap = QPixmap(self.user_session['Photo'])  # Remplacez par le chemin de votre image
+        if not os.path.isfile(self.user_session['photo']) :
+            self.user_session['photo'] = profile_salarie
+        pixmap = QPixmap(self.user_session['photo'])  # Remplacez par le chemin de votre image
         pixmap = pixmap.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         profile_image.setPixmap(pixmap)
         profile_image.setAlignment(Qt.AlignCenter)
 
         # Ajouter un nom de profil
-        profile_name = QLabel(str(self.user_session['Nom']+" "+self.user_session['Prenom'])) 
+        profile_name = QLabel(str(self.user_session['nom']+" "+self.user_session['prenom'])) 
         profile_name.setAlignment(Qt.AlignCenter)
         profile_name.setStyleSheet("font-size: 14px; font-weight: bold; align: left;")
 
@@ -434,8 +436,13 @@ class MainInterface(QMainWindow):
         from .echange_interface import Echange_dash
         self.main_interface = Echange_dash(self) 
     def cloture_clic(self):  
-        caisse = Caisse()
-        caisse.fermeture_de_caisse()
+        reply = QMessageBox.question(self, "Confirmation de cloture", "Merci de confirlé la cloture de la journée",
+                                 QMessageBox.Yes, QMessageBox.Cancel)
+
+        if reply == QMessageBox.Yes:
+
+            caisse = Caisse()
+            caisse.fermeture_de_caisse()
         
     def medicament_click(self):
         from .medicament_interface import Medicament_dash

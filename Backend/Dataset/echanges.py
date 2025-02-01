@@ -69,7 +69,7 @@ class Echanges:
         cursor.execute("SELECT * FROM Echanges WHERE id_echange = ?", (id_echange,))
         row = cursor.fetchone()
         conn.close()
-        return json.dumps(dict(row), default=str) if row else None
+        return  dict(row)  if row else None
 
     @staticmethod
     def extraire_tous_echanges():
@@ -79,6 +79,75 @@ class Echanges:
         cursor.execute("SELECT * FROM Echanges")
         rows = cursor.fetchall()
         conn.close()
-        return json.dumps([dict(row) for row in rows], default=str)
+        return  [dict(row) for row in rows] 
+    
+    @staticmethod
+    def get_total_echanges():
+        # Connect to the database
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+        cursor.execute('''SELECT SUM(total_facture) as totalEchanges FROM Echanges''')
+        result = cursor.fetchone() 
+        conn.close()
+        return result[0]
+    
+
+    @staticmethod
+    def get_total_echanges_salarie(salarie):
+        # Connect to the database
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+        cursor.execute('''SELECT SUM(total_facture) as totalEchanges FROM Echanges WHERE id_salarie = ?''', (salarie,))
+        result = cursor.fetchone()
+        conn.close()
+        return result[0]
+    
+
+
+    @staticmethod
+    def cloture_journee():
+        # Connexion à la base de données
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+
+        # Calcul du total des échanges de la journée
+        cursor.execute("""
+            SELECT SUM(total_facture) as total_journee
+            FROM Echanges
+            WHERE date_echange = ?
+        """, (datetime.now().strftime('%Y-%m-%d'),))  # Filtrer pour la date d'aujourd'hui
+        total_journee = cursor.fetchone()[0]
+
+        # Nombre d'échanges réalisés aujourd'hui
+        cursor.execute("""
+            SELECT COUNT(id_echange) as nombre_echanges
+            FROM Echanges
+            WHERE date_echange = ?
+        """, (datetime.now().strftime('%Y-%m-%d'),))
+        nombre_echanges = cursor.fetchone()[0]
+
+        # Total des échanges par salarié
+        cursor.execute("""
+            SELECT id_salarie, SUM(total_facture) as total_par_salarie
+            FROM Echanges
+            WHERE date_echange = ?
+            GROUP BY id_salarie
+        """, (datetime.now().strftime('%Y-%m-%d'),))
+        echanges_par_salarie = cursor.fetchall()
+
+        # Clôture des connexions
+        conn.close()
+
+        # Préparer les résultats sous forme de dictionnaire
+        statistiques = {
+                        "Calcul du total des échanges de la journée": total_journee if total_journee else 0,
+                        "Nombre d'échanges réalisés aujourd'hui": nombre_echanges if nombre_echanges else 0,
+                        "Total des échanges par salarié": [
+                            {"id_salarie": e[0], "Calcul du total des échanges de la journée par salarié": e[1]} 
+                            for e in echanges_par_salarie
+                        ]
+                    }
+
+        return statistiques
 
 

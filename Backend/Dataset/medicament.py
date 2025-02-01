@@ -136,4 +136,59 @@ class Medicament:
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
+    
+
+ 
+
+    @staticmethod
+    def cloture_journee():
+        # Connexion à la base de données
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+
+        # Total des médicaments
+        cursor.execute("""
+            SELECT COUNT(ID_Medicament) as total_medicaments
+            FROM Medicament
+        """)
+        total_medicaments = cursor.fetchone()[0]
+
+        # Total des médicaments avec stock inférieur au minimum
+        cursor.execute("""
+            SELECT COUNT(ID_Medicament) as medicaments_en_rupture
+            FROM Medicament
+            WHERE Stock_Actuel < Min_Stock
+        """)
+        medicaments_en_rupture = cursor.fetchone()[0]
+
+        # Total des médicaments avec stock positif
+        cursor.execute("""
+            SELECT COUNT(ID_Medicament) as medicaments_avec_stock
+            FROM Medicament
+            WHERE Stock_Actuel > 0
+        """)
+        medicaments_avec_stock = cursor.fetchone()[0]
+
+        # Calcul du stock total disponible
+        cursor.execute("""
+            SELECT SUM(Stock_Actuel) as total_stock
+            FROM Medicament
+        """)
+        total_stock = cursor.fetchone()[0]
+
+        
+
+        # Clôture de la connexion
+        conn.close()
+
+        # Préparer les résultats sous forme de dictionnaire
+        statistiques = {
+            "Total des médicaments": total_medicaments if total_medicaments else 0,
+            "Total des médicaments avec stock inférieur au minimum": medicaments_en_rupture if medicaments_en_rupture else 0,
+            "Total des médicaments avec stock positif": medicaments_avec_stock if medicaments_avec_stock else 0,
+            "Calcul du stock total disponible de tous les medicaments": total_stock if total_stock else 0
+        }
+
+        return statistiques
+
 

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résumé des Transactions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Résumé des Transactions du Jour</h2>
+        <table>
+            <tr>
+                <th>Indicateur</th>
+                <th>Valeur</th>
+            </tr>
+            <tr><td>Nombre de Transactions</td><td id="nombre_de_transactions"></td></tr>
+            <tr><td>Total en DHS</td><td id="total_en_dhs"></td></tr>
+            <tr><td>Nombre de Produits Vendus</td><td id="nombre_de_produits"></td></tr>
+            <tr><td>Total Dépenses Achat</td><td id="total_depenses_achat"></td></tr>
+            <tr><td>Total Ventes en DHS</td><td id="total_ventes_en_dhs"></td></tr>
+            <tr><td>Profit du Jour en DHS</td><td id="profit_du_jour_en_dhs"></td></tr>
+            <tr><td>Nombre de Clients</td><td id="nombre_de_clients"></td></tr>
+            <tr><td>Crédit Max Autorisé</td><td id="credit_max_autorise"></td></tr>
+            <tr><td>Crédit Actuel Pharmacie</td><td id="credit_actuel_pharmacie"></td></tr>
+        </table>
+    </div>
+
+    <script>
+        const data = {
+            nombre_de_transactions: 150,
+            total_en_dhs: 20000,
+            nombre_de_produits: 350,
+            total_depenses_achat: 12000,
+            total_ventes_en_dhs: 20000,
+            profit_du_jour_en_dhs: 8000,
+            nombre_de_clients: 75,
+            credit_max_autorise: 50000,
+            credit_actuel_pharmacie: 15000
+        };
+
+        for (const key in data) {
+            document.getElementById(key).textContent = data[key];
+        }
+    </script>
+</body>
+</html>

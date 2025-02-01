@@ -91,19 +91,67 @@ class Credit:
         conn.close()
         return  [dict(row) for row in rows] 
 
+    
+    
     @staticmethod
-    def create_table_payment():
+    def get_total_credits():
         conn = sqlite3.connect(dataset)
         cursor = conn.cursor()
+        cursor.execute("SELECT SUM(reste_a_payer) as totalCredits FROM Credit")
+        result = cursor.fetchone()
+        conn.close()
+        return result[0]
+    
+
+    @staticmethod
+    def get_total_credits_salarie(salarie):
+        conn = sqlite3.connect(dataset)
+        cursor = conn.cursor()
+        cursor.execute("SELECT SUM(reste_a_payer) as totalCredits FROM Credit WHERE id_salarie = ?", (salarie,))
+        result = cursor.fetchone()
+        conn.close()
+        return result[0]
+    
+
+    @staticmethod
+    def cloture_journee():
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        date_aujourdhui = datetime.now().date().strftime('%d/%m/%Y')
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS Payment (
-                id_payment INTEGER PRIMARY KEY AUTOINCREMENT,
-                id_credit INTEGER,
-                montant REAL,
-                date_payment DATE NOT NULL,
-                FOREIGN KEY (id_credit) REFERENCES Credit (id_credit)
-            );
+            SELECT  strftime('%d-%m-%Y', date_dernier_paiement) as date
+            FROM Credit 
         """)
-        conn.commit()
+        total_restant = cursor.fetchall() 
+        print([dict(a) for a in total_restant] )
+
+        cursor.execute("""
+            SELECT SUM(reste_a_payer) as total_restant 
+            FROM Credit
+            WHERE  strftime('%d/%m/%Y', date_dernier_paiement) = ?
+        """, (date_aujourdhui,))
+        total_restant = cursor.fetchone()["total_restant"] or 0 
+        print(total_restant)  
+         
+        # Total restant à payer
+        
+
+        cursor.execute("""
+            SELECT   date_dernier_paiement
+            FROM Credit 
+        """ )
+        total_restants = cursor.fetchone()
+        print(dict(total_restants), date_aujourdhui)  
+
+         
         conn.close()
 
+        return { 
+            "Total restant à payer aujourd'hui ": total_restant
+        }
+
+
+
+     

@@ -3,271 +3,149 @@ from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
 
-from Backend.Comptabilite.mailSender import MailSender
 
+import smtplib
+import matplotlib.pyplot as plt
+import io
+import base64
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+
+
+
+
+from Backend.Dataset.achat import Achats  # Assurez-vous que l'import est correct
+from Backend.Dataset.client import Clients  # Assurez-vous de l'existence des classes appropriées
+from Backend.Dataset.commande import Commandes
+from Backend.Dataset.credit import Credit
+from Backend.Dataset.echanges import Echanges
+from Backend.Dataset.fournisseur import Fournisseur
+from Backend.Dataset.medicament import Medicament
+from Backend.Dataset.salarie import Salaries
+from Backend.Dataset.stock import Stock
+from Backend.Dataset.payment import Payment
+from Backend.Dataset.pharmacie import Pharmacies
+from Backend.Dataset.ventes import Ventes
+from Backend.Dataset.retour import Retour
+
+
+
+
+
+# Informations de connexion Gmail
+smtp_server = "smtp.gmail.com"
+smtp_port = 587
+smtp_user = "pharmacieapplication@gmail.com"  # Remplace par ton email
+smtp_password = "adck kohd tuqu iomh"  # Utiliser un mot de passe d'application
+
+# Définition de l'expéditeur et du destinataire
+sender_email = smtp_user
+receiver_email = "zaiou.ahm@gmail.com"
+
+ 
 class Caisse:
     def __init__(self):
         self.dataset = dataset
 
 
-        """Détail des entrées et sorties de caisse
+    def cloture_journee(self): 
+        cloture_dict = {}
+        cloture_dict['Achat statistique'] = Achats.cloture_journee()
+        cloture_dict['Client statistique'] = Clients.cloture_journee()
+        cloture_dict['Commande statistique'] = Commandes.cloture_journee()
+        cloture_dict['Credit statistique'] = Credit.cloture_journee()
+        cloture_dict['Echange statistique'] = Echanges.cloture_journee()
+        cloture_dict['Medicament statistique'] = Medicament.cloture_journee()
+        cloture_dict['Paiment statistique'] = Payment.cloture_journee()
+        cloture_dict['Retour statistique'] = Retour.cloture_journee()
+        cloture_dict['Stock statistique'] = Stock.cloture_journee()
+        cloture_dict['Vente statistique'] = Ventes.cloture_journee()
+        print(cloture_dict)
+        # Générer le HTML
+        html_content = self.generate_html(cloture_dict)
+        self.send_email(html_content)
 
-            Espèces encaissées
-            Paiements par carte ou autres moyens
-            Remboursements ou retraits
-            Solde initial et final de la caisse
-
-            Montant en début de journée
-            Montant théorique en fin de journée (en fonction des transactions)
-            Montant réel compté en caisse
-            Écart de caisse
-
-            Différence entre le montant théorique et le montant réellement présent
-            Justification des écarts éventuels
-            Suivi des transactions par mode de paiement
-
-            Espèces, carte bancaire, virement, etc.
-            Validation des crédits et des échanges
-
-            Vérification des dettes clients non réglées
-            Confirmation des échanges réalisés
-            Détails des ventes
-
-            Articles vendus, quantités, remises appliquées
-            Signature ou validation du responsable
-
-            Pour confirmer la clôture et éviter toute contestation
-            """
-
-    def get_commandes_jour(self):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Commande) = ?''', (datetime.now().date().strftime('%d/%m/%Y'),))
-        result = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in result]
- 
-    def get_commandes_recues_jour(self):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Reception) = ?''', (datetime.now().date().strftime('%d/%m/%Y'),))
-        result = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in result]
-
-    def get_total_paiement(self):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT SUM(Montant_Paye) as totalPaiement FROM Payment''')
-        result = cursor.fetchone()
-        conn.close()
-        return result['totalPaiement']
-
-    def get_total_credits(self):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT SUM(Reste_A_Payer) as totalCredits FROM Credit''')
-        result = cursor.fetchone()
-        conn.close()
-        return result['totalCredits']
-
-    def get_total_echanges(self):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT SUM(Total_Facture) as totalEchanges FROM Echanges''')
-        result = cursor.fetchone()
-        conn.close()
-        return result['totalEchanges']
-
-    def get_situation_stock(self):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT ID_Medicament, Quantite_Actuelle FROM Stock''')
-        result = cursor.fetchall()
-        conn.close()
-        return {row['ID_Medicament']: row['Quantite_Actuelle'] for row in result}
-
-    def get_salaries(self):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT ID_Salarie FROM Salaries''')
-        result = cursor.fetchall()
-        conn.close()
-        return [row['ID_Salarie'] for row in result]
-
-    def get_transactions_jour(self, salarie):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT ID_Vente FROM Ventes WHERE strftime('%d/%m/%Y', Date_Vente) = ? AND ID_Salarie = ?''', (datetime.now().date().strftime('%d/%m/%Y'), salarie))
-        result = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in result]
-
-    def get_commandes_jour_salarie(self, salarie):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Commande) = ? AND ID_Salarie = ?''', (datetime.now().date().strftime('%d/%m/%Y'), salarie))
-        result = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in result]
-
-    def get_commandes_recues_jour_salarie(self, salarie):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Reception) = ? AND ID_Salarie = ?''', (datetime.now().date().strftime('%d/%m/%Y'), salarie))
-        result = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in result]
-
-    def get_total_vendu_salarie(self, salarie):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT SUM(Total_Facture) as totalVendu FROM Ventes WHERE ID_Salarie = ?''', (salarie,))
-        result = cursor.fetchone()
-        conn.close()
-        return result['totalVendu']
-
-    def get_total_paiement_salarie(self, salarie):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT SUM(Montant_Paye) as totalPaiement FROM Payment WHERE ID_Salarie = ?''', (salarie,))
-        result = cursor.fetchone()
-        conn.close()
-        return result['totalPaiement']
-
-    def get_total_credits_salarie(self, salarie):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT SUM(Reste_A_Payer) as totalCredits FROM Credit WHERE ID_Salarie = ?''', (salarie,))
-        result = cursor.fetchone()
-        conn.close()
-        return result['totalCredits']
-
-    def get_total_echanges_salarie(self, salarie):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT SUM(Total_Facture) as totalEchanges FROM Echanges WHERE ID_Salarie = ?''', (salarie,))
-        result = cursor.fetchone()
-        conn.close()
-        return result['totalEchanges']
-
-    def get_statistique(self):
-        # Connect to the database
-        conn = sqlite3.connect(self.dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute('''SELECT * FROM Ventes''')
-        result = cursor.fetchall()
-        conn.close()
-        return [dict(row) for row in result]
 
     def fermeture_de_caisse(self):
-        message_text = ""
-        # Nombre de ventes de jour
-        ventes_jour = self.get_statistique()
-
-        nombre_ventes_jour = len(ventes_jour)
-        print("Nombre de ventes de jour:", nombre_ventes_jour)
-        message_text+= "Nombre de ventes de jour: " + str(nombre_ventes_jour)
-
-        # Nombre de commande passer dans la journée
-        commandes_jour = self.get_commandes_jour()
-        nombre_commandes_jour = len(commandes_jour)
-        print("Nombre de commandes passées dans la journée:", nombre_commandes_jour)
-        message_text += "Nombre de commandes passées dans la journée:"+ str(nombre_commandes_jour)
-
-        # Nombre de Commande reçu dans la journée
-        commandes_recues_jour = self.get_commandes_recues_jour()
-        nombre_commandes_recues_jour = len(commandes_recues_jour)
-        print("Nombre de commandes reçues dans la journée:", nombre_commandes_recues_jour)
-        message_text += "Nombre de commandes reçues dans la journée: "+ str(nombre_commandes_recues_jour)
-        MailSender.send_email('Stat', message_text)
-        print(ventes_jour)
-        # Totale de vendu en DHs
-        total_vendu = sum([vente['total_facture'] for vente in ventes_jour])
-        print("Total vendu en DHs:", total_vendu)
-        message_text += "Total vendu en DHs: "+ str(total_vendu)
-
-
-        # Totale de paiement en DHs
-        total_paiement = self.get_total_paiement()
-        print("Total paiement en DHs:", total_paiement)
-
-        # Totale de credits en DHs
-        total_credits = self.get_total_credits()
-        print("Total crédits en DHs:", total_credits)
-
-        # Totale d'échange en DHs
-        total_echanges = self.get_total_echanges()
-        print("Total échanges en DHs:", total_echanges)
-
-        # Situation de stock
-        situation_stock = self.get_situation_stock()
-        print("Situation de stock:")
-        for medicament, quantite in situation_stock.items():
-            print(f"{medicament}: {quantite}")
-
-        # Pour chaque salarié:
-        salaries = self.get_salaries()
-        for salarie in salaries:
-            # Nombre de transactions de jour
-            transactions_jour = self.get_transactions_jour(salarie)
-            nombre_transactions_jour = len(transactions_jour)
-            print(f"Nombre de transactions de jour pour le salarié {salarie}: {nombre_transactions_jour}")
-
-            # Nombre de commandes passées dans la journée
-            commandes_jour_salarie = self.get_commandes_jour_salarie(salarie)
-            nombre_commandes_jour_salarie = len(commandes_jour_salarie)
-            print(f"Nombre de commandes passées dans la journée pour le salarié {salarie}: {nombre_commandes_jour_salarie}")
-
-            # Nombre de commandes reçues dans la journée
-            commandes_recues_jour_salarie = self.get_commandes_recues_jour_salarie(salarie)
-            nombre_commandes_recues_jour_salarie = len(commandes_recues_jour_salarie)
-            print(f"Nombre de commandes reçues dans la journée pour le salarié {salarie}: {nombre_commandes_recues_jour_salarie}")
-
-            # Totale de vendu en DHs
-            total_vendu_salarie = self.get_total_vendu_salarie(salarie)
-            print(f"Total vendu en DHs pour le salarié {salarie}: {total_vendu_salarie}")
-
-            # Totale de paiement en DHs
-            total_paiement_salarie = self.get_total_paiement_salarie(salarie)
-            print(f"Total paiement en DHs pour le salarié {salarie}: {total_paiement_salarie}")
-
-            # Totale de crédits en DHs
-            total_credits_salarie = self.get_total_credits_salarie(salarie)
-            print(f"Total crédits en DHs pour le salarié {salarie}: {total_credits_salarie}")
-
-            # Totale d'échange en DHs
-            total_echanges_salarie = self.get_total_echanges_salarie(salarie)
-            print(f"Total échanges en DHs pour le salarié {salarie}: {total_echanges_salarie}")
+        self.cloture_journee() 
+    
 
 
 
+
+
+
+
+    # Fonction pour créer un tableau HTML
+    def create_table(self, data, title):
+        html = f"<h2>{title}</h2>"
+        html += "<table border='1' style='width: 100%; border-collapse: collapse; margin-bottom: 20px;'><tr><th>Indicateur</th><th>Valeur</th></tr>"
+        for key, value in data.items():
+            if isinstance(value, dict):
+                # Cas où la valeur est un sous-ensemble de données
+                html += self.create_table(value, key)
+            elif isinstance(value, list) and value:
+                # Cas où la valeur est une liste non vide
+                for item in value:
+                    if isinstance(item, dict): 
+                        html += self.create_table(item, key) 
+                    else:
+                        html += f"<tr><td>{key}</td><td> {item}</td></tr>"
+            else:
+                html += f"<tr><td>{key}</td><td>{value if value is not None else 'N/A'}</td></tr>"
+        html += "</table>"
+        return html
+
+    # Générer le code HTML pour tout le JSON
+    def generate_html(self, data):
+        html = """
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                h2 { color: #333366; }
+                table { border: 1px solid #ccc; width: 100%; margin-bottom: 20px; }
+                th, td { padding: 8px; text-align: left; }
+                tr:nth-child(even) { background-color: #f2f2f2; }
+                tr:hover { background-color: #ddd; }
+            </style>
+        </head>
+        <body>
+        """
+        
+        # Parcourir les données pour générer les tables
+        for section, content in data.items():
+            html += f'<div class="section">{self.create_table(content, section)}</div>'
+
+        html += """
+        </body>
+        </html>
+        """
+        return html
+
+
+
+
+
+
+    def send_email(self, html_message):
+        msg = MIMEMultipart()
+        msg['Subject'] = f"📊 Rapport Journalier des Ventes {datetime.now()}"
+        msg['From'] = sender_email
+        msg['To'] = receiver_email
+
+        msg.attach(MIMEText(html_message, "html"))
+
+        # Envoi du mail via Gmail SMTP
+        try:
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.sendmail(sender_email, [receiver_email], msg.as_string())
+            print("✅ E-mail envoyé avec succès.")
+        except Exception as e:
+            print(f"❌ Erreur lors de l'envoi de l'e-mail : {e}")
+
+
+ 

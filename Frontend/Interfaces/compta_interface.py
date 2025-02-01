@@ -1,9 +1,11 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QTextBrowser,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
 )
 from qtpy.QtCore import Qt
+import mpld3
 
+from Frontend.Interfaces.vente_interface import Ventes
 
 class Compta_dash:
     def __init__(self, main_interface):
@@ -23,6 +25,23 @@ class Compta_dash:
         titre_page.setObjectName("TitrePage")
         titre_page.setAlignment(Qt.AlignCenter) 
         main_layout.addWidget(titre_page)
+        fig = Ventes.get_evolution()
+        image = mpld3.fig_to_html(fig)
+
+        # Ajouter un QTextBrowser pour afficher du HTML
+        html_content = f"""
+        <html>
+        <head><title>Comptabilité - Vue HTML</title></head>
+        <body>
+            <h2 style="color: blue;">Bienvenue sur le tableau de bord de la comptabilité!</h2>
+            <p>Ceci est un contenu HTML simple affiché dans l'interface.</p>
+        </body>
+        <div>{image}</div>
+        </html>
+        """
+        text_browser = QTextBrowser()
+        text_browser.setHtml(html_content)
+        main_layout.addWidget(text_browser)
 
 
 

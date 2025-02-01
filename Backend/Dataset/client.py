@@ -130,3 +130,38 @@ class Clients:
         rows = cursor.fetchall()
         conn.close()
         return  [dict(row) for row in rows] 
+
+
+    @staticmethod
+    def cloture_journee(date_jour=None):
+        if date_jour is None:
+            date_jour = datetime.now().strftime("%Y-%m-%d")  # Par défaut, utilise la date du jour
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Obtenir le total des crédits des clients avec des soldes positifs
+        cursor.execute("""
+            SELECT 
+                COUNT(*) AS total_clients,
+                SUM(max_credit) AS total_max_credit,
+                SUM(credit_actuel) AS total_credit_actuel
+            FROM Clients
+            WHERE credit_actuel > 0 
+        """)
+        result_clients = cursor.fetchone()
+
+        total_clients = result_clients['total_clients']
+        total_max_credit = result_clients['total_max_credit'] or 0
+        total_credit_actuel = result_clients['total_credit_actuel'] or 0
+
+        conn.close()
+
+        # Retourner un dictionnaire avec toutes les statistiques
+        return { 
+                "nombre_de_clients": total_clients,
+                "credit_max_autorise": total_max_credit,
+                "credit_actuel_pharmacie": total_credit_actuel
+            }
+
+    

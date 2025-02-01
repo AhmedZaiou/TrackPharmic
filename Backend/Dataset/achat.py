@@ -80,4 +80,43 @@ class Achats:
         rows = cursor.fetchall()
         conn.close()
         return json.dumps([dict(row) for row in rows], default=str)
+    
+
+
+
+    @staticmethod
+    def cloture_journee():
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        # Get total number of purchases made today, total quantity of items purchased today,
+        # total amount spent on purchases today, and total amount earned from sales today
+        cursor.execute("""
+            SELECT 
+            COUNT(*) AS total_purchases,
+            SUM(quantite_achetee) AS total_quantity,
+            SUM(prix_achat_unitaire * quantite_achetee) AS total_amount_spent,
+            SUM(prix_vente_unitaire * quantite_achetee) AS total_amount_earned
+            FROM Achats
+            WHERE date_achat = ?
+        """, (datetime.now().date(),))
+        result = cursor.fetchone()
+        total_purchases = result[0]
+        total_quantity = result[1]
+        total_amount_spent = result[2]
+        total_amount_earned = result[3]
+        
+        conn.close()
+        
+        return {
+            "Nombre de transactions achat": total_purchases,
+            "Quantité des produits vendus": total_quantity,
+            "Montant total dépensé": total_amount_spent,
+            "Montant total gagné": total_amount_earned
+        }
+    
+
+
+    
 

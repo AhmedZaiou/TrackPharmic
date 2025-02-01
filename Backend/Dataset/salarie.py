@@ -98,4 +98,14 @@ class Salaries:
         rows = cursor.fetchall()
         conn.close()
         return  [dict(row) for row in rows] 
+    
 
+    def get_salaries():
+        # Connect to the database
+        conn = sqlite3.connect(dataset)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute('''SELECT id_salarie, nom, prenom FROM Salaries''')
+        result = cursor.fetchall()
+        conn.close()
+        return [row['id_salarie'] for row in result], [row['nom'] for row in result], [row['prenom'] for row in result]
