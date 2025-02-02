@@ -251,7 +251,7 @@ class Echange_dash:
         self.name_input = QLineEdit() 
         self.name_input.setPlaceholderText("Nom")
         self.telephone_input = QLineEdit()
-        self.telephone_input.setValidator(int_validator)
+        self.telephone_input.setValidator(phone_validator)
         self.telephone_input.setPlaceholderText("Téléphone")
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")

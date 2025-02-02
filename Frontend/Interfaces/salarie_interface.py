@@ -1,9 +1,11 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QGridLayout,QDoubleSpinBox,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QGridLayout,QDoubleSpinBox,QMessageBox,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox, QHeaderView
 )
 from qtpy.QtCore import Qt
 from Backend.Dataset.salarie import Salaries
+
+from Frontend.utils.utils import *
 
 
 class Salarie_dash:
@@ -32,6 +34,7 @@ class Salarie_dash:
         self.cin_input = QLineEdit()
         self.cin_input.setPlaceholderText("CIN")
         self.telephone_input = QLineEdit()
+        self.telephone_input.setValidator(phone_validator)
         self.telephone_input.setPlaceholderText("Téléphone")
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")
@@ -131,7 +134,11 @@ class Salarie_dash:
         grade = self.grade.text()
         password = self.password.text()
         # Ici vous pouvez ajouter le client dans une base de données ou autre logique 
-        Salaries.ajouter_salarie(name, surname, cin,telephone, email, address, photo, salaire, type_contrat, date_embauche, grade,password)
+        try:
+            Salaries.ajouter_salarie(name, surname, cin,telephone, email, address, photo, salaire, type_contrat, date_embauche, grade,password)
+        except:
+            QMessageBox.warning(self.client_dash, "Erreur", "Le CIN existe déjà.")
+            return
         # Effacer les champs après soumission
         self.name_input.clear()
         self.surname_input.clear()

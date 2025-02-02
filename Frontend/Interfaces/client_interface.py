@@ -39,7 +39,7 @@ class Client_dash:
         self.cin_input.setPlaceholderText("CIN")
         self.telephone_input = QLineEdit()
         self.telephone_input.setPlaceholderText("Téléphone")
-        self.telephone_input.setValidator(int_validator)
+        self.telephone_input.setValidator(phone_validator)
         self.email_input = QLineEdit()
         self.email_input.setPlaceholderText("Email")
         self.address_input = QLineEdit()

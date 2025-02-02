@@ -336,9 +336,6 @@ class Commande_dash:
                 self.cart_table.setItem(row, 3, QTableWidgetItem(product['statut_reception']))
                 self.cart_table.setItem(row, 3, QTableWidgetItem(product['status_incl']))
 
-    
-
-
 
 
     def keyPressEvent(self, event): 

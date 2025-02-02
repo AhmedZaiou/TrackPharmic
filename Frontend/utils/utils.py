@@ -1,17 +1,14 @@
 from pathlib import Path 
 from qtpy.QtGui import QIntValidator, QDoubleValidator
-
+from Frontend.utils.validators import *
+from qtpy.QtGui import QRegularExpressionValidator
+from qtpy.QtCore import QRegularExpression
 
 current_directory = Path(__file__).parent
 Front_end = current_directory.parent 
-
 Tracpharmic = Path.home()/"Tracpharmic"
-
 images = Tracpharmic/"images"
-
 dataset = Tracpharmic/"dataset"/"pharmadataset.db" 
-
-
 name_application = "TracPharmic"  
 
 
@@ -28,8 +25,10 @@ def set_styles():
         print("Style file not found. Using default styles.")
 
 
-int_validator = QIntValidator()
+int_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{1,15}$"))
 float_validator = QDoubleValidator() 
+email_validator = EmailValidator()
+phone_validator = PhoneValidator()
 
 profile_salarie = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/profilsalarie.png"
 
@@ -82,3 +81,8 @@ host = "srv1653.hstgr.io"
 user = "u454999796_root"
 password = "Ah@2019@"
 database = "u454999796_pharma"
+
+
+
+
+

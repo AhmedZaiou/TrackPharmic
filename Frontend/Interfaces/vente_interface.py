@@ -26,6 +26,7 @@ class Vente_dash:
         self.producs_table = pd.DataFrame()
         self.last_key_time = time.time()
         self.barcode_delay_threshold = 0.1 
+        self.code_b = False
 
 
 
@@ -313,14 +314,15 @@ class Vente_dash:
         key = event.text() 
         current_time = time.time()
         if current_time - self.last_key_time < self.barcode_delay_threshold: 
-            code_b = True
+            self.code_b = True
         self.last_key_time = current_time 
         
-        if key == '\r' and code_b:  # Lorsque le lecteur envoie un saut de ligne  
+        if key == '\r' and self.code_b:  # Lorsque le lecteur envoie un saut de ligne  
             self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
             if self.code_barre_scanner != "":
                 self.add_medicament_to_vente(self.code_barre_scanner)
-                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan                  
+                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan    
+            self.code_b = False              
         else:
             self.code_barre_scanner += key  # Ajouter le caractère au code en cours 
 
