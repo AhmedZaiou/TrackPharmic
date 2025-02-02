@@ -4,8 +4,7 @@ from qtpy.QtCore import Qt,QSize
 from qtpy.QtGui import QPixmap, QIcon 
 
 from Frontend.utils.utils import *
-from Backend.Dataset.salarie import Salaries
-from Backend.Dataset.dataset import *
+from Backend.Dataset.salarie import Salaries 
 from Backend.Comptabilite.cloturecaisse import *
 import os
 
