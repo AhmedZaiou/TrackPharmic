@@ -1,12 +1,12 @@
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
 
 
 
 
 def create_medicament_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Medicament (
         ID_Medicament INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,8 +28,8 @@ def create_medicament_table():
     conn.close()
 
 def create_stock_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Stock (
         ID_Stock INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,8 +56,8 @@ def create_stock_table():
     conn.close()
 
 def create_ventes_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Ventes (
         ID_Vente INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,8 +83,8 @@ def create_ventes_table():
     conn.close()
 
 def create_achats_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Achats (
         ID_Achat INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,8 +105,8 @@ def create_achats_table():
     conn.close()
 
 def create_commandes_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Commandes (
         ID_Commande INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -128,8 +128,8 @@ def create_commandes_table():
     conn.close()
 
 def create_salaries_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Salaries (
         ID_Salarie INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -151,8 +151,8 @@ def create_salaries_table():
     conn.close()
 
 def create_clients_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Clients (
         ID_Client INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -170,8 +170,8 @@ def create_clients_table():
     conn.close()
 
 def create_pharmacies_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Pharmacies (
         ID_Pharmacie INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -187,8 +187,8 @@ def create_pharmacies_table():
     conn.close()
 
 def create_echanges_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Echanges (
         ID_Echange INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -207,8 +207,8 @@ def create_echanges_table():
     conn.close()
 
 def create_credit_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Credit (
         ID_Credit INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -227,8 +227,8 @@ def create_credit_table():
     conn.close()
 
 def create_payment_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Payment (
         ID_Payment INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -245,8 +245,8 @@ def create_payment_table():
     conn.close()
 
 def create_fournisseur_table():
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Fournisseur (
         ID_Fournisseur INTEGER PRIMARY KEY AUTOINCREMENT,

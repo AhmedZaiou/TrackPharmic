@@ -1,27 +1,23 @@
- 
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
-from datetime import datetime, timedelta
-import os
+from datetime import datetime
 
-
-class Clients: 
-
+class Clients:
     @staticmethod
-    def create_table_clients( ):
-        conn = sqlite3.connect(dataset)
+    def create_table_clients():
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Clients (
-                id_client INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_client INT AUTO_INCREMENT PRIMARY KEY,
                 nom VARCHAR(100),
                 prenom VARCHAR(100),
                 cin VARCHAR(20) UNIQUE,
                 telephone VARCHAR(15),
                 email VARCHAR(100),
                 adresse TEXT,
-                max_credit REAL,
-                credit_actuel REAL DEFAULT 0,
+                max_credit DECIMAL(10,2),
+                credit_actuel DECIMAL(10,2) DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
@@ -29,118 +25,100 @@ class Clients:
         conn.close()
 
     @staticmethod
-    def ajouter_client(  nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
-        conn = sqlite3.connect(dataset)
+    def ajouter_client(nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Clients (nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """, (nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel))
         conn.commit()
         conn.close()
 
     @staticmethod
-    def supprimer_client(  id_client):
-        conn = sqlite3.connect(dataset)
+    def supprimer_client(id_client):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM Clients WHERE id_client = ?", (id_client,))
+        cursor.execute("DELETE FROM Clients WHERE id_client = %s", (id_client,))
         conn.commit()
         conn.close()
 
     @staticmethod
-    def modifier_client(  id_client, nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
-        conn = sqlite3.connect(dataset)
+    def modifier_client(id_client, nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Clients
-            SET nom = ?, prenom = ?, cin = ?, telephone = ?, email = ?, adresse = ?, max_credit = ?, credit_actuel = ?
-            WHERE id_client = ?
+            SET nom = %s, prenom = %s, cin = %s, telephone = %s, email = %s, adresse = %s,
+                max_credit = %s, credit_actuel = %s
+            WHERE id_client = %s
         """, (nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel, id_client))
         conn.commit()
         conn.close()
 
     @staticmethod
-    def ajouter_credit_client(  id_client, montant_credit):
-        conn = sqlite3.connect(dataset)
+    def ajouter_credit_client(id_client, montant_credit):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Clients
-            SET credit_actuel = credit_actuel + ?
-            WHERE id_client = ?
+            SET credit_actuel = credit_actuel + %s
+            WHERE id_client = %s
         """, (montant_credit, id_client))
         conn.commit()
         conn.close()
 
     @staticmethod
-    def extraire_client(  id_client):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Clients WHERE id_client = ?", (id_client,))
+    def extraire_client(id_client):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Clients WHERE id_client = %s", (id_client,))
         row = cursor.fetchone()
         conn.close()
-        return  dict(row)  if row else None
+        return dict(row) if row else None
 
     @staticmethod
-    def extraire_client_id(  id_client):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Clients WHERE id_client = ?", (id_client,))
+    def extraire_client_info(nom, prenom, cin):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Clients WHERE nom = %s AND prenom = %s AND cin = %s", (nom, prenom, cin))
         row = cursor.fetchone()
         conn.close()
-        return  dict(row)  if row else None
+        return dict(row) if row else None
 
     @staticmethod
-    def extraire_client_info(  nom, prenom, cin):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Clients WHERE nom = ? AND prenom = ? AND cin = ?", (nom, prenom, cin))
-        row = cursor.fetchone()
-        conn.close()
-        return  dict(row)  if row else None
-
-    @staticmethod
-    def extraire_client_nom_like(  nom_part):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT nom, prenom, cin FROM Clients WHERE nom LIKE ?", ('%' + nom_part + '%',))
+    def extraire_client_nom_like(nom_part):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT nom, prenom, cin FROM Clients WHERE nom LIKE %s", ('%' + nom_part + '%',))
         rows = cursor.fetchall()
         conn.close()
-        return  [dict(row) for row in rows] 
+        return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_tous_clients( ):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+    def extraire_tous_clients():
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Clients")
         rows = cursor.fetchall()
         conn.close()
-        return  [dict(row) for row in rows] 
+        return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_tous_client_with_credit( ):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+    def extraire_tous_clients_with_credit():
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Clients WHERE credit_actuel > 0")
         rows = cursor.fetchall()
         conn.close()
-        return  [dict(row) for row in rows] 
-
+        return [dict(row) for row in rows]
 
     @staticmethod
     def cloture_journee(date_jour=None):
         if date_jour is None:
-            date_jour = datetime.now().strftime("%Y-%m-%d")  # Par défaut, utilise la date du jour
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-
-        # Obtenir le total des crédits des clients avec des soldes positifs
+            date_jour = datetime.now().strftime("%Y-%m-%d")
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             SELECT 
                 COUNT(*) AS total_clients,
@@ -150,18 +128,9 @@ class Clients:
             WHERE credit_actuel > 0 
         """)
         result_clients = cursor.fetchone()
-
-        total_clients = result_clients['total_clients']
-        total_max_credit = result_clients['total_max_credit'] or 0
-        total_credit_actuel = result_clients['total_credit_actuel'] or 0
-
         conn.close()
-
-        # Retourner un dictionnaire avec toutes les statistiques
-        return { 
-                "nombre_de_clients": total_clients,
-                "credit_max_autorise": total_max_credit,
-                "credit_actuel_pharmacie": total_credit_actuel
-            }
-
-    
+        return {
+            "nombre_de_clients": result_clients['total_clients'],
+            "credit_max_autorise": result_clients['total_max_credit'] or 0,
+            "credit_actuel_pharmacie": result_clients['total_credit_actuel'] or 0
+        }

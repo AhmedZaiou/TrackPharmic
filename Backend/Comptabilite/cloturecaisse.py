@@ -14,8 +14,7 @@ from email.mime.image import MIMEImage
 
 
 
-
-from Backend.Dataset.achat import Achats  # Assurez-vous que l'import est correct
+ 
 from Backend.Dataset.client import Clients  # Assurez-vous de l'existence des classes appropriées
 from Backend.Dataset.commande import Commandes
 from Backend.Dataset.credit import Credit
@@ -50,8 +49,7 @@ class Caisse:
 
 
     def cloture_journee(self): 
-        cloture_dict = {}
-        cloture_dict['Achat statistique'] = Achats.cloture_journee()
+        cloture_dict = {} 
         cloture_dict['Client statistique'] = Clients.cloture_journee()
         cloture_dict['Commande statistique'] = Commandes.cloture_journee()
         cloture_dict['Credit statistique'] = Credit.cloture_journee()
@@ -62,6 +60,7 @@ class Caisse:
         cloture_dict['Stock statistique'] = Stock.cloture_journee()
         cloture_dict['Vente statistique'] = Ventes.cloture_journee()
         print(cloture_dict)
+        return 
         # Générer le HTML
         html_content = self.generate_html(cloture_dict)
         self.send_email(html_content)

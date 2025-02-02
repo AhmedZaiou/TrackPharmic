@@ -109,7 +109,7 @@ class Echange_dash:
         self.main_interface.content_layout.addWidget(self.vente_dash)
     def confirm_echange_pharma(self):
         now = datetime.now()
-        now_str = now.strftime("%d/%m/%Y %H:%M:%S")
+        now_str = now.strftime("%Y-%m-%d %H:%M:%S")
         numero_facture = int(now.timestamp())
         id_salarie = self.main_interface.user_session['id_salarie']
 

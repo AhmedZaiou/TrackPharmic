@@ -1,19 +1,17 @@
- 
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
 import json
 
-class Salaries:  
-    @staticmethod
+class Salaries:
     @staticmethod
     def create_table_salaries():
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Salaries (
-                id_salarie INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_salarie INTEGER PRIMARY KEY AUTO_INCREMENT,
                 nom VARCHAR(100),
                 prenom VARCHAR(100),
                 cin VARCHAR(20) UNIQUE,
@@ -33,78 +31,69 @@ class Salaries:
         conn.close()
 
     @staticmethod
-    @staticmethod
-    def ajouter_salarie( nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash):
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+    def ajouter_salarie(nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Salaries (nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash))
         conn.commit()
         conn.close()
 
     @staticmethod
-    @staticmethod
-    def supprimer_salarie( id_salarie):
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM Salaries WHERE id_salarie = ?", (id_salarie,))
+    def supprimer_salarie(id_salarie):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("DELETE FROM Salaries WHERE id_salarie = %s", (id_salarie,))
         conn.commit()
         conn.close()
 
     @staticmethod
-    @staticmethod
-    def modifier_salarie( id_salarie, nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash):
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+    def modifier_salarie(id_salarie, nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Salaries
-            SET nom = ?, prenom = ?, cin = ?, telephone = ?, email = ?, adresse = ?, photo = ?, salaire = ?, type_contrat = ?, date_embauche = ?, grade = ?, password_hash = ?
-            WHERE id_salarie = ?
+            SET nom = %s, prenom = %s, cin = %s, telephone = %s, email = %s, adresse = %s, photo = %s, salaire = %s, 
+                type_contrat = %s, date_embauche = %s, grade = %s, password_hash = %s
+            WHERE id_salarie = %s
         """, (nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash, id_salarie))
         conn.commit()
         conn.close()
 
     @staticmethod
-    @staticmethod
-    def extraire_salarie( id_salarie):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Salaries WHERE id_salarie = ?", (id_salarie,))
-        row = cursor.fetchone()
-        conn.close()
-        return  dict(row)  if row else None
-
-    @staticmethod
-    @staticmethod
-    def extraire_salarie_login( nom, password_hash):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Salaries WHERE nom = ? AND password_hash = ?", (nom, password_hash))
+    def extraire_salarie(id_salarie):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Salaries WHERE id_salarie = %s", (id_salarie,))
         row = cursor.fetchone()
         conn.close()
         return dict(row) if row else None
 
     @staticmethod
+    def extraire_salarie_login(nom, password_hash):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Salaries WHERE nom = %s AND password_hash = %s", (nom, password_hash))
+        row = cursor.fetchone()
+        conn.close()
+        return dict(row) if row else None
+
     @staticmethod
     def extraire_tous_salaries():
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Salaries")
         rows = cursor.fetchall()
         conn.close()
-        return  [dict(row) for row in rows] 
-    
+        return [dict(row) for row in rows]
 
+    @staticmethod
     def get_salaries():
         # Connect to the database
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute('''SELECT id_salarie, nom, prenom FROM Salaries''')
         result = cursor.fetchall()
         conn.close()

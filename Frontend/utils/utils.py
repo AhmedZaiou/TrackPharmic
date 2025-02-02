@@ -65,3 +65,20 @@ smtp_password = "adck kohd tuqu iomh"  # Utiliser un mot de passe d'application
 # Définition de l'expéditeur et du destinataire
 sender_email = smtp_user
 receiver_email = "zaiou.ahm@gmail.com"
+
+
+
+
+
+
+
+
+
+
+
+# data base
+
+host = "srv1653.hstgr.io"
+user = "u454999796_root"
+password = "Ah@2019@"
+database = "u454999796_pharma"

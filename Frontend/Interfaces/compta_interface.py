@@ -25,8 +25,7 @@ class Compta_dash:
         titre_page.setObjectName("TitrePage")
         titre_page.setAlignment(Qt.AlignCenter) 
         main_layout.addWidget(titre_page)
-        fig = Ventes.get_evolution()
-        image = mpld3.fig_to_html(fig)
+        
 
         # Ajouter un QTextBrowser pour afficher du HTML
         html_content = f"""
@@ -36,7 +35,7 @@ class Compta_dash:
             <h2 style="color: blue;">Bienvenue sur le tableau de bord de la comptabilité!</h2>
             <p>Ceci est un contenu HTML simple affiché dans l'interface.</p>
         </body>
-        <div>{image}</div>
+        <div></div>
         </html>
         """
         text_browser = QTextBrowser()

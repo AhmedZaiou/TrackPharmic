@@ -1,5 +1,4 @@
- 
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -7,11 +6,11 @@ import os
 class Pharmacies: 
     @staticmethod
     def create_table_pharmacies():
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Pharmacies (
-                id_pharmacie INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_pharmacie INTEGER PRIMARY KEY AUTO_INCREMENT,
                 nom VARCHAR(100),
                 adresse TEXT,
                 telephone VARCHAR(15),
@@ -25,56 +24,51 @@ class Pharmacies:
         conn.close()
 
     @staticmethod
-    def ajouter_pharmacie(  nom, adresse, telephone, email, outvalue, invalue):
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+    def ajouter_pharmacie(nom, adresse, telephone, email, outvalue, invalue):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Pharmacies (nom, adresse, telephone, email, outvalue, invalue)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """, (nom, adresse, telephone, email, outvalue, invalue))
         conn.commit()
         conn.close()
 
     @staticmethod
-    def modifier_pharmacie(  id_pharmacie, nom, adresse, telephone, email, outvalue, invalue):
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+    def modifier_pharmacie(id_pharmacie, nom, adresse, telephone, email, outvalue, invalue):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Pharmacies
-            SET nom = ?, adresse = ?, telephone = ?, email = ?, outvalue = ?, invalue = ?
-            WHERE id_pharmacie = ?
+            SET nom = %s, adresse = %s, telephone = %s, email = %s, outvalue = %s, invalue = %s
+            WHERE id_pharmacie = %s
         """, (nom, adresse, telephone, email, outvalue, invalue, id_pharmacie))
         conn.commit()
         conn.close()
 
     @staticmethod
     def extraire_tous_pharma():
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Pharmacies")
         rows = cursor.fetchall()
         conn.close()
-        return  [dict(row) for row in rows] 
+        return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_pharma_nom_like(  nom_part):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT nom FROM Pharmacies WHERE nom LIKE ?", ('%' + nom_part + '%',))
+    def extraire_pharma_nom_like(nom_part):
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT nom FROM Pharmacies WHERE nom LIKE %s", ('%' + nom_part + '%',))
         rows = cursor.fetchall()
         conn.close()
-        return  [dict(row) for row in rows] 
-    
+        return [dict(row) for row in rows]
+
+    @staticmethod
     def extraire_pharma_nom(nom):
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Pharmacies WHERE Nom = ?", (nom,))
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Pharmacies WHERE nom = %s", (nom,))
         rows = cursor.fetchone()
         conn.close()
-        return   dict(rows) if rows else None
-    
-     
-
+        return dict(rows) if rows else None

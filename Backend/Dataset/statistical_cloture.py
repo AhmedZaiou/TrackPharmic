@@ -1,4 +1,4 @@
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -8,9 +8,9 @@ import os
 
 def get_commandes_jour():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Commande) = ?''', (datetime.now().date().strftime('%d/%m/%Y'),))
     result = cursor.fetchall()
     conn.close()
@@ -18,9 +18,9 @@ def get_commandes_jour():
 
 def get_commandes_recues_jour():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Reception) = ?''', (datetime.now().date().strftime('%d/%m/%Y'),))
     result = cursor.fetchall()
     conn.close()
@@ -28,9 +28,9 @@ def get_commandes_recues_jour():
 
 def get_total_paiement():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT SUM(Montant_Paye) as totalPaiement FROM Payment''')
     result = cursor.fetchone()
     conn.close()
@@ -38,9 +38,9 @@ def get_total_paiement():
 
 def get_total_credits():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT SUM(Reste_A_Payer) as totalCredits FROM Credit''')
     result = cursor.fetchone()
     conn.close()
@@ -48,9 +48,9 @@ def get_total_credits():
 
 def get_total_echanges():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT SUM(Total_Facture) as totalEchanges FROM Echanges''')
     result = cursor.fetchone()
     conn.close()
@@ -58,9 +58,9 @@ def get_total_echanges():
 
 def get_situation_stock():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Medicament, Quantite_Actuelle FROM Stock''')
     result = cursor.fetchall()
     conn.close()
@@ -68,9 +68,9 @@ def get_situation_stock():
 
 def get_salaries():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Salarie FROM Salaries''')
     result = cursor.fetchall()
     conn.close()
@@ -78,9 +78,9 @@ def get_salaries():
 
 def get_transactions_jour(salarie):
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Vente FROM Ventes WHERE strftime('%d/%m/%Y', Date_Vente) = ? AND ID_Salarie = ?''', (datetime.now().date().strftime('%d/%m/%Y'), salarie))
     result = cursor.fetchall()
     conn.close()
@@ -88,9 +88,9 @@ def get_transactions_jour(salarie):
 
 def get_commandes_jour_salarie(salarie):
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Commande) = ? AND ID_Salarie = ?''', (datetime.now().date().strftime('%d/%m/%Y'), salarie))
     result = cursor.fetchall()
     conn.close()
@@ -98,9 +98,9 @@ def get_commandes_jour_salarie(salarie):
 
 def get_commandes_recues_jour_salarie(salarie):
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Commande FROM Commandes WHERE strftime('%d/%m/%Y', Date_Reception) = ? AND ID_Salarie = ?''', (datetime.now().date().strftime('%d/%m/%Y'), salarie))
     result = cursor.fetchall()
     conn.close()
@@ -108,9 +108,9 @@ def get_commandes_recues_jour_salarie(salarie):
 
 def get_total_vendu_salarie(salarie):
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT SUM(Total_Facture) as totalVendu FROM Ventes WHERE ID_Salarie = ?''', (salarie,))
     result = cursor.fetchone()
     conn.close()
@@ -118,9 +118,9 @@ def get_total_vendu_salarie(salarie):
 
 def get_total_paiement_salarie(salarie):
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT SUM(Montant_Paye) as totalPaiement FROM Payment WHERE ID_Salarie = ?''', (salarie,))
     result = cursor.fetchone()
     conn.close()
@@ -128,9 +128,9 @@ def get_total_paiement_salarie(salarie):
 
 def get_total_credits_salarie(salarie):
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT SUM(Reste_A_Payer) as totalCredits FROM Credit WHERE ID_Salarie = ?''', (salarie,))
     result = cursor.fetchone()
     conn.close()
@@ -138,9 +138,9 @@ def get_total_credits_salarie(salarie):
 
 def get_total_echanges_salarie(salarie):
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT SUM(Total_Facture) as totalEchanges FROM Echanges WHERE ID_Salarie = ?''', (salarie,))
     result = cursor.fetchone()
     conn.close()
@@ -148,9 +148,9 @@ def get_total_echanges_salarie(salarie):
 
 def get_statistique():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT * FROM Ventes''')
     result = cursor.fetchall()
     conn.close()

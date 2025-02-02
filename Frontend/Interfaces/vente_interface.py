@@ -359,7 +359,7 @@ class Vente_dash:
 
     def confirm_sale(self):  
         now = datetime.now()
-        now_str = now.strftime("%d/%m/%Y %H:%M:%S")
+        now_str = now.strftime("%Y-%m-%d %H:%M:%S")
         id_client = 0 if self.client_info is None else self.client_info['id_client']
         numero_facture = int(now.timestamp())
         id_salarie = self.main_interface.user_session['id_salarie']
@@ -459,7 +459,8 @@ class Vente_dash:
 
     def ajouter_vente_with_all_operation(self, id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, id_client, numero_facture, id_salarie, ID_Stock_item):
         Ventes.ajouter_vente(id_medicament, idcommande_item, prix_achat_item, prix_vente_item, date_vente, quanti, quanti * prix_vente_item, id_client, numero_facture, id_salarie, ID_Stock_item) 
-        Stock.effectuer_vente_stock(  ID_Stock_item, quanti)
+        Stock.effectuer_vente_stock( ID_Stock_item, quanti)
+        Medicament.effectuer_vente_medicament(id_medicament, quanti)
         return quanti * prix_vente_item
         # todo : supprimer du stock 
     def ajouter_credit_with_all_operation(self, id_client, numero_facture, to_pay_now, total_facture, now_str, status, id_salarie):

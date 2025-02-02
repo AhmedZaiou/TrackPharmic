@@ -136,7 +136,12 @@ class Retour_dash:
         code_barre_value_ajout = self.code_barre_value_ajout.text() 
         numero_facture = self.numero_facture.text() 
         client_iden = self.client_iden.text() 
+
+        
         self.medicament_search = Medicament.extraire_medicament_code_barre(code_barre_value_ajout)
+        if not self.medicament_search or not prix_achat_retour or not quantite_commender_retour or not date_expiration_medicament:
+            QMessageBox.information(self.main_interface, "Information incomplete", "Merci de remplire les informations")
+            return 
         now = datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -148,6 +153,7 @@ class Retour_dash:
             Stock.ajouter_stock(  self.medicament_search['ID_Medicament'], 0, self.main_interface.user_session['id_salarie'], prix_achat_retour, prix_achat_retour,
                       prix_achat_retour, now, date_expiration_medicament, 0, quantite_commender_retour,
                       quantite_commender_retour, quantite_commender_retour, now, now)
+            
             self.main_interface = Retour_dash(self.main_interface)
 
     def keyPressEventLibre(self, event):

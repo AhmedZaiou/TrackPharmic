@@ -4,7 +4,7 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt
 
-from Backend.Dataset.dataset import *
+from Backend.Dataset.stock import Stock
 
 
 class Acceuil_dash:
@@ -64,7 +64,7 @@ class Acceuil_dash:
 
 
     def populate_table(self):
-        data = extraire_stock_expiration()  
+        data = Stock.extraire_tous_stock()  
         self.table_widget_medicament_expiration.setRowCount(len(data))
         for index, element in enumerate(data):
             dict_element = dict(element)

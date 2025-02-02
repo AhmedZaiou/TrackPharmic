@@ -1,5 +1,5 @@
  
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -9,8 +9,8 @@ import os
 
 def create_ventes_table():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
 
     # Execute the query to create the Ventes table if it doesn't exist
     cursor.execute('''CREATE TABLE IF NOT EXISTS Ventes (
@@ -36,8 +36,8 @@ def create_ventes_table():
 
 def test():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+    cursor =  conn.cursor(dictionary=True)
 
     # Execute the query to get the statistics 
     cursor.execute('''SELECT strftime('%d/%m/%Y', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2)) 
@@ -56,10 +56,10 @@ FROM Ventes; ''')
 # get statistics générales pour la journée
 def get_statistique():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
 
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+     
+    cursor =  conn.cursor(dictionary=True)
 
     cursor.execute('''SELECT COUNT(ID_Vente) as numberVentes, SUM(Quantite_Vendue) as NumberProducts, SUM(Total_Facture) as totalDh, SUM(Prix_Achat) as totalAchat FROM Ventes WHERE strftime('%d/%m/%Y', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ?''', (datetime.now().date().strftime('%d/%m/%Y'),))
     result = cursor.fetchone()
@@ -70,9 +70,9 @@ def get_statistique():
 # get statistics par salarié pour la  journé 
 def get_stat_salarie():
         # Connect to the database
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+         
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute('''SELECT ID_Salarie, COUNT(ID_Vente) as numberVentes, SUM(Quantite_Vendue) as NumberProducts, SUM(Total_Facture) as totalDh FROM Ventes WHERE strftime('%d/%m/%Y', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ? GROUP BY ID_Salarie''', (datetime.now().date().strftime('%d/%m/%Y'),))
         result = cursor.fetchall()
         conn.close()
@@ -82,9 +82,9 @@ def get_stat_salarie():
 # extraire les medicaments vendus pour la journée
 def get_medicament_vendu():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Medicament, SUM(Quantite_Vendue) as NumberProducts, SUM(Total_Facture) as TotalMoney, SUM(Prix_Achat) as TotalCost FROM Ventes WHERE strftime('%d/%m/%Y', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ? GROUP BY ID_Medicament''', (datetime.now().date().strftime('%d/%m/%Y'),))
     result = cursor.fetchall()
     conn.close()
@@ -98,10 +98,10 @@ def get_medicament_vendu():
 
 def get_statistique_mois():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
 
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+     
+    cursor =  conn.cursor(dictionary=True)
 
     cursor.execute('''SELECT COUNT(ID_Vente) as numberVentes, SUM(Quantite_Vendue) as NumberProducts, SUM(Total_Facture) as totalDh, SUM(Prix_Achat) as totalAchat FROM Ventes WHERE strftime('%m', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ? AND strftime('%Y', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ?''', (datetime.now().date().strftime('%m'), datetime.now().date().strftime('%Y')))
     result = cursor.fetchone()
@@ -112,9 +112,9 @@ def get_statistique_mois():
 
 def get_stat_salarie_mois():
         # Connect to the database
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+         
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute('''SELECT ID_Salarie, COUNT(ID_Vente) as numberVentes, SUM(Quantite_Vendue) as NumberProducts, SUM(Total_Facture) as totalDh FROM Ventes WHERE strftime('%m', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ? AND strftime('%Y', substr(Date_Vente, 7, 4) || '-' || substr(Date_Vente, 4, 2) || '-' || substr(Date_Vente, 1, 2))  = ? GROUP BY ID_Salarie''', (datetime.now().date().strftime('%m'), datetime.now().date().strftime('%Y')))
         result = cursor.fetchall()
         conn.close()
@@ -124,9 +124,9 @@ def get_stat_salarie_mois():
 
 def get_medicament_vendu_mois():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Medicament, SUM(Quantite_Vendue) as NumberProducts, 
                    SUM(Total_Facture) as TotalMoney, SUM(Prix_Achat) as TotalCost 
                    FROM Ventes 
@@ -144,8 +144,8 @@ def get_medicament_vendu_mois():
 
 def create_stock_table():
         # Connect to the database
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+        cursor =  conn.cursor(dictionary=True)
         # Execute the query to create the Stock table if it doesn't exist
         cursor.execute('''CREATE TABLE IF NOT EXISTS Stock (
                         ID_Stock INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -176,9 +176,9 @@ def create_stock_table():
 
 def get_statistique_stock():
         # Connect to the database
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+         
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute('''SELECT COUNT(ID_Stock) as numberStock, SUM(Quantite_Actuelle) as NumberProducts, 
                        SUM(Prix_Achat) as totalAchat, SUM(Prix_Vente) as totalVente FROM Stock''')
         result = cursor.fetchone()
@@ -188,9 +188,9 @@ def get_statistique_stock():
 # get les medicament avec leur quentité qui expirand dans les deux mois prochaines 
 def get_medicament_expirant():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     # Calculate the date two months from now
     two_months_from_now = datetime.now() + timedelta(days=60) 
     # Execute the query to get the medications expiring in the next two months
@@ -206,9 +206,9 @@ def get_medicament_expirant():
 # get medicament qui il s'ont une quantité inférieur à la quantité minimale
 def get_medicament_faible_medicament():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT ID_Medicament, stock_actuel , min_stock  
                     FROM Medicament 
                     WHERE stock_actuel < min_stock ''')
@@ -267,9 +267,9 @@ def get_medicament_faible_medicament():
             )"""
 def get_statistique_credit():
     # Connect to the database
-    conn = sqlite3.connect(dataset)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    conn = mysql.connector.connect(host=host,user=user,password=password,database=database)
+     
+    cursor =  conn.cursor(dictionary=True)
     cursor.execute('''SELECT COUNT(ID_Credit) as numberCredit, SUM(Montant_Paye) as totalPaye, SUM(Reste_A_Payer) as totalReste FROM Credit''')
     result = cursor.fetchone()
     conn.close()

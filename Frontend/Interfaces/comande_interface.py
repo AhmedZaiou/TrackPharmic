@@ -331,7 +331,7 @@ class Commande_dash:
                 self.cart_table.setItem(row, 0, QTableWidgetItem(str(product['id_commande'])))
                 fournissuer = Fournisseur.extraire_fournisseur(product['id_fournisseur'])
                 self.cart_table.setItem(row, 1, QTableWidgetItem(fournissuer['nom_fournisseur']))
-                self.cart_table.setItem(row, 2, QTableWidgetItem(product['date_commande']))
+                self.cart_table.setItem(row, 2, QTableWidgetItem(str(product['date_commande'])))
                 self.cart_table.setItem(row, 3, QTableWidgetItem(product['Liste_Produits']))
                 self.cart_table.setItem(row, 3, QTableWidgetItem(product['statut_reception']))
                 self.cart_table.setItem(row, 3, QTableWidgetItem(product['status_incl']))

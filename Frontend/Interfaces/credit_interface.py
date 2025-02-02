@@ -45,7 +45,7 @@ class Credit_dash:
 
     def remplir_tableau(self):
         # Exemple de données fictives
-        credits = Clients.extraire_tous_client_with_credit() 
+        credits = Clients.extraire_tous_clients_with_credit() 
         credits = [ dict(i) for i in credits]  
         self.table.setRowCount(len(credits)) 
         for row, credit in enumerate(credits): 
@@ -78,7 +78,7 @@ class Credit_dash:
 
         table_form_layout = QGridLayout()
 
-        self.client = Clients.extraire_client_id(self.id_client)
+        self.client = Clients.extraire_client(self.id_client)
         self.client = dict(self.client)
         
 
@@ -129,7 +129,7 @@ class Credit_dash:
     
     def add_paiment(self):
         now = datetime.now()
-        now_str = now.strftime("%d/%m/%Y %H:%M:%S")
+        now_str = now.strftime("%Y-%m-%d %H:%M:%S")
         montant_paye = self.payment_input.value()
         id_salarie = self.main_interface.user_session['id_salarie']
         Payment.ajouter_payment(self.id_client, int(now.timestamp()), montant_paye, now_str, id_salarie)

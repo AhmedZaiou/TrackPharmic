@@ -26,8 +26,7 @@ class MainInterface(QMainWindow):
 
 
     def create_database(self):
-        import json
-        from Backend.Dataset.achat import Achats  # Assurez-vous que l'import est correct
+        import json 
         from Backend.Dataset.client import Clients  # Assurez-vous de l'existence des classes appropriées
         from Backend.Dataset.commande import Commandes
         from Backend.Dataset.credit import Credit
@@ -42,14 +41,13 @@ class MainInterface(QMainWindow):
         from Backend.Dataset.retour import Retour
 
         
-        Medicament.supprimer_toute_base_donnees()
+        #Medicament.supprimer_toute_base_donnees()
 
         Clients.create_table_clients()
         Stock.create_table_stock()
         Commandes.create_table_commandes()
         Credit.create_table_credit()
-        Echanges.create_table_echanges()
-        Achats.create_table_achats()
+        Echanges.create_table_echanges() 
         Fournisseur.create_table_fournisseur()
         Medicament.create_table_medicament()
         Payment.create_table_payment()

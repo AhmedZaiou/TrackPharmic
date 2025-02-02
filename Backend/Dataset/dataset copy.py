@@ -1,5 +1,5 @@
  
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -225,7 +225,7 @@ def extraire_tous_stock():
         cursor.execute("SELECT * FROM Stock")
         return cursor.fetchall()
 def extraire_medicament_quantite_minimale_sup_0():
-    with sqlite3.connect(dataset) as conn:
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM medicament WHERE min_stock > 0")
@@ -658,7 +658,7 @@ def create_table_phaemacies():
         """)
 
 def ajouter_pharmacie(nom, adresse, telephone, email, outvalue, invalue): 
-    with sqlite3.connect(dataset) as conn:
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Pharmacies (Nom, adresse, telephone, email, outvalue, invalue)
@@ -668,7 +668,7 @@ def ajouter_pharmacie(nom, adresse, telephone, email, outvalue, invalue):
 
 def modifier_pharmacie(dataset, id_pharmacie, nom, adresse, telephone, email, outvalue, invalue):
     
-    with sqlite3.connect(dataset) as conn:
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Pharmacies
@@ -839,7 +839,7 @@ def create_table_payment():
             )
         """)
 def ajouter_payment(id_client, numero_facture, montant_paye, date_paiement, id_salarie):
-    with sqlite3.connect(dataset) as conn:
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Payment (ID_Client, Numero_Facture, Montant_Paye, Date_Paiement, ID_Salarie)
@@ -947,7 +947,7 @@ def extraire_pharma_nom(nom):
 
 
 def extraire_stock_expiration():
-    with sqlite3.connect(dataset) as conn:
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
         conn.row_factory = sqlite3.Row
         today = datetime.now().date()
         two_months_later = today + timedelta(days=60)

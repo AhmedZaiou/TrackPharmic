@@ -159,7 +159,8 @@ class Stock_dash:
         self.prix_cons_medicament = QLineEdit()
         self.prix_cons_medicament.setValidator(float_validator)
         self.date_expiration_medicament = QDateEdit()
-        self.date_expiration_medicament.setCalendarPopup(True)
+        self.date_expiration_medicament.setCalendarPopup(True) 
+        self.date_expiration_medicament.setDate(QDate.currentDate().addYears(2))
  
         self.quantite_minimal_medicament = QLineEdit()
         self.quantite_minimal_medicament.setValidator(int_validator)
@@ -362,7 +363,7 @@ class Stock_dash:
             return 
         quantite_minimal_medicament = self.quantite_minimal_medicament.text() 
 
-        date_expiration_medicament = self.date_expiration_medicament.text()
+        date_expiration_medicament = self.date_expiration_medicament.date().toString("yyyy-MM-dd")
         prix_achat_medicament = self.prix_achat_medicament.text()
         prix_vente_medicament = self.prix_vente_medicament.text()
         quantite_commender_value = self.quantite_commender_value.value() 
@@ -384,7 +385,8 @@ class Stock_dash:
         quantite_commender_value = self.quantite_commender_value_ajout.text()
 
         quantite_minimal_medicament = self.quantite_minimal_medicament_ajout.text() 
-        date_expiration_medicament = self.date_expiration_medicament_ajout.text()
+        date_expiration_medicament = self.date_expiration_medicament_ajout.date().toString("yyyy-MM-dd")
+        print(date_expiration_medicament)
         prix_achat_medicament = self.prix_achat_medicament_ajout.text()
         prix_vente_medicament = self.prix_vente_medicament_ajout.text()  
         now = datetime.now()

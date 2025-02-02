@@ -1,10 +1,8 @@
- 
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
 import json
-
 
 class Retour:
     @staticmethod
@@ -13,14 +11,14 @@ class Retour:
 
     @staticmethod
     def create_table_retours():
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Retours (
-                id_retour INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_retour INTEGER PRIMARY KEY AUTO_INCREMENT,
                 id_medicament INTEGER NOT NULL, 
                 prix REAL, 
-                date_retour DATE NOT NULL,
+                date_retour DATETIME NOT NULL,
                 quantite_retour INTEGER DEFAULT 0,  
                 numero_facture VARCHAR(50),
                 id_salarie INTEGER 
@@ -32,79 +30,77 @@ class Retour:
     @staticmethod
     def ajouter_retour(id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie):
         Retour.create_table_retours()
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Retours (id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie))  # Corrected column names
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie))
         conn.commit()
         conn.close()
-        
 
     @staticmethod
     def extraire_tous_retours():
-        conn = sqlite3.connect(dataset)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Retours")
         rows = cursor.fetchall()
         conn.close()
-        return   [dict(row) for row in rows]  
-    
+        return [dict(row) for row in rows]
 
     @staticmethod
     def cloture_journee():
-        # Connexion à la base de données
-        conn = sqlite3.connect(dataset)
-        cursor = conn.cursor()
+        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(dictionary=True)
 
-        # Obtenir la date actuelle au format YYYY-MM-DD
+        # Get today's date in YYYY-MM-DD format
         today = datetime.today().strftime('%Y-%m-%d')
 
-        # Total des retours effectués aujourd'hui (prix total des retours)
+        # Total returns made today (total price of returns)
         cursor.execute("""
-            SELECT SUM(prix * quantite_retour) as total_retours
+            SELECT SUM(prix * quantite_retour) AS total_retours
             FROM Retours
-            WHERE date_retour = ?
+            WHERE Date(date_retour) = %s
         """, (today,))
-        total_retours = cursor.fetchone()[0]
+        total_retours = cursor.fetchone() 
+        total_retours = total_retours['total_retours']
 
-        # Total des retours effectués aujourd'hui par salarié
+        # Total returns made today by employee
         cursor.execute("""
-            SELECT id_salarie, SUM(prix * quantite_retour) as total_retours_salarie
+            SELECT id_salarie, SUM(prix * quantite_retour) AS total_retours_salarie
             FROM Retours
-            WHERE date_retour = ?
+            WHERE Date(date_retour) = %s
             GROUP BY id_salarie
         """, (today,))
         retours_salaries = cursor.fetchall()
 
-        # Nombre total de retours effectués aujourd'hui
+        # Total number of returns made today
         cursor.execute("""
-            SELECT COUNT(id_retour) as total_retours_count
+            SELECT COUNT(id_retour) AS total_retours_count
             FROM Retours
-            WHERE date_retour = ?
+            WHERE Date(date_retour) = %s
         """, (today,))
-        total_retours_count = cursor.fetchone()[0]
+        total_retours_count = cursor.fetchone() 
+        total_retours_count = total_retours_count["total_retours_count"]
 
-        # Total des retours effectués aujourd'hui par médicament
+        # Total returns made today by medication
         cursor.execute("""
-            SELECT id_medicament, SUM(prix * quantite_retour) as total_retours_medicament
+            SELECT id_medicament, SUM(prix * quantite_retour) AS total_retours_medicament
             FROM Retours
-            WHERE date_retour = ?
+            WHERE Date(date_retour) = %s
             GROUP BY id_medicament
         """, (today,))
         retours_medicaments = cursor.fetchall()
 
-        # Clôture de la connexion
+        # Close the connection
         conn.close()
 
-        # Préparer les résultats sous forme de dictionnaire
+        # Prepare results as a dictionary
         statistiques = {
-            "Total des retours effectués aujourd'hui (prix total des retours)": total_retours if total_retours else 0.0,
-            "Nombre total de retours effectués aujourd'hui": total_retours_count if total_retours_count else 0,
-            "Total des retours effectués aujourd'hui par salarié en Dhs": [{"id_salarie": row[0], "total_retours_salarie": row[1]} for row in retours_salaries],
-            "Total des retours effectués aujourd'hui par médicament en Dhs": [{"id_medicament": row[0], "total_retours_medicament": row[1]} for row in retours_medicaments]
+            "Total des retours effectués aujourdhui": total_retours if total_retours else 0.0,
+            "Nombre total de retours effectués aujourdhui": total_retours_count if total_retours_count else 0,
+            "Total des retours effectués aujourdhui par salarié":  retours_salaries,
+            "Total des retours effectués aujourdhui par médicament en Dhs": retours_medicaments
         }
 
         return statistiques

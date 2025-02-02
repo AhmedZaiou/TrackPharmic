@@ -20,7 +20,7 @@ class Salarie_dash:
 
         main_layout = QVBoxLayout(self.client_dash)
 
-        titre_page = QLabel("Gestion des clients")
+        titre_page = QLabel("Gestion des Salariés")
         titre_page.setObjectName("TitrePage")
         titre_page.setAlignment(Qt.AlignCenter) 
         main_layout.addWidget(titre_page)
@@ -43,13 +43,14 @@ class Salarie_dash:
         self.salaire = QLineEdit()
         self.salaire.setPlaceholderText("Salaire (Dh)")
         self.type_contrat = QLineEdit()
-        self.type_contrat.setPlaceholderText("Type contrat")
+        self.type_contrat.setPlaceholderText("Type contrat (CDI ou CDD)")
         self.date_embauche = QLineEdit()
-        self.date_embauche.setPlaceholderText("Date d'embauche")
+        self.date_embauche.setPlaceholderText("Date d'embauche (12/12/2022)")
         self.grade = QLineEdit()
-        self.grade.setPlaceholderText("Grade")
+        self.grade.setPlaceholderText("Grade (admin or not)")
         self.password = QLineEdit()
         self.password.setPlaceholderText("Mot de passe")
+        self.password.setEchoMode(QLineEdit.Password) 
 
          
 

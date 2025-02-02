@@ -1,5 +1,5 @@
  
-import sqlite3
+import mysql.connector
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -17,7 +17,7 @@ def supprimer_toute_base_donnees():
 # Fonction : create_table_medicament
 def create_table_medicament():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Medicament (
                 ID_Medicament INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,7 +39,7 @@ def create_table_medicament():
 def ajouter_medicament(nom, caracteristique, code_ean_13, medicament_generique, prix_officine, prix_public_de_vente,
                        prix_base_remboursement, prix_hospitalier, substance_active_dci, classe_therapeutique, min_stock, stock_actuel):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Medicament (
                 Nom, caracteristique, Code_EAN_13, Medicament_GENERIQUE, Prix_Officine, Prix_Public_de_Vente,
@@ -51,7 +51,7 @@ def ajouter_medicament(nom, caracteristique, code_ean_13, medicament_generique, 
 
 def supprimer_medicament(id_medicament):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Medicament WHERE ID_Medicament = ?", (id_medicament,))
 
 
@@ -59,7 +59,7 @@ def modifier_medicament(id_medicament, nom, caracteristique, code_ean_13, medica
                         prix_public_de_vente, prix_base_remboursement, prix_hospitalier, substance_active_dci,
                         classe_therapeutique,  min_stock, stock_actuel):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Medicament SET
                 Nom = ?, caracteristique = ?, Code_EAN_13 = ?, Medicament_GENERIQUE = ?, Prix_Officine = ?,
@@ -72,34 +72,34 @@ def modifier_medicament(id_medicament, nom, caracteristique, code_ean_13, medica
 
 def extraire_medicament(id_medicament):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Medicament WHERE ID_Medicament = ?", (id_medicament,))
         return cursor.fetchone()
 
 def extraire_medicament_code_barre(code_barre):
     with sqlite3.connect( dataset) as conn: 
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Medicament WHERE Code_EAN_13 = ?", (code_barre,))
         return cursor.fetchone()
 
 
 def extraire_medicament_code_barre_like(code_barre):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT Code_EAN_13 FROM Medicament WHERE Code_EAN_13 LIKE ? limit 5",  (f"{code_barre}%",))
         return cursor.fetchone()
 
 def extraire_medicament_nom_like(nom):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT Nom FROM Medicament WHERE Nom LIKE ? limit 5", (f"%{nom}%",))
         return cursor.fetchone()
 
 
 def extraire_tous_medicament():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT Code_EAN_13 FROM Medicament")
         return cursor.fetchall()
 
@@ -112,7 +112,7 @@ def extraire_tous_medicament():
 # Fonction : create_table_stock
 def create_table_stock():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Stock (
                 ID_Stock INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -150,7 +150,7 @@ def ajouter_stock(id_medicament, id_commande, id_salarie, prix_achat, prix_vente
                   stock_initial, quantite_actuelle, quantite_minimale, quantite_maximale,
                   date_reception, date_derniere_sortie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Stock (
                 ID_Medicament, ID_Commande, ID_Salarie, Prix_Achat, Prix_Vente, Prix_Conseille,
@@ -168,7 +168,7 @@ def ajouter_stock(id_medicament, id_commande, id_salarie, prix_achat, prix_vente
 # Fonction : supprimer_stock
 def supprimer_stock(id_stock):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Stock WHERE ID_Stock = ?", (id_stock,))
 
 # Fonction : modifier_stock
@@ -176,7 +176,7 @@ def modifier_stock(id_stock, id_medicament, id_commande, id_salarie, prix_achat,
                    date_expiration, stock_initial, quantite_actuelle, quantite_minimale, quantite_maximale,
                    quantite_commandee, date_reception, date_derniere_sortie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Stock SET
                 ID_Medicament = ?, ID_Commande = ?, ID_Salarie = ?,  Prix_Achat = ?, Prix_Vente = ?, Prix_Conseille = ?,
@@ -191,7 +191,7 @@ def modifier_stock(id_stock, id_medicament, id_commande, id_salarie, prix_achat,
 def extraire_medicament_id_stock(id_medicament):
     with sqlite3.connect( dataset) as conn: 
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT ID_Stock,ID_Medicament, ID_Commande,Prix_Achat,Prix_Vente, Date_Expiration, Quantite_Actuelle  FROM Stock WHERE ID_Medicament = ? order by Date_Expiration", (id_medicament,))
         list_results =  cursor.fetchall()
         if list_results is None or len(list_results) == 0:
@@ -213,7 +213,7 @@ def extraire_medicament_id_stock(id_medicament):
 # Fonction : extraire_stock
 def extraire_stock(id_stock):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Stock WHERE ID_Stock = ?", (id_stock,))
         return cursor.fetchone()
 
@@ -221,13 +221,13 @@ def extraire_stock(id_stock):
 def extraire_tous_stock():
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Stock")
         return cursor.fetchall()
 def extraire_medicament_quantite_minimale_sup_0():
-    with sqlite3.connect(dataset) as conn:
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM medicament WHERE min_stock > 0")
         result = cursor.fetchall()
         return result
@@ -239,7 +239,7 @@ def extraire_medicament_quantite_minimale_sup_0():
 # Fonction : create_table_ventes
 def create_table_ventes():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Ventes (
                 ID_Vente INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -262,7 +262,7 @@ def create_table_ventes():
 def ajouter_vente(id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture,
                   id_client, numero_facture, id_salarie, ID_Stock_item):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Ventes (
                 ID_Medicament, ID_Commande_Entre, Prix_Achat, Prix_Vente, Date_Vente,
@@ -276,14 +276,14 @@ def ajouter_vente(id_medicament, id_commande_entre, prix_achat, prix_vente, date
 # Fonction : supprimer_vente
 def supprimer_vente(id_vente):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Ventes WHERE ID_Vente = ?", (id_vente,))
 
 # Fonction : modifier_vente
 def modifier_vente(id_vente, id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue,
                    total_facture, id_client, numero_facture, id_salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Ventes SET
                 ID_Medicament = ?, ID_Commande_Entre = ?, Prix_Achat = ?, Prix_Vente = ?, Date_Vente = ?,
@@ -295,14 +295,14 @@ def modifier_vente(id_vente, id_medicament, id_commande_entre, prix_achat, prix_
 # Fonction : extraire_vente
 def extraire_vente(id_vente):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Ventes WHERE ID_Vente = ?", (id_vente,))
         return cursor.fetchone()
 
 # Fonction : extraire_tous_ventes
 def extraire_tous_ventes():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Ventes")
         return cursor.fetchall()
 
@@ -312,7 +312,7 @@ def extraire_tous_ventes():
 # Fonction : create_table_achats
 def create_table_achats():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Achats (
                 ID_Achat INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -333,7 +333,7 @@ def create_table_achats():
 def ajouter_achat(id_medicament, id_fournisseur, quantite_achetee, prix_achat_unitaire, prix_vente_unitaire, 
                   date_achat, date_expiration, id_salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Achats (
                 ID_Medicament, ID_Fournisseur, Quantite_Achetee, Prix_Achat_Unitaire, Prix_Vente_Unitaire, 
@@ -345,14 +345,14 @@ def ajouter_achat(id_medicament, id_fournisseur, quantite_achetee, prix_achat_un
 # Fonction : supprimer_achat
 def supprimer_achat(id_achat):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Achats WHERE ID_Achat = ?", (id_achat,))
 
 # Fonction : modifier_achat
 def modifier_achat(id_achat, id_medicament, id_fournisseur, quantite_achetee, prix_achat_unitaire, prix_vente_unitaire,
                    date_achat, date_expiration, id_salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Achats SET 
                 ID_Medicament = ?, ID_Fournisseur = ?, Quantite_Achetee = ?, Prix_Achat_Unitaire = ?, 
@@ -364,14 +364,14 @@ def modifier_achat(id_achat, id_medicament, id_fournisseur, quantite_achetee, pr
 # Fonction : extraire_achat
 def extraire_achat(id_achat):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Achats WHERE ID_Achat = ?", (id_achat,))
         return cursor.fetchone()
 
 # Fonction : extraire_tous_achats
 def extraire_tous_achats():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Achats")
         return cursor.fetchall()
 
@@ -383,7 +383,7 @@ def extraire_tous_achats():
 # Fonction : create_table_commandes
 def create_table_commandes():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Commandes (
                 ID_Commande INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -406,7 +406,7 @@ def create_table_commandes():
 def ajouter_commande(liste_produits, id_fournisseur, date_commande, date_reception_prev, statut_reception, 
                      receptionniste, produits_reçus, date_reception, id_salarie, status_incl): 
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Commandes (
                 Liste_Produits, ID_Fournisseur, Date_Commande, Date_Reception_Prevue, Statut_Reception, 
@@ -418,14 +418,14 @@ def ajouter_commande(liste_produits, id_fournisseur, date_commande, date_recepti
 # Fonction : supprimer_commande
 def supprimer_commande(id_commande):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Commandes WHERE ID_Commande = ?", (id_commande,))
 
 # Fonction : modifier_commande
 def modifier_commande(id_commande, liste_produits, id_fournisseur, date_commande, date_reception_prev, 
                       statut_reception, receptionniste, produits_reçus, date_reception, id_salarie, status_incl):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Commandes SET 
                 Liste_Produits = ?, ID_Fournisseur = ?, Date_Commande = ?, Date_Reception_Prevue = ?, 
@@ -436,7 +436,7 @@ def modifier_commande(id_commande, liste_produits, id_fournisseur, date_commande
               receptionniste, produits_reçus, date_reception, id_salarie, status_incl, id_commande))
 def complet_commande(id_commande, ID_Salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor() 
+        cursor =  conn.cursor(dictionary=True) 
         now = datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S")
         cursor.execute("""
@@ -449,14 +449,14 @@ def complet_commande(id_commande, ID_Salarie):
 # Fonction : extraire_commande
 def extraire_commande(id_commande):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Commandes WHERE ID_Commande = ?", (id_commande,))
         return cursor.fetchone()
 
 # Fonction : extraire_tous_commandes
 def extraire_tous_commandes():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Commandes")
         return cursor.fetchall()
 
@@ -467,7 +467,7 @@ def extraire_tous_commandes():
 # Fonction : create_table_salaries
 def create_table_salaries():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Salaries (
                 ID_Salarie INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -491,7 +491,7 @@ def create_table_salaries():
 # Fonction : ajouter_salarie
 def ajouter_salarie(nom, prenom, cin,Telephone, Email, Adresse, photo, salaire, type_contrat, date_embauche, grade, password):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Salaries (Nom, Prenom, CIN, Telephone, Email, Adresse, Photo, Salaire, Type_Contrat, Date_Embauche, Grade, password)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
@@ -500,13 +500,13 @@ def ajouter_salarie(nom, prenom, cin,Telephone, Email, Adresse, photo, salaire, 
 # Fonction : supprimer_salarie
 def supprimer_salarie(id_salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Salaries WHERE ID_Salarie = ?", (id_salarie,))
 
 # Fonction : modifier_salarie
 def modifier_salarie(id_salarie, nom, prenom, cin,Telephone, Email, Adresse, photo, salaire, type_contrat, date_embauche, grade):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Salaries SET
                 Nom = ?, Prenom = ?, CIN = ?,Telephone = ?, Email = ?, Adresse = ?, Photo = ?, Salaire = ?, Type_Contrat = ?,
@@ -517,14 +517,14 @@ def modifier_salarie(id_salarie, nom, prenom, cin,Telephone, Email, Adresse, pho
 # Fonction : extraire_salarie
 def extraire_salarie(id_salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Salaries WHERE ID_Salarie = ?", (id_salarie,))
         return cursor.fetchone()
     
 def extraire_salarie_login(nom, password):
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Salaries WHERE Nom = ? and password = ? ", (nom,password))
         return dict(cursor.fetchone())
 
@@ -533,7 +533,7 @@ def extraire_tous_salaries():
     with sqlite3.connect( dataset) as conn:
 
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Salaries")
         return cursor.fetchall()
 
@@ -542,7 +542,7 @@ def extraire_tous_salaries():
 # Fonction : create_table_clients
 def create_table_clients():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Clients (
                 ID_Client INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -561,7 +561,7 @@ def create_table_clients():
 def ajouter_client(nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
     
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Clients (Nom, Prenom, CIN, Telephone, Email, Adresse, Max_Credit, Credit_Actuel)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -570,13 +570,13 @@ def ajouter_client(nom, prenom, cin, telephone, email, adresse, max_credit, cred
 # Fonction : supprimer_client
 def supprimer_client(id_client):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Clients WHERE ID_Client = ?", (id_client,))
 
 # Fonction : modifier_client
 def modifier_client(id_client, nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Clients SET
                 Nom = ?, Prenom = ?, CIN = ?, Telephone = ?, Email = ?, Adresse = ?, Max_Credit = ?, 
@@ -587,7 +587,7 @@ def modifier_client(id_client, nom, prenom, cin, telephone, email, adresse, max_
 # Fonction : modifier_client
 def ajouter_credit_client(id_client,  credit_aajouter):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Clients SET 
                 Credit_Actuel = Credit_Actuel + ?
@@ -601,26 +601,26 @@ def ajouter_credit_client(id_client,  credit_aajouter):
 def extraire_client(id_client):
     with sqlite3.connect( dataset) as conn:
         
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Clients WHERE ID_Client = ?", (id_client,))
         return cursor.fetchone()
 def extraire_client_id(id_client):
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Clients WHERE ID_Client = ?", (id_client,))
         return cursor.fetchone()
 def extraire_client_info(nom,prenom,cin):
     with sqlite3.connect( dataset) as conn:
 
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Clients WHERE Nom = ? and Prenom = ? and CIN = ?", (nom,prenom,cin))
         return cursor.fetchone()
     
 def extraire_client_nom_like(name):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT Nom,Prenom,CIN FROM Clients WHERE Nom like ?", (f"%{name}%",))
         return cursor.fetchall()
 
@@ -629,13 +629,13 @@ def extraire_client_nom_like(name):
 def extraire_tous_clients():
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Clients")
         return cursor.fetchall()
 def extraire_tous_client_with_credit():
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Clients where  Credit_Actuel != '0'")
         return cursor.fetchall()
 
@@ -644,7 +644,7 @@ def extraire_tous_client_with_credit():
 # Fonction : create_table_echanges
 def create_table_phaemacies():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Pharmacies (
                 ID_Pharmacie INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -658,8 +658,8 @@ def create_table_phaemacies():
         """)
 
 def ajouter_pharmacie(nom, adresse, telephone, email, outvalue, invalue): 
-    with sqlite3.connect(dataset) as conn:
-        cursor = conn.cursor()
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Pharmacies (Nom, adresse, telephone, email, outvalue, invalue)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -668,8 +668,8 @@ def ajouter_pharmacie(nom, adresse, telephone, email, outvalue, invalue):
 
 def modifier_pharmacie(dataset, id_pharmacie, nom, adresse, telephone, email, outvalue, invalue):
     
-    with sqlite3.connect(dataset) as conn:
-        cursor = conn.cursor()
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Pharmacies
             SET Nom = ?, adresse = ?, telephone = ?, email = ?, outvalue = ?, invalue = ?
@@ -681,13 +681,13 @@ def modifier_pharmacie(dataset, id_pharmacie, nom, adresse, telephone, email, ou
 def extraire_tous_pharma():
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Pharmacies")
         return cursor.fetchall()
     
 def extraire_pharma_nom_like(name):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT Nom, adresse FROM Pharmacies WHERE Nom like ?", (f"%{name}%",))
         return cursor.fetchall()
  
@@ -695,7 +695,7 @@ def extraire_pharma_nom_like(name):
 # Fonction : create_table_echanges
 def create_table_echanges():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("drop table if exists Echanges")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Echanges (
@@ -713,7 +713,7 @@ def create_table_echanges():
 def ajouter_echange(id_pharmacie, ID_facture, date_echange, total_facture, sens, id_salarie):
     create_table_echanges()
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Echanges (ID_Pharmacie, ID_facture, Date_Echange, Total_Facture, sens, ID_Salarie)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -722,13 +722,13 @@ def ajouter_echange(id_pharmacie, ID_facture, date_echange, total_facture, sens,
 # Fonction : supprimer_echange
 def supprimer_echange(id_echange):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Echanges WHERE ID_Echange = ?", (id_echange,))
 
 # Fonction : modifier_echange
 def modifier_echange(id_echange, id_pharmacie, ID_facture, date_echange, total_facture, sens, id_salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Echanges SET
                 ID_Pharmacie = ?, ID_facture = ?, Date_Echange = ?, Total_Facture = ?, sens = ?, ID_Salarie = ?
@@ -738,14 +738,14 @@ def modifier_echange(id_echange, id_pharmacie, ID_facture, date_echange, total_f
 # Fonction : extraire_echange
 def extraire_echange(id_echange):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Echanges WHERE ID_Echange = ?", (id_echange,))
         return cursor.fetchone()
 
 # Fonction : extraire_tous_echanges
 def extraire_tous_echanges():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Echanges")
         return cursor.fetchall()
  
@@ -753,7 +753,7 @@ def extraire_tous_echanges():
 # Fonction : create_table_credit
 def create_table_credit():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Credit (
                 ID_Credit INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -773,7 +773,7 @@ def create_table_credit():
 # Fonction : ajouter_credit
 def ajouter_credit(id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Credit (ID_Client, Numero_Facture, Montant_Paye, Reste_A_Payer, Date_Dernier_Paiement, Statut, ID_Salarie)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -782,13 +782,13 @@ def ajouter_credit(id_client, numero_facture, montant_paye, reste_a_payer, date_
 # Fonction : supprimer_credit
 def supprimer_credit(id_credit):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Credit WHERE ID_Credit = ?", (id_credit,))
 
 # Fonction : modifier_credit
 def modifier_credit(id_credit, id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Credit SET 
                 ID_Client = ?, Numero_Facture = ?, Montant_Paye = ?, Reste_A_Payer = ?, 
@@ -799,7 +799,7 @@ def modifier_credit(id_credit, id_client, numero_facture, montant_paye, reste_a_
 # Fonction : extraire_credit
 def extraire_credit(id_credit):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Credit WHERE ID_Credit = ?", (id_credit,))
         return cursor.fetchone()
 
@@ -808,14 +808,14 @@ def extraire_credit(id_credit):
 def extraire_tous_credits():
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Credit")
         return cursor.fetchall()
     
 def extraire_credit_with_id_client(id_client):
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Credit WHERE ID_Client = ? limit 10", (id_client,))
         return cursor.fetchall()
 
@@ -827,7 +827,7 @@ def extraire_credit_with_id_client(id_client):
 
 def create_table_payment():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Payment (
                 ID_Payment INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -839,8 +839,8 @@ def create_table_payment():
             )
         """)
 def ajouter_payment(id_client, numero_facture, montant_paye, date_paiement, id_salarie):
-    with sqlite3.connect(dataset) as conn:
-        cursor = conn.cursor()
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Payment (ID_Client, Numero_Facture, Montant_Paye, Date_Paiement, ID_Salarie)
             VALUES (?, ?, ?, ?, ?)
@@ -850,7 +850,7 @@ def ajouter_payment(id_client, numero_facture, montant_paye, date_paiement, id_s
 def extraire_paiment_with_id_client(id_client):
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Payment WHERE ID_Client = ? limit 10", (id_client,))
         return cursor.fetchall()
 
@@ -861,7 +861,7 @@ def extraire_paiment_with_id_client(id_client):
 # Fonction : create_table_fournisseur
 def create_table_fournisseur():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Fournisseurs (
                 ID_Fournisseur INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -877,7 +877,7 @@ def create_table_fournisseur():
 # Fonction : ajouter_fournisseur
 def ajouter_fournisseur(nom_fournisseur, telephone, email, adresse, ville, pays): 
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO Fournisseurs (Nom_Fournisseur, Telephone, Email, Adresse, Ville, Pays)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -886,13 +886,13 @@ def ajouter_fournisseur(nom_fournisseur, telephone, email, adresse, ville, pays)
 # Fonction : supprimer_fournisseur
 def supprimer_fournisseur(id_fournisseur):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("DELETE FROM Fournisseurs WHERE ID_Fournisseur = ?", (id_fournisseur,))
 
 # Fonction : modifier_fournisseur
 def modifier_fournisseur(id_fournisseur, nom_fournisseur, telephone, email, adresse, ville, pays):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("""
             UPDATE Fournisseurs SET 
                 Nom_Fournisseur = ?, Telephone = ?, Email = ?, Adresse = ?, Ville = ?, Pays = ? 
@@ -902,25 +902,25 @@ def modifier_fournisseur(id_fournisseur, nom_fournisseur, telephone, email, adre
 # Fonction : extraire_fournisseur
 def extraire_fournisseur(id_fournisseur):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Fournisseurs WHERE ID_Fournisseur = ?", (id_fournisseur,))
         return cursor.fetchone()
     
 def extraire_fournisseur_nom(nom):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Fournisseurs WHERE Nom_Fournisseur = ?", (nom,))
         return cursor.fetchone()
 def extraire_fournisseur_nom_like(nom):
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT Nom_Fournisseur FROM Fournisseurs WHERE Nom_Fournisseur like ?", (f"%{nom}%",))
         return cursor.fetchall()
 
 # Fonction : extraire_tous_fournisseurs
 def extraire_tous_fournisseurs():
     with sqlite3.connect( dataset) as conn:
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Fournisseurs")
         return cursor.fetchall()
 
@@ -929,14 +929,14 @@ def extraire_tous_commandes_table():
     request = """SELECT  *  FROM  Commandes where Statut_Reception != 'Complet'"""
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute(request)
         return cursor.fetchall()
 
 def extraire_pharma_nom(nom):
     with sqlite3.connect( dataset) as conn:
         conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+        cursor =  conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Pharmacies WHERE Nom = ?", (nom,))
         return cursor.fetchone()
     
@@ -947,7 +947,7 @@ def extraire_pharma_nom(nom):
 
 
 def extraire_stock_expiration():
-    with sqlite3.connect(dataset) as conn:
+    with mysql.connector.connect(host=host,user=user,password=password,database=database) as conn:
         conn.row_factory = sqlite3.Row
         today = datetime.now().date()
         two_months_later = today + timedelta(days=60)
