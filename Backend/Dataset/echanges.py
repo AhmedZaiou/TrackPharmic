@@ -1,12 +1,12 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime
 
 class Echanges:
     @staticmethod
     def create_table_echanges():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Echanges (
                 id_echange INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -23,8 +23,8 @@ class Echanges:
 
     @staticmethod
     def ajouter_echange(id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             INSERT INTO Echanges (id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie)
             VALUES (%s, %s, %s, %s, %s, %s)
@@ -34,8 +34,8 @@ class Echanges:
 
     @staticmethod
     def get_total_echanges():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT SUM(total_facture) as totalEchanges FROM Echanges")
         result = cursor.fetchone()
         conn.close()
@@ -43,8 +43,8 @@ class Echanges:
 
     @staticmethod
     def cloture_journee():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         date_aujourdhui = datetime.now().strftime('%Y-%m-%d')
 
         # Calcul du total des échanges de la journée

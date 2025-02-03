@@ -31,7 +31,7 @@ class Acceuil_dash:
         self.table_widget_medicament_expiration.setColumnCount(4)
         self.table_widget_medicament_expiration.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table_widget_medicament_expiration.setHorizontalHeaderLabels(["Code médicament","Nom médicament", "Date expiration", "Quantité"])
-        self.populate_table() 
+        #self.populate_table() 
         widget_medicament_expiration_layout.addWidget(label_titre)
         widget_medicament_expiration_layout.addWidget(self.table_widget_medicament_expiration)
         main_layout.addWidget(widget_medicament_expiration)
@@ -44,7 +44,7 @@ class Acceuil_dash:
         self.table_widget_disponibilite.setColumnCount(3)
         self.table_widget_disponibilite.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table_widget_disponibilite.setHorizontalHeaderLabels(["Code médicament","Nom médicament", "Quantité", "Min Quantité"])
-        self.populate_disponibilite_table() 
+        #self.populate_disponibilite_table() 
 
         widget_disponibilite_layout.addWidget(label_titre_disponibilite)
         widget_disponibilite_layout.addWidget(self.table_widget_disponibilite)

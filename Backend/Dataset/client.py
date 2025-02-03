@@ -1,11 +1,11 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime
 
 class Clients:
     @staticmethod
     def create_table_clients():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Clients (
@@ -26,7 +26,7 @@ class Clients:
 
     @staticmethod
     def ajouter_client(nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Clients (nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel)
@@ -37,7 +37,7 @@ class Clients:
 
     @staticmethod
     def supprimer_client(id_client):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Clients WHERE id_client = %s", (id_client,))
         conn.commit()
@@ -45,7 +45,7 @@ class Clients:
 
     @staticmethod
     def modifier_client(id_client, nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Clients
@@ -58,7 +58,7 @@ class Clients:
 
     @staticmethod
     def ajouter_credit_client(id_client, montant_credit):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Clients
@@ -70,8 +70,8 @@ class Clients:
 
     @staticmethod
     def extraire_client(id_client):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients WHERE id_client = %s", (id_client,))
         row = cursor.fetchone()
         conn.close()
@@ -79,8 +79,8 @@ class Clients:
 
     @staticmethod
     def extraire_client_info(nom, prenom, cin):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients WHERE nom = %s AND prenom = %s AND cin = %s", (nom, prenom, cin))
         row = cursor.fetchone()
         conn.close()
@@ -88,8 +88,8 @@ class Clients:
 
     @staticmethod
     def extraire_client_nom_like(nom_part):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT nom, prenom, cin FROM Clients WHERE nom LIKE %s", ('%' + nom_part + '%',))
         rows = cursor.fetchall()
         conn.close()
@@ -97,8 +97,8 @@ class Clients:
 
     @staticmethod
     def extraire_tous_clients():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients")
         rows = cursor.fetchall()
         conn.close()
@@ -106,8 +106,8 @@ class Clients:
 
     @staticmethod
     def extraire_tous_clients_with_credit():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients WHERE credit_actuel > 0")
         rows = cursor.fetchall()
         conn.close()
@@ -117,8 +117,8 @@ class Clients:
     def cloture_journee(date_jour=None):
         if date_jour is None:
             date_jour = datetime.now().strftime("%Y-%m-%d")
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             SELECT 
                 COUNT(*) AS total_clients,

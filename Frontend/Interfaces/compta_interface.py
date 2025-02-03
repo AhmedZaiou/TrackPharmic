@@ -2,8 +2,7 @@ from qtpy.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QTextBrowser,
     QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
 )
-from qtpy.QtCore import Qt
-import mpld3
+from qtpy.QtCore import Qt 
 
 from Frontend.Interfaces.vente_interface import Ventes
 

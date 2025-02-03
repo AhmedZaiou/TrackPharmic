@@ -1,12 +1,12 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime
 
 class Credit:
     @staticmethod
     def create_table_credit():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Credit (
                 id_credit INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -24,8 +24,8 @@ class Credit:
 
     @staticmethod
     def ajouter_credit(id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             INSERT INTO Credit (id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -35,16 +35,16 @@ class Credit:
 
     @staticmethod
     def supprimer_credit(id_credit):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Credit WHERE id_credit = %s", (id_credit,))
         conn.commit()
         conn.close()
 
     @staticmethod
     def modifier_credit(id_credit, id_client, numero_facture, montant_paye, reste_a_payer, date_dernier_paiement, statut, id_salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             UPDATE Credit
             SET id_client = %s, numero_facture = %s, montant_paye = %s, reste_a_payer = %s, date_dernier_paiement = %s, statut = %s, id_salarie = %s
@@ -55,8 +55,8 @@ class Credit:
 
     @staticmethod
     def extraire_credit(id_credit):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit WHERE id_credit = %s", (id_credit,))
         row = cursor.fetchone()
         conn.close()
@@ -64,8 +64,8 @@ class Credit:
 
     @staticmethod
     def extraire_tous_credits():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit")
         rows = cursor.fetchall()
         conn.close()
@@ -73,8 +73,8 @@ class Credit:
 
     @staticmethod
     def extraire_credit_with_id_client(id_client):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit WHERE id_client = %s", (id_client,))
         rows = cursor.fetchall()
         conn.close()
@@ -82,8 +82,8 @@ class Credit:
 
     @staticmethod
     def get_total_credits():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT SUM(reste_a_payer) as totalCredits FROM Credit")
         result = cursor.fetchone()
         conn.close()
@@ -91,8 +91,8 @@ class Credit:
 
     @staticmethod
     def get_total_credits_salarie(salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT SUM(reste_a_payer) as totalCredits FROM Credit WHERE id_salarie = %s", (salarie,))
         result = cursor.fetchone()
         conn.close()
@@ -100,8 +100,8 @@ class Credit:
 
     @staticmethod
     def cloture_journee():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_aujourdhui = datetime.now().strftime('%Y-%m-%d')
 

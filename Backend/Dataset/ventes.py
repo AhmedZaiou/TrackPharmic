@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta, date
 import os
@@ -14,8 +14,8 @@ class Ventes:
 
     @staticmethod
     def create_table_ventes():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Ventes (
                 id_vente INT PRIMARY KEY AUTO_INCREMENT,
@@ -38,8 +38,8 @@ class Ventes:
     @staticmethod
     def ajouter_vente(id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture, id_client, numero_facture, id_salarie, id_stock_item):
         Ventes.create_table_ventes()
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             INSERT INTO Ventes (id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture, id_client, numero_facture, id_salarie, id_stock_item)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -49,16 +49,16 @@ class Ventes:
 
     @staticmethod
     def supprimer_vente(id_vente):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Ventes WHERE id_vente = %s", (id_vente,))
         conn.commit()
         conn.close()
 
     @staticmethod
     def modifier_vente(id_vente, id_medicament, id_commande_entre, prix_achat, prix_vente, date_vente, quantite_vendue, total_facture, id_client, numero_facture, id_salarie, id_stock_item):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             UPDATE Ventes
             SET id_medicament = %s, id_commande_entre = %s, prix_achat = %s, prix_vente = %s, date_vente = %s, quantite_vendue = %s, total_facture = %s, id_client = %s, numero_facture = %s, id_salarie = %s, id_stock_item = %s
@@ -69,8 +69,8 @@ class Ventes:
 
     @staticmethod
     def extraire_vente(id_vente):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Ventes WHERE id_vente = %s", (id_vente,))
         row = cursor.fetchone()
         conn.close()
@@ -78,8 +78,8 @@ class Ventes:
 
     @staticmethod
     def extraire_tous_ventes():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Ventes")
         rows = cursor.fetchall()
         conn.close()
@@ -87,8 +87,8 @@ class Ventes:
 
     @staticmethod
     def get_transactions_jour(salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT id_vente FROM Ventes WHERE date_vente = %s AND id_salarie = %s''', (datetime.now().date(), salarie))
         result = cursor.fetchall()
         conn.close()
@@ -96,8 +96,8 @@ class Ventes:
 
     @staticmethod
     def get_total_vendu_salarie(salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT SUM(total_facture) as totalVendu FROM Ventes WHERE id_salarie = %s''', (salarie,))
         result = cursor.fetchone()
         conn.close()
@@ -105,8 +105,8 @@ class Ventes:
 
     @staticmethod
     def get_statistique():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT * FROM Ventes''')
         result = cursor.fetchall()
         conn.close()
@@ -117,8 +117,8 @@ class Ventes:
         if date_jour is None:
             date_jour = datetime.now().strftime("%Y-%m-%d")
 
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         cursor.execute("""SELECT COUNT(*) as count, SUM(total_facture) as total, SUM(quantite_vendue) as quanti,
                        SUM(prix_achat * quantite_vendue) as total_achat,

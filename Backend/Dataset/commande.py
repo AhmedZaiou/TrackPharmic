@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os 
@@ -13,8 +13,8 @@ class Commandes:
 
     @staticmethod
     def create_table_commandes():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Commandes (
                 id_commande INT PRIMARY KEY AUTO_INCREMENT,
@@ -35,8 +35,8 @@ class Commandes:
 
     @staticmethod
     def ajouter_commande(Liste_Produits, id_fournisseur, date_commande, date_reception_prev, statut_reception, receptionniste, produits_recus, date_reception, id_salarie, status_incl):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             INSERT INTO Commandes (id_fournisseur, date_commande, date_reception_prev, statut_reception, receptionniste, produits_recus, date_reception, id_salarie, status_incl, Liste_Produits)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -46,16 +46,16 @@ class Commandes:
 
     @staticmethod
     def supprimer_commande(id_commande):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Commandes WHERE id_commande = %s", (id_commande,))
         conn.commit()
         conn.close()
 
     @staticmethod
     def modifier_commande(Liste_Produits, id_commande, id_fournisseur, date_commande, date_reception_prev, statut_reception, receptionniste, produits_recus, date_reception, id_salarie, status_incl):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             UPDATE Commandes
             SET id_fournisseur = %s, date_commande = %s, date_reception_prev = %s, statut_reception = %s, receptionniste = %s, produits_recus = %s, date_reception = %s, id_salarie = %s, status_incl = %s, Liste_Produits = %s
@@ -66,8 +66,8 @@ class Commandes:
 
     @staticmethod
     def complet_commande(id_commande):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             UPDATE Commandes
             SET statut_reception = 'Complète', date_reception = %s
@@ -78,8 +78,8 @@ class Commandes:
 
     @staticmethod
     def extraire_commande(id_commande):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes WHERE id_commande = %s", (id_commande,))
         row = cursor.fetchone()
         conn.close()
@@ -87,8 +87,8 @@ class Commandes:
 
     @staticmethod
     def extraire_tous_commandes():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes")
         rows = cursor.fetchall()
         conn.close()
@@ -96,8 +96,8 @@ class Commandes:
     
     @staticmethod
     def extraire_tous_commandes_table():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes WHERE Statut_Reception != 'Complet'")
         rows = cursor.fetchall()
         conn.close()
@@ -105,8 +105,8 @@ class Commandes:
     
     @staticmethod
     def get_commandes_jour():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT ID_Commande FROM Commandes WHERE DATE(Date_Commande) = %s''', (datetime.now().date(),))
         result = cursor.fetchall()
         conn.close()
@@ -114,8 +114,8 @@ class Commandes:
     
     @staticmethod
     def get_commandes_recues_jour():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT ID_Commande FROM Commandes WHERE DATE(Date_Reception) = %s''', (datetime.now().date(),))
         result = cursor.fetchall()
         conn.close()
@@ -123,8 +123,8 @@ class Commandes:
     
     @staticmethod
     def get_commandes_jour_salarie(salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT ID_Commande FROM Commandes WHERE DATE(Date_Commande) = %s AND ID_Salarie = %s''', (datetime.now().date(), salarie))
         result = cursor.fetchall()
         conn.close()
@@ -132,8 +132,8 @@ class Commandes:
     
     @staticmethod
     def get_commandes_recues_jour_salarie(salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT ID_Commande FROM Commandes WHERE DATE(Date_Reception) = %s AND ID_Salarie = %s''', (datetime.now().date(), salarie))
         result = cursor.fetchall()
         conn.close()
@@ -141,8 +141,8 @@ class Commandes:
     
     @staticmethod
     def statistic_commande_salarie(salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         
         date_jour = datetime.now().date()
         
@@ -170,8 +170,8 @@ class Commandes:
     
     @staticmethod
     def statistic_commande_generale():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         
         date_jour = datetime.now().date()
         

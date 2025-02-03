@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -10,8 +10,8 @@ class Payment:
 
     @staticmethod
     def create_table_payment():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Payment (
                 id_payment INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -27,8 +27,8 @@ class Payment:
 
     @staticmethod
     def ajouter_payment(id_client, numero_facture, montant_paye, date_paiement, id_salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             INSERT INTO Payment (id_client, numero_facture, montant_paye, date_paiement, id_salarie)
             VALUES (%s, %s, %s, %s, %s)
@@ -38,8 +38,8 @@ class Payment:
 
     @staticmethod
     def extraire_payment_with_id_client(id_client):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Payment WHERE id_client = %s", (id_client,))
         rows = cursor.fetchall()
         conn.close()
@@ -47,8 +47,8 @@ class Payment:
 
     @staticmethod
     def get_total_paiement():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT SUM(montant_paye) as totalPaiement FROM Payment''')
         result = cursor.fetchone()
         conn.close()
@@ -56,8 +56,8 @@ class Payment:
 
     @staticmethod
     def get_total_paiement_salarie(salarie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute('''SELECT SUM(montant_paye) as totalPaiement FROM Payment WHERE id_salarie = %s''', (salarie,))
         result = cursor.fetchone()
         conn.close()
@@ -66,8 +66,8 @@ class Payment:
     @staticmethod
     def cloture_journee():
         # Connexion à la base de données
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Obtenir la date actuelle au format YYYY-MM-DD
         today = datetime.today().strftime('%Y-%m-%d')

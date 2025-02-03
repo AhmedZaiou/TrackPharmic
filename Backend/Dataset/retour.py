@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -11,8 +11,8 @@ class Retour:
 
     @staticmethod
     def create_table_retours():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Retours (
                 id_retour INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -30,8 +30,8 @@ class Retour:
     @staticmethod
     def ajouter_retour(id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie):
         Retour.create_table_retours()
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             INSERT INTO Retours (id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie)
             VALUES (%s, %s, %s, %s, %s, %s)
@@ -41,8 +41,8 @@ class Retour:
 
     @staticmethod
     def extraire_tous_retours():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Retours")
         rows = cursor.fetchall()
         conn.close()
@@ -50,8 +50,8 @@ class Retour:
 
     @staticmethod
     def cloture_journee():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Get today's date in YYYY-MM-DD format
         today = datetime.today().strftime('%Y-%m-%d')

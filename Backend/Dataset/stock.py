@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -7,8 +7,8 @@ from Backend.Dataset.medicament import Medicament
 class Stock: 
     @staticmethod
     def create_table_stock():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = '''
         CREATE TABLE IF NOT EXISTS Stock (
             id_stock INT AUTO_INCREMENT PRIMARY KEY,
@@ -36,8 +36,8 @@ class Stock:
     def ajouter_stock(id_medicament, id_commande, id_salarie, prix_achat, prix_vente,
                       prix_conseille, date_achat, date_expiration, stock_initial, quantite_actuelle,
                       quantite_minimale, quantite_maximale, date_reception, date_derniere_sortie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = '''
         INSERT INTO Stock (id_medicament, id_commande, id_salarie, prix_achat, prix_vente, prix_conseille,
                            date_achat, date_expiration, stock_initial, quantite_actuelle, quantite_minimale,
@@ -54,8 +54,8 @@ class Stock:
 
     @staticmethod
     def supprimer_stock(id_stock):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "DELETE FROM Stock WHERE id_stock = %s;"
         cursor.execute(query, (id_stock,))
         conn.commit()
@@ -65,8 +65,8 @@ class Stock:
     def modifier_stock(id_stock, id_medicament, id_commande, id_salarie, prix_achat, prix_vente,
                        prix_conseille, date_achat, date_expiration, stock_initial, quantite_actuelle,
                        quantite_minimale, quantite_maximale, date_reception, date_derniere_sortie):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = '''
         UPDATE Stock SET
             id_medicament = %s, id_commande = %s, id_salarie = %s, prix_achat = %s, prix_vente = %s, prix_conseille = %s,
@@ -82,8 +82,8 @@ class Stock:
 
     @staticmethod
     def effectuer_vente_stock(id_stock, quantite_vendu):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = '''
         UPDATE Stock SET quantite_actuelle = quantite_actuelle - %s
         WHERE id_stock = %s;
@@ -95,8 +95,8 @@ class Stock:
 
     @staticmethod
     def extraire_medicament_id_stock(id_medicament):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "SELECT * FROM Stock WHERE id_medicament = %s;"
         cursor.execute(query, (id_medicament,))
         row = cursor.fetchall()
@@ -117,8 +117,8 @@ class Stock:
 
     @staticmethod
     def extraire_stock(id_stock):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "SELECT * FROM Stock WHERE id_stock = %s;"
         cursor.execute(query, (id_stock,))
         row = cursor.fetchone()
@@ -127,8 +127,8 @@ class Stock:
 
     @staticmethod
     def extraire_tous_stock():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "SELECT * FROM Stock;"
         cursor.execute(query)
         rows = cursor.fetchall()
@@ -137,8 +137,8 @@ class Stock:
 
     @staticmethod
     def extraire_medicament_quantite_minimale_sup_0():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "SELECT * FROM Stock WHERE quantite_minimale > 0;"
         cursor.execute(query)
         rows = cursor.fetchall()
@@ -147,8 +147,8 @@ class Stock:
 
     @staticmethod
     def get_situation_stock():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT id_medicament, quantite_actuelle FROM Stock")
         result = cursor.fetchall()
         conn.close()
@@ -156,8 +156,8 @@ class Stock:
 
     @staticmethod
     def calculer_total_achat_vente():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT SUM(prix_achat) AS total_achat, SUM(prix_vente) AS total_vente FROM Stock")
         result = cursor.fetchone()
         conn.close()
@@ -166,8 +166,8 @@ class Stock:
     @staticmethod
     def cloture_journee():
         today = datetime.now().strftime('%Y-%m-%d')
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Total des achats et ventes pour la journée
         cursor.execute("""

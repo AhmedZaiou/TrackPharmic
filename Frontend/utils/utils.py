@@ -30,26 +30,22 @@ float_validator = QDoubleValidator()
 email_validator = EmailValidator()
 phone_validator = PhoneValidator()
 
-profile_salarie = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/profilsalarie.png"
-
-app_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/pharmacie_bloc.png"
-
-deconexion_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/deconexion.png"
-
-salare_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/salarielogo.png"
-fournisseur_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/fournisseurlogo.png"
-
-kpi_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/kpi.png"
-acceuil_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/logoacceuil.png"
-commande_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/commandelogo.png"
-credit_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/creditlogoa.png"
-vente_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/ventelogo.svg"
-client_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/clientlogo.png"
-echange_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/echangelogo.png"
-stock_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/stocklogo.png"
-medicament_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/medicamentlogo.png"
-ferme_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/ferme.png"
-retour_logo = "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Frontend/images/retour.png"
+profile_salarie = f"{Front_end}/images/profilsalarie.png"
+app_logo = f"{Front_end}/images/pharmacie_bloc.png"
+deconexion_logo = f"{Front_end}/images/deconexion.png"
+salare_logo = f"{Front_end}/images/salarielogo.png"
+fournisseur_logo = f"{Front_end}/images/fournisseurlogo.png"
+kpi_logo = f"{Front_end}/images/kpi.png"
+acceuil_logo = f"{Front_end}/images/logoacceuil.png"
+commande_logo = f"{Front_end}/images/commandelogo.png"
+credit_logo = f"{Front_end}/images/creditlogoa.png"
+vente_logo = f"{Front_end}/images/ventelogo.svg"
+client_logo = f"{Front_end}/images/clientlogo.png"
+echange_logo = f"{Front_end}/images/echangelogo.png"
+stock_logo = f"{Front_end}/images/stocklogo.png"
+medicament_logo = f"{Front_end}/images/medicamentlogo.png"
+ferme_logo = f"{Front_end}/images/ferme.png"
+retour_logo = f"{Front_end}/images/retour.png"
 
 
 

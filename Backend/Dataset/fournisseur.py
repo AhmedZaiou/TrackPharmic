@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 from Frontend.utils.utils import *
 from datetime import datetime, timedelta
 import os
@@ -7,7 +7,7 @@ import json
 class Fournisseur:
     @staticmethod
     def create_table_fournisseur():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Fournisseur (
@@ -26,7 +26,7 @@ class Fournisseur:
 
     @staticmethod
     def ajouter_fournisseur(nom_fournisseur, telephone, email, adresse, ville, pays):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO Fournisseur (nom_fournisseur, telephone, email, adresse, ville, pays)
@@ -37,7 +37,7 @@ class Fournisseur:
 
     @staticmethod
     def supprimer_fournisseur(id_fournisseur):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Fournisseur WHERE id_fournisseur = %s", (id_fournisseur,))
         conn.commit()
@@ -45,7 +45,7 @@ class Fournisseur:
 
     @staticmethod
     def modifier_fournisseur(id_fournisseur, nom_fournisseur, telephone, email, adresse, ville, pays):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
         cursor = conn.cursor()
         cursor.execute("""
             UPDATE Fournisseur
@@ -57,8 +57,8 @@ class Fournisseur:
 
     @staticmethod
     def extraire_fournisseur(id_fournisseur):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Fournisseur WHERE id_fournisseur = %s", (id_fournisseur,))
         row = cursor.fetchone()
         conn.close()
@@ -66,8 +66,8 @@ class Fournisseur:
 
     @staticmethod
     def extraire_fournisseur_nom(nom_fournisseur):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Fournisseur WHERE nom_fournisseur = %s", (nom_fournisseur,))
         row = cursor.fetchone()
         conn.close()
@@ -75,8 +75,8 @@ class Fournisseur:
 
     @staticmethod
     def extraire_fournisseur_nom_like(nom_fournisseur_like):
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Fournisseur WHERE nom_fournisseur LIKE %s", ('%' + nom_fournisseur_like + '%',))
         rows = cursor.fetchall()
         conn.close()
@@ -84,8 +84,8 @@ class Fournisseur:
 
     @staticmethod
     def extraire_tous_fournisseurs():
-        conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
-        cursor = conn.cursor(dictionary=True)
+        conn = pymysql.connect(host=host, user=user, password=password, database=database)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Fournisseur")
         rows = cursor.fetchall()
         conn.close()
