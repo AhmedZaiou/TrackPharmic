@@ -1,6 +1,7 @@
 import re
 from qtpy.QtGui import QValidator
 
+
 class PhoneValidator(QValidator):
     def validate(self, input_text, pos):
         if input_text.isdigit() and (7 <= len(input_text) <= 15):
@@ -17,11 +18,11 @@ class EmailValidator(QValidator):
     def validate(self, input_text, pos):
         if not input_text:
             return QValidator.Intermediate, input_text, pos
-        
+
         if self.EMAIL_REGEX.fullmatch(input_text):
             return QValidator.Acceptable, input_text, pos
-        
+
         if "@" in input_text and "." in input_text:
             return QValidator.Intermediate, input_text, pos
-        
+
         return QValidator.Intermediate, input_text, pos

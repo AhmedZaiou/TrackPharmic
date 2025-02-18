@@ -1,32 +1,32 @@
-from pathlib import Path 
+from pathlib import Path
 from qtpy.QtGui import QIntValidator, QDoubleValidator
 from Frontend.utils.validators import *
 from qtpy.QtGui import QRegularExpressionValidator
 from qtpy.QtCore import QRegularExpression
 
 current_directory = Path(__file__).parent
-Front_end = current_directory.parent 
-Tracpharmic = Path.home()/"Tracpharmic"
-images = Tracpharmic/"images"
-dataset = Tracpharmic/"dataset"/"pharmadataset.db" 
-name_application = "TracPharmic"  
+Front_end = current_directory.parent
+Tracpharmic = Path.home() / "Tracpharmic"
+images = Tracpharmic / "images"
+dataset = Tracpharmic / "dataset" / "pharmadataset.db"
+name_application = "TracPharmic"
 
 
 def set_styles():
     try:
-        with open(Front_end/"style"/"style.qss", "r") as file:
+        with open(Front_end / "style" / "style.qss", "r") as file:
             style = file.read()
             """background_path_str =  str(background_path).replace("\\", "/") 
             arrowdrop_str =  str(arrowdrop).replace("\\", "/") 
             style = style.replace("background_image",background_path_str)
-            style = style.replace("arrowdrop", arrowdrop_str)""" 
+            style = style.replace("arrowdrop", arrowdrop_str)"""
             return style
     except FileNotFoundError:
         print("Style file not found. Using default styles.")
 
 
 int_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{1,15}$"))
-float_validator = QDoubleValidator() 
+float_validator = QDoubleValidator()
 email_validator = EmailValidator()
 phone_validator = PhoneValidator()
 
@@ -48,9 +48,6 @@ ferme_logo = f"{Front_end}/images/ferme.png"
 retour_logo = f"{Front_end}/images/retour.png"
 
 
-
-
-
 # Informations de connexion Gmail
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
@@ -59,15 +56,6 @@ smtp_password = "adck kohd tuqu iomh"  # Utiliser un mot de passe d'application
 
 # Définition de l'expéditeur et du destinataire
 sender_email = smtp_user
-receiver_email = "zaiou.ahm@gmail.com"
-
-
-
-
-
-
-
-
 
 
 
@@ -82,3 +70,22 @@ database = "u454999796_pharma"
 
 
 
+# Pharma information 
+Name_pharma = "RACHAD TAZA"
+Email_pharma = "bichrjamai@icloud.com"
+receiver_email = "zaiou.ahm@gmail.com"
+Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
+Tel_pharma = "0535285298, 0680061368"
+
+
+
+
+from PyQt5.QtWidgets import QMessageBox
+
+def confirm_sale( interface, titre, message):
+    msg_box = QMessageBox(interface)
+    msg_box.setFixedWidth(1500)  
+    msg_box.setWindowTitle(titre)
+    msg_box.setText(message)
+    msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
+    return msg_box.exec_()

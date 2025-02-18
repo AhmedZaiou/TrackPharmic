@@ -3,16 +3,14 @@ from email.mime.text import MIMEText
 from Frontend.utils.utils import *
 
 
-
-
-class MailSender: 
+class MailSender:
     @staticmethod
-    def send_email( subject, message):
+    def send_email(subject, message):
         # Création du message
         msg = MIMEText(message, "plain", "utf-8")
-        msg['Subject'] = subject
-        msg['From'] = sender_email
-        msg['To'] = receiver_email
+        msg["Subject"] = subject
+        msg["From"] = sender_email
+        msg["To"] = receiver_email
 
         # Envoi de l'email via Gmail SMTP
         try:
@@ -23,4 +21,3 @@ class MailSender:
             return True
         except Exception as e:
             return False
-        

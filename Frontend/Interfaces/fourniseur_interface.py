@@ -1,6 +1,19 @@
 from qtpy.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,QGridLayout,QHeaderView,
-    QTableWidget, QTableWidgetItem, QLabel, QPushButton, QLineEdit, QCheckBox
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGridLayout,
+    QHeaderView,
+    QTableWidget,
+    QTableWidgetItem,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QCheckBox,
+    QMessageBox,
+    
 )
 from qtpy.QtCore import Qt
 
@@ -22,12 +35,17 @@ class Fournisseur_dash:
         # Widget central
         # Layout principal
         main_layout = QVBoxLayout(self.fournisseur_dash)
+        label_titre = QLabel("Ajouter un fournisseur") 
+        label_titre.setObjectName("TitrePage")
+        main_layout.addWidget(label_titre)
         form_layout = QGridLayout()
         self.nom_input = QLineEdit()
         self.nom_input.setPlaceholderText("Entrez le nom du fournisseur")
         self.telephone_input = QLineEdit()
         self.telephone_input.setValidator(phone_validator)
-        self.telephone_input.setPlaceholderText("Entrez le numéro de téléphone du fournisseur")
+        self.telephone_input.setPlaceholderText(
+            "Entrez le numéro de téléphone du fournisseur"
+        )
         self.email_input = QLineEdit()
         self.email_input.setValidator(email_validator)
         self.email_input.setPlaceholderText("Entrez l'email du fournisseur")
@@ -38,53 +56,70 @@ class Fournisseur_dash:
         self.pays_input = QLineEdit()
         self.pays_input.setPlaceholderText("Entrez le pays du fournisseur")
 
+        form_layout.addWidget(QLabel("Nom du Fournisseur :"), 0, 0)
+        form_layout.addWidget(self.nom_input, 0, 1)
+        form_layout.addWidget(QLabel("Téléphone :"), 1, 0)
+        form_layout.addWidget(self.telephone_input, 1, 1)
+        form_layout.addWidget(QLabel("Email :"), 2, 0)
+        form_layout.addWidget(self.email_input, 2, 1)
+        form_layout.addWidget(QLabel("Adresse :"), 3, 0)
+        form_layout.addWidget(self.adresse_input, 3, 1)
+        form_layout.addWidget(QLabel("Ville :"), 4, 0)
+        form_layout.addWidget(self.ville_input, 4, 1)
+        form_layout.addWidget(QLabel("Pays :"), 5, 0)
+        form_layout.addWidget(self.pays_input, 5, 1)
 
-        form_layout.addWidget(QLabel("Nom du Fournisseur :"), 0,0)
-        form_layout.addWidget(self.nom_input , 0,1)
-        form_layout.addWidget(QLabel("Téléphone :"), 1,0)
-        form_layout.addWidget(self.telephone_input , 1,1)
-        form_layout.addWidget(QLabel("Email :"), 2,0)
-        form_layout.addWidget(self.email_input , 2,1)
-        form_layout.addWidget(QLabel("Adresse :"), 3,0)
-        form_layout.addWidget(self.adresse_input , 3,1)
-        form_layout.addWidget(QLabel("Ville :"), 4,0)
-        form_layout.addWidget(self.ville_input , 4,1)
-        form_layout.addWidget(QLabel("Pays :"), 5,0)
-        form_layout.addWidget(self.pays_input , 5,1)
-        
         self.add_button = QPushButton("Ajouter Fournisseur")
         self.add_button.clicked.connect(self.ajouter_fournisseur)
         form_layout.addWidget(self.add_button)
 
         main_layout.addLayout(form_layout)
 
-
         self.table = QTableWidget()
         self.table.setColumnCount(6)
 
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table.setHorizontalHeaderLabels(["Nom", "Téléphone", "Email", "Adresse", "Ville","Pays"])
-        self.remplir_tableau() 
+        self.table.setHorizontalHeaderLabels(
+            ["Nom", "Téléphone", "Email", "Adresse", "Ville", "Pays"]
+        )
+        self.remplir_tableau()
+        # Search bar for filtering
+        self.search_bar = QLineEdit()
+        self.search_bar.setPlaceholderText("Chercher par 'Nom'...")
+        self.search_bar.textChanged.connect(self.filter_table)  # Trigger filter when text changes
+
+        main_layout.addWidget(self.search_bar)
         main_layout.addWidget(self.table)
 
         self.main_interface.content_layout.addWidget(self.fournisseur_dash)
+    def filter_table(self):
+        #if not self.all_data:
+        #    self.load_all_data()
+        # Get the filter text from the search bar
+        filter_text = self.search_bar.text().lower()
+
+        # Loop through all rows and hide/show them based on the search
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, 1)  # Assuming column 0 is 'Nom'
+            if item is not None:
+                if filter_text in item.text().lower():  # Case-insensitive comparison
+                    self.table.setRowHidden(row, False)
+                else:
+                    self.table.setRowHidden(row, True)
 
     def remplir_tableau(self):
         # Exemple de données fictives
-        fournisseurs = Fournisseur.extraire_tous_fournisseurs() 
+        fournisseurs = Fournisseur.extraire_tous_fournisseurs()
 
         self.table.setRowCount(len(fournisseurs))
 
-        for row, fournisseur in enumerate(fournisseurs): 
-                self.table.setItem(row, 0, QTableWidgetItem(fournisseur['nom_fournisseur']))
-                self.table.setItem(row, 1, QTableWidgetItem(fournisseur['telephone']))
-                self.table.setItem(row, 2, QTableWidgetItem(fournisseur['email']))
-                self.table.setItem(row, 3, QTableWidgetItem(fournisseur['adresse']))
-                self.table.setItem(row, 4, QTableWidgetItem(fournisseur['ville']))
-                self.table.setItem(row, 5, QTableWidgetItem(fournisseur['pays']))
-
-
-
+        for row, fournisseur in enumerate(fournisseurs):
+            self.table.setItem(row, 0, QTableWidgetItem(fournisseur["nom_fournisseur"]))
+            self.table.setItem(row, 1, QTableWidgetItem(fournisseur["telephone"]))
+            self.table.setItem(row, 2, QTableWidgetItem(fournisseur["email"]))
+            self.table.setItem(row, 3, QTableWidgetItem(fournisseur["adresse"]))
+            self.table.setItem(row, 4, QTableWidgetItem(fournisseur["ville"]))
+            self.table.setItem(row, 5, QTableWidgetItem(fournisseur["pays"]))
 
     def ajouter_fournisseur(self):
         # Récupération des valeurs des champs
@@ -94,7 +129,15 @@ class Fournisseur_dash:
         adresse = self.adresse_input.text()
         ville = self.ville_input.text()
         pays = self.pays_input.text()
-        Fournisseur.ajouter_fournisseur(nom, telephone, email, adresse, ville, pays) 
+
+        if not (nom and telephone ):
+            QMessageBox.warning(
+                self.main_interface,
+                "Erreur",
+                "Le nom et telephone sont obligatoires.",
+            )
+            return
+        Fournisseur.ajouter_fournisseur(nom, telephone, email, adresse, ville, pays)
         self.nom_input.clear()
         self.telephone_input.clear()
         self.email_input.clear()
@@ -102,9 +145,6 @@ class Fournisseur_dash:
         self.ville_input.clear()
         self.pays_input.clear()
         self.remplir_tableau()
-
-    
-
 
     def toggle_inputs(self):
         if self.checkbox.isChecked():
@@ -168,6 +208,3 @@ class Fournisseur_dash:
         amount = self.amount_input.text()
         print(f"Vente confirmée avec {amount} € payé maintenant.")
         # Logique de confirmation peut être ajoutée ici
-
-
-

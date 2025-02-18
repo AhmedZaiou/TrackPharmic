@@ -1,10 +1,23 @@
-
-from qtpy.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QAction, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QFrame, QLabel, QLineEdit,QMessageBox
-from qtpy.QtCore import Qt,QSize
-from qtpy.QtGui import QPixmap, QIcon 
+from qtpy.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QMenuBar,
+    QMenu,
+    QAction,
+    QVBoxLayout,
+    QHBoxLayout,
+    QPushButton,
+    QWidget,
+    QFrame,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+)
+from qtpy.QtCore import Qt, QSize
+from qtpy.QtGui import QPixmap, QIcon
 
 from Frontend.utils.utils import *
-from Backend.Dataset.salarie import Salaries 
+from Backend.Dataset.salarie import Salaries
 from Backend.Comptabilite.cloturecaisse import *
 import os
 
@@ -14,19 +27,19 @@ class MainInterface(QMainWindow):
         super().__init__()
 
         self.setWindowTitle(name_application)
-        self.setGeometry(100, 100, 1200, 800) # merci de remplire 
-        #self.showFullScreen()
+        self.setGeometry(100, 100, 1200, 800)  # merci de remplire
+        # self.showFullScreen()
         self.setStyleSheet(set_styles())
-        #self.show_main_interface()
+        # self.show_main_interface()
         self.show_login_interface()
         self.setFocusPolicy(Qt.StrongFocus)
-        #self.create_database()
-    
-
+        # self.create_database()
 
     def create_database(self):
-        import json 
-        from Backend.Dataset.client import Clients  # Assurez-vous de l'existence des classes appropriées
+        import json
+        from Backend.Dataset.client import (
+            Clients,
+        )  # Assurez-vous de l'existence des classes appropriées
         from Backend.Dataset.commande import Commandes
         from Backend.Dataset.credit import Credit
         from Backend.Dataset.echanges import Echanges
@@ -39,14 +52,13 @@ class MainInterface(QMainWindow):
         from Backend.Dataset.ventes import Ventes
         from Backend.Dataset.retour import Retour
 
-        
-        #Medicament.supprimer_toute_base_donnees()
+        # Medicament.supprimer_toute_base_donnees()
 
         Clients.create_table_clients()
         Stock.create_table_stock()
         Commandes.create_table_commandes()
         Credit.create_table_credit()
-        Echanges.create_table_echanges() 
+        Echanges.create_table_echanges()
         Fournisseur.create_table_fournisseur()
         Medicament.create_table_medicament()
         Payment.create_table_payment()
@@ -54,39 +66,50 @@ class MainInterface(QMainWindow):
         Ventes.create_table_ventes()
         Salaries.create_table_salaries()
         Retour.create_table_retours()
-        Salaries.ajouter_salarie( "user", "prenom", "cin", "telephone", "email", "adresse", "photo", "salaire", "type_contrat", "date_embauche", "admin", "user")
-
-
-
-     
+        Salaries.ajouter_salarie(
+            "user",
+            "prenom",
+            "cin",
+            "telephone",
+            "email",
+            "adresse",
+            "photo",
+            "salaire",
+            "type_contrat",
+            "date_embauche",
+            "admin",
+            "user",
+        )
 
     def show_login_interface(self):
-        
         self.central_widget = QWidget(self)
-        self.setCentralWidget(self.central_widget) 
+        self.setCentralWidget(self.central_widget)
         self.central_widget.setObjectName("widgetGeneral")
         self.central_widget = QWidget()
-        self.central_widget.setObjectName("widgetGeneral")  
+        self.central_widget.setObjectName("widgetGeneral")
 
-        self.main_layout_p = QVBoxLayout(self.central_widget) 
-        
+        self.main_layout_p = QVBoxLayout(self.central_widget)
+
         self.setCentralWidget(self.central_widget)
 
         self.central_widget = QWidget()
-        self.central_widget.setObjectName("main") 
-        
+        self.central_widget.setObjectName("main")
 
-        self.main_layout = QVBoxLayout(self.central_widget) 
+        self.main_layout = QVBoxLayout(self.central_widget)
 
         # Ajouter le logo de l'application
         self.logo_label = QLabel()
-        pixmap = QPixmap(app_logo)  # Remplacez "path_to_logo_image" par le chemin de votre image
-        pixmap = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)  # Réduire la taille du logo
+        pixmap = QPixmap(
+            app_logo
+        )  # Remplacez "path_to_logo_image" par le chemin de votre image
+        pixmap = pixmap.scaled(
+            150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation
+        )  # Réduire la taille du logo
         self.logo_label.setPixmap(pixmap)
         self.logo_label.setObjectName("logo")
         self.main_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)
         # Ajouter le titre de l'application
-        self.title_label = QLabel("Titre de l'application")
+        self.title_label = QLabel(Name_pharma)
         self.title_label.setObjectName("titlelogo")
 
         # Créer un widget pour contenir le logo et le titre
@@ -98,18 +121,16 @@ class MainInterface(QMainWindow):
 
         self.main_layout.addWidget(logo_title_widget, alignment=Qt.AlignCenter)
 
-        
-     
         # Page de connexion
         self.login_frame = QFrame()
-        self.login_frame.setFixedSize(400, 400)  # Frame carrée avec taille fixe 
+        self.login_frame.setFixedSize(400, 400)  # Frame carrée avec taille fixe
         self.main_layout.addWidget(self.login_frame, alignment=Qt.AlignCenter)
         self.login_frame.setObjectName("loginframe")
         # Layout de la frame de connexion
         self.login_layout = QVBoxLayout(self.login_frame)
         self.connexion = QLabel("Connexion")
-        self.connexion.setObjectName('connexionlab')
-        self.login_layout.addWidget(self.connexion )
+        self.connexion.setObjectName("connexionlab")
+        self.login_layout.addWidget(self.connexion)
         self.user_label = QLabel("Utilisateur :")
         self.login_layout.addWidget(self.user_label)
         self.user_entry = QLineEdit()
@@ -131,38 +152,34 @@ class MainInterface(QMainWindow):
 
         self.main_layout_p.addWidget(self.central_widget)
 
-        
-        
-
     def login(self):
         login = self.user_entry.text()
-        password = self.password_entry.text() 
-        self.user_session = Salaries.extraire_salarie_login(login, password) 
+        password = self.password_entry.text()
+        self.user_session = Salaries.extraire_salarie_login(login, password)
         if self.user_session is None:
-            QMessageBox.information(self, "Erreur de connexion", "Mot de passe ou utilisateur incorrect")
-        elif self.user_session['grade'] == "admin":
+            QMessageBox.information(
+                self, "Erreur de connexion", "Mot de passe ou utilisateur incorrect"
+            )
+        elif self.user_session["grade"] == "admin":
             self.show_main_interface()
-        else: 
-            self.show_main_interface_salarie()  
+        else:
+            self.show_main_interface_salarie()
 
     def show_main_interface(self):
         # Widget central
         self.central_widget = QWidget(self)
-        self.setCentralWidget(self.central_widget)  
+        self.setCentralWidget(self.central_widget)
         self.current_input = ""
 
         self.central_widget.setObjectName("widgetGeneral")
 
-        
         self.main_layout = QVBoxLayout(self.central_widget)
 
-        
         self.top_menu_frame = QFrame(self)
         self.top_menu_frame.setObjectName("topmenu")
         self.top_menu_frame.setFixedHeight(100)  # Hauteur du menu vertical
         self.main_layout.addWidget(self.top_menu_frame)
 
-        
         self.top_menu_layout = QHBoxLayout(self.top_menu_frame)
 
         profile_widget = QWidget()
@@ -171,15 +188,19 @@ class MainInterface(QMainWindow):
 
         # Ajouter une image de profil
         profile_image = QLabel()
-        if not os.path.isfile(self.user_session['photo']) :
-            self.user_session['photo'] = profile_salarie
-        pixmap = QPixmap(self.user_session['photo'])  # Remplacez par le chemin de votre image
+        if not os.path.isfile(self.user_session["photo"]):
+            self.user_session["photo"] = profile_salarie
+        pixmap = QPixmap(
+            self.user_session["photo"]
+        )  # Remplacez par le chemin de votre image
         pixmap = pixmap.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         profile_image.setPixmap(pixmap)
         profile_image.setAlignment(Qt.AlignCenter)
 
         # Ajouter un nom de profil
-        profile_name = QLabel(str(self.user_session['nom']+" "+self.user_session['prenom'])) 
+        profile_name = QLabel(
+            str(self.user_session["nom"] + " " + self.user_session["prenom"])
+        )
         profile_name.setAlignment(Qt.AlignCenter)
         profile_name.setStyleSheet("font-size: 14px; font-weight: bold; align: left;")
 
@@ -190,22 +211,34 @@ class MainInterface(QMainWindow):
         # Ajouter le widget de profil au menu gauche
         self.top_menu_layout.addWidget(profile_widget)
 
-        self.deconexion_bouton = self.create_button_with_icon("Déconnexion", deconexion_logo)
-        self.salarie_bouton = self.create_button_with_icon("Gesion Salariés", salare_logo)
-        self.kpi_bouton = self.create_button_with_icon("Comptabilité de la pharmacie", kpi_logo)
-        self.medicament_bouton = self.create_button_with_icon("Gestion des médicaments", medicament_logo)
-        self.fournisseur_bouton = self.create_button_with_icon("Gestion des fournisseurs", fournisseur_logo)
+        self.deconexion_bouton = self.create_button_with_icon(
+            "Déconnexion", deconexion_logo
+        )
+        self.salarie_bouton = self.create_button_with_icon(
+            "Gesion Salariés", salare_logo
+        )
+        self.kpi_bouton = self.create_button_with_icon(
+            "Comptabilité de la pharmacie", kpi_logo
+        )
+        self.medicament_bouton = self.create_button_with_icon(
+            "Gestion des médicaments", medicament_logo
+        )
+        self.fournisseur_bouton = self.create_button_with_icon(
+            "Gestion des fournisseurs", fournisseur_logo
+        )
 
-        self.list_stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
+        self.list_stock_bouton = self.create_button_with_icon(
+            "Gestion de stock", stock_logo
+        )
 
         self.top_menu_layout.addWidget(self.fournisseur_bouton)
         self.top_menu_layout.addWidget(self.medicament_bouton)
 
-        self.top_menu_layout.addWidget(self.list_stock_bouton )
+        self.top_menu_layout.addWidget(self.list_stock_bouton)
 
         self.top_menu_layout.addWidget(self.salarie_bouton)
         self.top_menu_layout.addWidget(self.kpi_bouton)
-        # Ajouter des boutons dans le menu vertical du haut 
+        # Ajouter des boutons dans le menu vertical du haut
         self.top_menu_layout.addWidget(self.deconexion_bouton)
 
         self.fournisseur_bouton.clicked.connect(self.fournisseur_click)
@@ -214,7 +247,6 @@ class MainInterface(QMainWindow):
         self.kpi_bouton.clicked.connect(self.compta_click)
         self.deconexion_bouton.clicked.connect(self.deconexion_click)
 
-
         self.base_widget = QWidget()
         self.base_layout = QHBoxLayout(self.base_widget)
 
@@ -228,14 +260,28 @@ class MainInterface(QMainWindow):
         self.left_menu_layout = QVBoxLayout(self.left_menu_frame)
 
         self.acceuil_bouton = self.create_button_with_icon("Acceuil", acceuil_logo)
-        self.commande_bouton = self.create_button_with_icon("Gestion des commandes", commande_logo)
-        self.credit_bouton = self.create_button_with_icon("Gestion des crédits", credit_logo)
-        self.vente_bouton = self.create_button_with_icon("Gestion des ventes", vente_logo)
-        self.retour_bouton = self.create_button_with_icon("Gestion des retours", retour_logo)
-        self.client_bouton = self.create_button_with_icon("Gestion des clients", client_logo)
-        self.echange_bouton = self.create_button_with_icon("Gestion des échanges", echange_logo)
+        self.commande_bouton = self.create_button_with_icon(
+            "Gestion des commandes", commande_logo
+        )
+        self.credit_bouton = self.create_button_with_icon(
+            "Gestion des crédits", credit_logo
+        )
+        self.vente_bouton = self.create_button_with_icon(
+            "Gestion des ventes", vente_logo
+        )
+        self.retour_bouton = self.create_button_with_icon(
+            "Gestion des retours", retour_logo
+        )
+        self.client_bouton = self.create_button_with_icon(
+            "Gestion des clients", client_logo
+        )
+        self.echange_bouton = self.create_button_with_icon(
+            "Gestion des échanges", echange_logo
+        )
         self.stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
-        self.ferme_bouton = self.create_button_with_icon("Cloturé la caisse", ferme_logo)
+        self.ferme_bouton = self.create_button_with_icon(
+            "Cloturé la caisse", ferme_logo
+        )
 
         self.acceuil_bouton.clicked.connect(self.acceuil_click)
         self.commande_bouton.clicked.connect(self.commande_click)
@@ -248,7 +294,6 @@ class MainInterface(QMainWindow):
         self.ferme_bouton.clicked.connect(self.cloture_clic)
 
         self.list_stock_bouton.clicked.connect(self.list_stock_click)
-
 
         # Ajouter des boutons dans le menu gauche
         self.left_menu_layout.addWidget(self.acceuil_bouton)
@@ -275,26 +320,22 @@ class MainInterface(QMainWindow):
         # Créer les menus (Menu horizontal en haut et menu latéral)
         self.create_menus()
         self.acceuil_click()
-    
-    
+
     def show_main_interface_salarie(self):
         # Widget central
         self.central_widget = QWidget(self)
-        self.setCentralWidget(self.central_widget)  
+        self.setCentralWidget(self.central_widget)
         self.current_input = ""
 
         self.central_widget.setObjectName("widgetGeneral")
 
-        
         self.main_layout = QVBoxLayout(self.central_widget)
 
-        
         self.top_menu_frame = QFrame(self)
         self.top_menu_frame.setObjectName("topmenu")
         self.top_menu_frame.setFixedHeight(100)  # Hauteur du menu vertical
         self.main_layout.addWidget(self.top_menu_frame)
 
-        
         self.top_menu_layout = QHBoxLayout(self.top_menu_frame)
 
         profile_widget = QWidget()
@@ -303,15 +344,19 @@ class MainInterface(QMainWindow):
 
         # Ajouter une image de profil
         profile_image = QLabel()
-        if not os.path.isfile(self.user_session['photo']) :
-            self.user_session['photo'] = profile_salarie
-        pixmap = QPixmap(self.user_session['photo'])  # Remplacez par le chemin de votre image
+        if not os.path.isfile(self.user_session["photo"]):
+            self.user_session["photo"] = profile_salarie
+        pixmap = QPixmap(
+            self.user_session["photo"]
+        )  # Remplacez par le chemin de votre image
         pixmap = pixmap.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         profile_image.setPixmap(pixmap)
         profile_image.setAlignment(Qt.AlignCenter)
 
         # Ajouter un nom de profil
-        profile_name = QLabel(str(self.user_session['nom']+" "+self.user_session['prenom'])) 
+        profile_name = QLabel(
+            str(self.user_session["nom"] + " " + self.user_session["prenom"])
+        )
         profile_name.setAlignment(Qt.AlignCenter)
         profile_name.setStyleSheet("font-size: 14px; font-weight: bold; align: left;")
 
@@ -322,23 +367,30 @@ class MainInterface(QMainWindow):
         # Ajouter le widget de profil au menu gauche
         self.top_menu_layout.addWidget(profile_widget)
 
-        self.deconexion_bouton = self.create_button_with_icon("Déconnexion", deconexion_logo)
-        self.medicament_bouton = self.create_button_with_icon("Gestion des médicaments", medicament_logo)
-        self.fournisseur_bouton = self.create_button_with_icon("Gestion des fournisseurs", fournisseur_logo)
-        self.list_stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
+        self.deconexion_bouton = self.create_button_with_icon(
+            "Déconnexion", deconexion_logo
+        )
+        self.medicament_bouton = self.create_button_with_icon(
+            "Gestion des médicaments", medicament_logo
+        )
+        self.fournisseur_bouton = self.create_button_with_icon(
+            "Gestion des fournisseurs", fournisseur_logo
+        )
+        self.list_stock_bouton = self.create_button_with_icon(
+            "Gestion de stock", stock_logo
+        )
 
         self.top_menu_layout.addWidget(self.fournisseur_bouton)
         self.top_menu_layout.addWidget(self.medicament_bouton)
-        self.top_menu_layout.addWidget(self.list_stock_bouton )
-  
-        # Ajouter des boutons dans le menu vertical du haut 
+        self.top_menu_layout.addWidget(self.list_stock_bouton)
+
+        # Ajouter des boutons dans le menu vertical du haut
         self.top_menu_layout.addWidget(self.deconexion_bouton)
 
         self.fournisseur_bouton.clicked.connect(self.fournisseur_click)
-        self.medicament_bouton.clicked.connect(self.medicament_click) 
+        self.medicament_bouton.clicked.connect(self.medicament_click)
         self.deconexion_bouton.clicked.connect(self.deconexion_click)
         self.list_stock_bouton.clicked.connect(self.list_stock_click)
-
 
         self.base_widget = QWidget()
         self.base_layout = QHBoxLayout(self.base_widget)
@@ -353,14 +405,28 @@ class MainInterface(QMainWindow):
         self.left_menu_layout = QVBoxLayout(self.left_menu_frame)
 
         self.acceuil_bouton = self.create_button_with_icon("Acceuil", acceuil_logo)
-        self.commande_bouton = self.create_button_with_icon("Gestion des commandes", commande_logo)
-        self.credit_bouton = self.create_button_with_icon("Gestion des crédits", credit_logo)
-        self.vente_bouton = self.create_button_with_icon("Gestion des ventes", vente_logo)
-        self.retour_bouton = self.create_button_with_icon("Gestion des retours", retour_logo)
-        self.client_bouton = self.create_button_with_icon("Gestion des clients", client_logo)
-        self.echange_bouton = self.create_button_with_icon("Gestion des échanges", echange_logo)
+        self.commande_bouton = self.create_button_with_icon(
+            "Gestion des commandes", commande_logo
+        )
+        self.credit_bouton = self.create_button_with_icon(
+            "Gestion des crédits", credit_logo
+        )
+        self.vente_bouton = self.create_button_with_icon(
+            "Gestion des ventes", vente_logo
+        )
+        self.retour_bouton = self.create_button_with_icon(
+            "Gestion des retours", retour_logo
+        )
+        self.client_bouton = self.create_button_with_icon(
+            "Gestion des clients", client_logo
+        )
+        self.echange_bouton = self.create_button_with_icon(
+            "Gestion des échanges", echange_logo
+        )
         self.stock_bouton = self.create_button_with_icon("Gestion de stock", stock_logo)
-        self.ferme_bouton = self.create_button_with_icon("Cloturé la caisse", ferme_logo)
+        self.ferme_bouton = self.create_button_with_icon(
+            "Cloturé la caisse", ferme_logo
+        )
 
         self.acceuil_bouton.clicked.connect(self.acceuil_click)
         self.commande_bouton.clicked.connect(self.commande_click)
@@ -371,7 +437,6 @@ class MainInterface(QMainWindow):
         self.stock_bouton.clicked.connect(self.stock_click)
         self.ferme_bouton.clicked.connect(self.cloture_clic)
         self.retour_bouton.clicked.connect(self.retour_click)
-
 
         # Ajouter des boutons dans le menu gauche
         self.left_menu_layout.addWidget(self.acceuil_bouton)
@@ -398,87 +463,102 @@ class MainInterface(QMainWindow):
         # Créer les menus (Menu horizontal en haut et menu latéral)
         self.create_menus()
         self.acceuil_click()
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     def keyPressEvent(self, event):
         """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
         pass
-    
-        
-
 
     def acceuil_click(self):
         from .acceuil_interface import Acceuil_dash
-        self.main_interface = Acceuil_dash(self) 
+
+        self.main_interface = Acceuil_dash(self)
 
     def client_click(self):
         from .client_interface import Client_dash
-        self.main_interface = Client_dash(self) 
-        
+
+        self.main_interface = Client_dash(self)
+
     def commande_click(self):
         from .comande_interface import Commande_dash
-        self.main_interface = Commande_dash(self) 
-        
+
+        self.main_interface = Commande_dash(self)
+
     def credit_click(self):
         from .credit_interface import Credit_dash
-        self.main_interface = Credit_dash(self) 
+
+        self.main_interface = Credit_dash(self)
+
     def echange_click(self):
         from .echange_interface import Echange_dash
-        self.main_interface = Echange_dash(self) 
-    def cloture_clic(self):  
-        reply = QMessageBox.question(self, "Confirmation de cloture", "Merci de confirlé la cloture de la journée",
-                                 QMessageBox.Yes, QMessageBox.Cancel)
+
+        self.main_interface = Echange_dash(self)
+
+    def cloture_clic(self):
+        reply = QMessageBox.question(
+            self,
+            "Confirmation de cloture",
+            "Merci de confirlé la cloture de la journée",
+            QMessageBox.Yes,
+            QMessageBox.Cancel,
+        )
 
         if reply == QMessageBox.Yes:
-
             caisse = Caisse()
             caisse.fermeture_de_caisse()
-        
+
     def medicament_click(self):
         from .medicament_interface import Medicament_dash
-        self.main_interface = Medicament_dash(self) 
+
+        self.main_interface = Medicament_dash(self)
+
     def salarie_click(self):
         from .salarie_interface import Salarie_dash
-        self.main_interface = Salarie_dash(self) 
+
+        self.main_interface = Salarie_dash(self)
+
     def stock_click(self):
         from .stock_interface import Stock_dash
-        self.main_interface = Stock_dash(self) 
+
+        self.main_interface = Stock_dash(self)
+
     def vente_click(self):
         from .vente_interface import Vente_dash
+
         self.main_interface = Vente_dash(self)
+
     def retour_click(self):
         from .retour_interface import Retour_dash
+
         self.main_interface = Retour_dash(self)
+
     def compta_click(self):
         from .compta_interface import Compta_dash
+
         self.main_interface = Compta_dash(self)
+
     def fournisseur_click(self):
         from .fourniseur_interface import Fournisseur_dash
+
         self.main_interface = Fournisseur_dash(self)
+
     def medicament_click(self):
         from .medicament_interface import Medicament_dash
+
         self.main_interface = Medicament_dash(self)
+
     def list_stock_click(self):
         from .stock_element_interface import List_stock_dash
-        self.main_interface = List_stock_dash(self)
-    def deconexion_click(self): 
-        self.close() 
-    
 
-    
-    
+        self.main_interface = List_stock_dash(self)
+
+    def deconexion_click(self):
+        self.close()
+
     def create_button_with_icon(self, text, icon_path):
         # Créer un bouton avec une image
         button = QPushButton("")
         button.setObjectName("ButtonWithLogo")
-        button.setToolTip(text) 
+        button.setToolTip(text)
         icon = QIcon(icon_path)
 
         if not icon.isNull():  # Vérifie si l'icône est valide
@@ -487,7 +567,6 @@ class MainInterface(QMainWindow):
         else:
             print(f"L'image '{icon_path}' n'a pas été trouvée ou est invalide.")
         return button
-
 
     def create_menus(self):
         # Menu barre supérieure (horizontal)
@@ -517,12 +596,8 @@ class MainInterface(QMainWindow):
         about_action = QAction("À propos", self)
         help_menu.addAction(about_action)
 
-
-
-
     def clear_content_frame(self):
         for i in reversed(range(self.content_layout.count())):
             widget = self.content_layout.itemAt(i).widget()
             if widget:
                 widget.deleteLater()
-     

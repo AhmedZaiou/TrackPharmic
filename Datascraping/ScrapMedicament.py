@@ -2,18 +2,21 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
+
 def scrape_medicaments(url):
     # Télécharger le contenu de la page
-    response = requests.get(url,  verify=False)
+    response = requests.get(url, verify=False)
     if response.status_code != 200:
         print(f"Erreur lors de l'accès à la page: {response.status_code}")
         return None
 
     # Parse le HTML avec BeautifulSoup
     soup = BeautifulSoup(response.content, "html.parser")
-    
+
     # Trouver la section des médicaments
-    medicament_table = soup.find("table")  # Supposant que les médicaments sont dans une table
+    medicament_table = soup.find(
+        "table"
+    )  # Supposant que les médicaments sont dans une table
     if not medicament_table:
         print("Table des médicaments introuvable.")
         return None
@@ -29,14 +32,19 @@ def scrape_medicaments(url):
 
     return medicament_data
 
+
 # URL cible
 url = "https://dmp.sante.gov.ma/basesdedonnes/listes-medicaments"
 
-list_url = [f"https://dmp.sante.gov.ma/basesdedonnes/listes-medicaments?page={i}&search=" for i in range(2,200)]
+list_url = [
+    f"https://dmp.sante.gov.ma/basesdedonnes/listes-medicaments?page={i}&search="
+    for i in range(2, 200)
+]
 list_url.append(url)
 # Scraper les données
-data=[]
+data = []
 for url in list_url:
-
     data += scrape_medicaments(url)
-pd.DataFrame(data).to_csv("/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Datascraping/scrapedData/DMPdata-.csv")
+pd.DataFrame(data).to_csv(
+    "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Datascraping/scrapedData/DMPdata-.csv"
+)

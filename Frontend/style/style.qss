@@ -52,6 +52,7 @@ background-color: white;
     color: black; /* Couleur du texte */
     text-align: center; /* Centrer le titre */
     margin-bottom: 20px; /* Espacement sous le titre */    
+    font-weight: bold;  
     
 }
 #logoTitle{
