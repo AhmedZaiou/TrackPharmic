@@ -524,6 +524,9 @@ class Echange_dash:
             QMessageBox.information(
                 self.main_interface, "Echange effectué", "Echange effectué avec succès"
             )
+            self.name_pharma.clear()
+            self.producs_table = pd.DataFrame()
+            self.update_table()
 
     def envoyer(self, state):
         if state == 2:
@@ -666,18 +669,21 @@ class Echange_dash:
         return ""
 
     def keyPressEvent(self, event):
-        key = event.text()
-        current_time = time.time()
-        if current_time - self.last_key_time < self.barcode_delay_threshold:
-            code_b = True
-        self.last_key_time = current_time
-        if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
-            self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
-            if self.code_barre_scanner != "":
-                self.add_medicament_to_echange(self.code_barre_scanner)
-                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-        else:
-            self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        try:
+            key = event.text()
+            current_time = time.time()
+            if current_time - self.last_key_time < self.barcode_delay_threshold:
+                code_b = True
+            self.last_key_time = current_time
+            if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
+                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+                if self.code_barre_scanner != "":
+                    self.add_medicament_to_echange(self.code_barre_scanner)
+                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
+            else:
+                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        except:
+            print("Erreur")
 
     def add_medicament_to_echange(self, code_barre_scanner):
         if (
@@ -770,21 +776,24 @@ class Echange_dash:
 
 
     def keyPressEvent_recu(self, event):
-        key = event.text()
-        current_time = time.time()
-        if current_time - self.last_key_time < self.barcode_delay_threshold:
-            code_b = True
-        else:
-            code_b = False
-        self.last_key_time = current_time
-        if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
-            self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
-            if self.code_barre_scanner != "":
-                self.code_barre_value_ajout.setText(self.code_barre_scanner)
-                self.remplir_medicament_cases(self.code_barre_scanner)
-                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-        else:
-            self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        try:
+            key = event.text()
+            current_time = time.time()
+            if current_time - self.last_key_time < self.barcode_delay_threshold:
+                code_b = True
+            else:
+                code_b = False
+            self.last_key_time = current_time
+            if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
+                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+                if self.code_barre_scanner != "":
+                    self.code_barre_value_ajout.setText(self.code_barre_scanner)
+                    self.remplir_medicament_cases(self.code_barre_scanner)
+                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
+            else:
+                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        except:
+            print("erreur")
 
     def remplir_medicament_cases(self, code_barre_scanner):
         self.medicament_search = Medicament.extraire_medicament_code_barre(

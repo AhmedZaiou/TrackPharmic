@@ -370,20 +370,23 @@ class Vente_dash:
                     self.update_table()
 
     def keyPressEvent(self, event):
-        key = event.text()
-        current_time = time.time()
-        if current_time - self.last_key_time < self.barcode_delay_threshold:
-            self.code_b = True
-        self.last_key_time = current_time
+        try:
+            key = event.text()
+            current_time = time.time()
+            if current_time - self.last_key_time < self.barcode_delay_threshold:
+                self.code_b = True
+            self.last_key_time = current_time
 
-        if key == "\r" and self.code_b:  # Lorsque le lecteur envoie un saut de ligne
-            self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
-            if self.code_barre_scanner != "":
-                self.add_medicament_to_vente(self.code_barre_scanner)
-                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-            self.code_b = False
-        else:
-            self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+            if key == "\r" and self.code_b:  # Lorsque le lecteur envoie un saut de ligne
+                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+                if self.code_barre_scanner != "":
+                    self.add_medicament_to_vente(self.code_barre_scanner)
+                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
+                self.code_b = False
+            else:
+                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        except:
+            print('Erreur')
 
     def process_barcode_manuel(self):
         pass

@@ -193,27 +193,30 @@ class Medicament_dash:
             ) 
 
     def keyPressEvent(self, event):
-        """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
-        key = event.text()
+        try:
+            """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
+            key = event.text()
 
-        if key == "\r":  # Lorsque le lecteur envoie un saut de ligne
-            if len(self.code_barre_scanner) == 13:
-                self.code_ean_input.setText(self.code_barre_scanner)
-                self.medicament_search = Medicament.extraire_medicament_code_barre(
-                    self.code_barre_scanner
-                )
-                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-                if self.medicament_search is not None:
-                    reply = QMessageBox.question(
-                        self.main_interface,
-                        "Confirmation",
-                        "Le médicament existe déjà, voulez-vous le modifier ?",
-                        QMessageBox.Yes | QMessageBox.No,
+            if key == "\r":  # Lorsque le lecteur envoie un saut de ligne
+                if len(self.code_barre_scanner) == 13:
+                    self.code_ean_input.setText(self.code_barre_scanner)
+                    self.medicament_search = Medicament.extraire_medicament_code_barre(
+                        self.code_barre_scanner
                     )
-                    if reply == QMessageBox.Yes:
-                        self.modifier_medicament_inter(self.code_barre_scanner)
-        else:
-            self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
+                    if self.medicament_search is not None:
+                        reply = QMessageBox.question(
+                            self.main_interface,
+                            "Confirmation",
+                            "Le médicament existe déjà, voulez-vous le modifier ?",
+                            QMessageBox.Yes | QMessageBox.No,
+                        )
+                        if reply == QMessageBox.Yes:
+                            self.modifier_medicament_inter(self.code_barre_scanner)
+            else:
+                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        except:
+            print('erreur')
 
     def modifier_medicament_inter(self, code_ean):
         self.show_modifier_interface()

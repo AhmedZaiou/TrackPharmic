@@ -397,6 +397,7 @@ class Stock_dash:
         self.date_expiration_medicament.setDate(QDate.currentDate().addYears(2))
         self.prix_achat_medicament.clear()
         self.prix_vente_medicament.clear()
+        self.code_barre_value.clear()
         self.quantite_commender_value.clear()
 
 
@@ -526,20 +527,23 @@ class Stock_dash:
         return ""
 
     def keyPressEventLibre(self, event):
-        """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
-        key = event.text()
-        current_time = time.time()
-        if current_time - self.last_key_time < self.barcode_delay_threshold:
-            code_b = True
-        self.last_key_time = current_time
-        if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
-            self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
-            if self.code_barre_scanner != "":
-                self.code_barre_value_ajout.setText(self.code_barre_scanner)
-                self.remplir_medicament_ajout(self.code_barre_scanner)
-                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-        else:
-            self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        try:
+            """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
+            key = event.text()
+            current_time = time.time()
+            if current_time - self.last_key_time < self.barcode_delay_threshold:
+                code_b = True
+            self.last_key_time = current_time
+            if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
+                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+                if self.code_barre_scanner != "":
+                    self.code_barre_value_ajout.setText(self.code_barre_scanner)
+                    self.remplir_medicament_ajout(self.code_barre_scanner)
+                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
+            else:
+                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        except:
+            print("Erreurs")
 
     def remplir_medicament_ajout(self, code_barre_scanner):
         self.medicament_search = Medicament.extraire_medicament_code_barre(
@@ -567,19 +571,22 @@ class Stock_dash:
             )
 
     def keyPressEvent(self, event):
-        key = event.text()
-        current_time = time.time()
-        if current_time - self.last_key_time < self.barcode_delay_threshold:
-            code_b = True
-        self.last_key_time = current_time
-        if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
-            self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
-            if self.code_barre_scanner != "":
-                self.code_barre_value.setText(self.code_barre_scanner)
-                self.remplir_medicament_cases(self.code_barre_scanner)
-                self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-        else:
-            self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        try:
+            key = event.text()
+            current_time = time.time()
+            if current_time - self.last_key_time < self.barcode_delay_threshold:
+                code_b = True
+            self.last_key_time = current_time
+            if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
+                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+                if self.code_barre_scanner != "":
+                    self.code_barre_value.setText(self.code_barre_scanner)
+                    self.remplir_medicament_cases(self.code_barre_scanner)
+                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
+            else:
+                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+        except:
+            print('Erreur')
 
     def remplir_medicament_cases(self, code_barre_scanner):
         self.medicament_search = Medicament.extraire_medicament_code_barre(
