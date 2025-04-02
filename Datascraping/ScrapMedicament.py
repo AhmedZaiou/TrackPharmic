@@ -39,4 +39,4 @@ data=[]
 for url in list_url:
 
     data += scrape_medicaments(url)
-pd.DataFrame(data).to_csv("/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Datascraping/scrapedData/DMPdata-.csv")
+pd.DataFrame(data).to_csv("/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Datascraping/scrapedData/DMPdata-ppp.csv")
