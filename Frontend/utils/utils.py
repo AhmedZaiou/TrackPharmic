@@ -11,6 +11,8 @@ images = Tracpharmic / "images"
 dataset = Tracpharmic / "dataset" / "pharmadataset.db"
 name_application = "TracPharmic"
 
+matricul_pharma = '01'
+
 
 def set_styles():
     try:

@@ -30,7 +30,19 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import time
+from io import BytesIO
+import base64
 
+import tempfile
+import os
+from xhtml2pdf import pisa
+import barcode
+from barcode.writer import ImageWriter
+from PIL import Image
+
+if os.name == 'nt': 
+    import win32api
+    import win32print
 
 class Vente_dash:
     def __init__(self, main_interface):
@@ -295,6 +307,7 @@ class Vente_dash:
         self.producs_table.loc[row, "Prix_total"] = (
             new_quantity * self.producs_table.loc[row, "Prix_Public_de_Vente"]
         )
+        self.producs_table = self.producs_table[self.producs_table["Quantite"] != 0]
         self.update_table()
 
     def add_medicament_to_vente(self, code_barre_scanner):
@@ -427,12 +440,35 @@ class Vente_dash:
             )
             self.main_interface = Vente_dash(self.main_interface)
 
+    def generate_barcode(self, barcode_data): 
+        options = {
+        'module_width': 200 / 1000,  # Adjust module width (barcode thickness)
+        'module_height':2.5,  # Barcode height
+        'font_size': 3,  # Font size for the label (you can adjust this)
+        'text_distance': 2,  # Distance between the barcode and text
+        'quiet_zone': 1,  # Quiet zone (padding) around the barcode
+        } 
+        barcode_format = barcode.get_barcode_class('EAN13')  # Barcode format (EAN13 in this case)
+        barcode_instance = barcode_format(barcode_data, writer=ImageWriter())
+
+        # Save the barcode as an image file
+        barcode_image = barcode_instance.render(options)  # Generate the barcode image
+        # Save the barcode to a BytesIO object 
+
+        # Resize the image  
+        buffered = BytesIO()
+        barcode_image.save(buffered, format="PNG")
+        # Convert the image to base64
+        barcode_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+
+        return barcode_base64
 
     def confirm_sale(self):
         now = datetime.now()
         now_str = now.strftime("%Y-%m-%d %H:%M:%S")
         id_client = 0 if self.client_info is None else self.client_info["id_client"]
         numero_facture = int(now.timestamp())
+        
         id_salarie = self.main_interface.user_session["id_salarie"]
  
         if self.producs_table.empty :
@@ -443,25 +479,27 @@ class Vente_dash:
             )
             return
         
-        
-        
-
-
         message = f"""
             <!DOCTYPE html>
             <html>
             <body>
-                <h2>Pharmacie Hajra</h2>
-                <p><strong>Adresse :</strong> 123, Rue Exemple, Ville, Pays</p>
-                <p><strong>Téléphone :</strong> +212 123 456 789</p>  
-                <h3>Facture n°: {numero_facture}</h3>
+                <h2>RACHAD TAZA</h2>
+                <p><strong>Adresse :</strong> Hay Rachad, Bloc2, n:75, Taza</p>
+                <p><strong>Téléphone :</strong> 0535285298, 0680061368</p>  
+                <p>Facture n°: {numero_facture}</p>
                 <p><strong>Agent :</strong> {self.main_interface.user_session['id_salarie']}</p>
                 <hr>
-                <h4>Client:</h4>
-                <p><strong>Nom :</strong> {self.client_info['nom']} {self.client_info['prenom']}</p>
-                <p><strong>CIN :</strong> {self.client_info['cin']}</p>
-                <p><strong>Crédit Actuel :</strong> {self.client_info['credit_actuel']} Dh</p>
-                <hr>
+                """
+        
+        if self.client_info['nom'] != "Anonyme":
+            message += f"""
+                    <h4>Client:</h4>
+                    <p><strong>Nom :</strong> {self.client_info['nom']} {self.client_info['prenom']}</p>
+                    <p><strong>CIN :</strong> {self.client_info['cin']}</p>
+                    <p><strong>Crédit Actuel :</strong> {self.client_info['credit_actuel']} Dh</p>
+                    <hr>
+                    """
+        message += f"""
 
                 <h4>Détails de la vente:</h4>
                 <table border="1" cellspacing="0" cellpadding="5">
@@ -508,6 +546,7 @@ class Vente_dash:
                             id_salarie,
                             ID_Stock_item]
                         )
+                        
                         self.total_facture += prix_vente_item * quanti_rest_to_hand
                         quantite_traiter += quanti_rest_to_hand
                     else:
@@ -524,6 +563,7 @@ class Vente_dash:
                             id_salarie,
                             ID_Stock_item]
                         )
+                        
                         self.total_facture += prix_vente_item * quanti
                     if quantite_traiter >= quantite_vendue:
                         break
@@ -557,10 +597,9 @@ class Vente_dash:
 
         self.producs_table.reset_index(drop=True)
         
+        barcode_data = f'{matricul_pharma}{numero_facture}0'
         
-
-        
-        
+        image_base64 = self.generate_barcode(barcode_data)
         message +=  f"""
                 </table>
 
@@ -568,7 +607,7 @@ class Vente_dash:
                 <p><strong>Montant payé :</strong> {to_pay_now} Dh</p>
                 <p><strong>Reste à payer :</strong> {total_facture_calculer - int(to_pay_now)} Dh</p>
                 <hr>
-
+                <p><img src="data:image/png;base64,{image_base64}" alt="Logo" style="max-width:10px;max-height:15px;"></p>
                 <p><em>Merci pour votre achat!</em></p>
                 <p><strong>Date :</strong> {now_str}</p>
             </body>
@@ -603,6 +642,7 @@ class Vente_dash:
                     "in progresse",
                     id_salarie,
                 )
+            self.print_ticket(message)
 
             QMessageBox.information(
                 self.main_interface,
@@ -620,6 +660,18 @@ class Vente_dash:
             self.checkbox.setChecked(False)
             self.amount_input.clear() 
             self.producs_table = pd.DataFrame()
+    
+    def print_ticket(self, message_html):
+        print("Conversion du ticket HTML en PDF...")
+        pdf_path = "output.pdf"
+
+        with open("output.pdf", "w+b") as f:
+            pisa.CreatePDF(message_html, dest=f)
+        
+        if os.name == 'nt':  # 'nt' indique Windows 
+            win32api.ShellExecute(0, "print", pdf_path, None, ".", 0)
+        else:
+            os.system(f"lp {pdf_path}")
 
     def ajouter_vente_with_all_operation(
         self,

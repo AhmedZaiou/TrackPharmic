@@ -32,8 +32,9 @@ class Acceuil_dash:
 
         # Premier widget: Tableau des médicaments avec date d'expiration < 2 mois
         widget_medicament_expiration = QWidget()
-        label_titre = QLabel("Liste des médicaments avec date d'expiration < 2 mois")
+        label_titre = QLabel("Médicaments expirant dans moins de 2 mois") 
         label_titre.setObjectName("TitrePage")
+        label_titre.setAlignment(Qt.AlignCenter)
         widget_medicament_expiration_layout = QVBoxLayout(widget_medicament_expiration)
         self.table_widget_medicament_expiration = QTableWidget()
         self.table_widget_medicament_expiration.setColumnCount(4)
@@ -53,9 +54,10 @@ class Acceuil_dash:
         # Troisième widget: Médicaments avec disponibilité de stock < min stock
         widget_disponibilite = QWidget()
         label_titre_disponibilite = QLabel(
-            "Liste des médicaments avec disponibilité de stock < min stock"
+            "Médicaments en dessous du stock minimal requis"
         )
         label_titre_disponibilite.setObjectName("TitrePage")
+        label_titre_disponibilite.setAlignment(Qt.AlignCenter)
         widget_disponibilite_layout = QVBoxLayout(widget_disponibilite)
         self.table_widget_disponibilite = QTableWidget()
         self.table_widget_disponibilite.setColumnCount(4)

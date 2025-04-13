@@ -75,14 +75,14 @@ class Stock_dash:
         menu_layout = self.create_menu_commande()
         main_layout.addLayout(menu_layout)
 
-        self.cart_table = QTableWidget(0, 5)
+        self.cart_table = QTableWidget(0, 4)
         self.cart_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.cart_table.setHorizontalHeaderLabels(
             [
                 "Code commande",
                 "Fourniseur",
                 "Date de comande",
-                "Noms des medicaments",
+                #"Noms des medicaments",
                 "Statue commande",
             ]
         )
@@ -471,11 +471,11 @@ class Stock_dash:
             self.cart_table.setItem(
                 row, 2, QTableWidgetItem(str(product["date_commande"]))
             )
+            #self.cart_table.setItem(
+            #    row, 3, QTableWidgetItem(str(product["Liste_Produits"]))
+            #)
             self.cart_table.setItem(
-                row, 3, QTableWidgetItem(str(product["Liste_Produits"]))
-            )
-            self.cart_table.setItem(
-                row, 4, QTableWidgetItem(str(product["statut_reception"]))
+                row, 3, QTableWidgetItem(str(product["statut_reception"]))
             )
 
     def commande_select(self, row, column):

@@ -65,7 +65,7 @@ class Compta_dash:
         retour_mois = self.transformer_donnees_par_mois(retour_mois)
         ventes_jours = self.transformer_donnees(ventes_jours)
         ventes_mois = self.transformer_donnees_par_mois(ventes_mois)
-        print(credit_jours)
+        
 
         # Prepare data
         self.all_data_jour = {
@@ -116,8 +116,7 @@ class Compta_dash:
         data_transformee = {'mois': [], 'ventes': []}
         aujourd_hui = datetime.today() 
         mois_debut = datetime(aujourd_hui.year, 1, 1)
-        mois_fin = aujourd_hui
-        print("annee ",donnees)
+        mois_fin = aujourd_hui 
         mois_courant = mois_debut
         while mois_courant <= mois_fin:
             mois_str = mois_courant.strftime('%Y-%m')
@@ -165,10 +164,20 @@ class Compta_dash:
 
         # Add the canvases to the layout of the interface
         layout = QVBoxLayout()
-        layout.addWidget(QLabel("Ventes quotidiennes et autres données"))
-        layout.addWidget(self.canvas1)
-        layout.addWidget(QLabel("Ventes mensuelles et autres données"))
+
+        titre_vente_q = QLabel("Ventes quotidiennes et autres données")
+        titre_vente_q.setAlignment(Qt.AlignCenter)
+        titre_vente_q.setObjectName("TitrePage")
+        layout.addWidget(titre_vente_q) 
+        layout.addWidget(self.canvas1) 
+        titre_vente_m = QLabel("Ventes mensuelles et autres données")
+        titre_vente_m.setAlignment(Qt.AlignCenter)
+        titre_vente_m.setObjectName("TitrePage")
+        layout.addWidget(titre_vente_m) 
         layout.addWidget(self.canvas2)
 
         # Set the layout for the vente_dash widget
         self.vente_dash.setLayout(layout)
+
+
+

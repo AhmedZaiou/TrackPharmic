@@ -28,7 +28,7 @@ class MainInterface(QMainWindow):
 
         self.setWindowTitle(name_application)
         self.setGeometry(100, 100, 1200, 800)  # merci de remplire
-        # self.showFullScreen()
+        self.showFullScreen()
         self.setStyleSheet(set_styles())
         # self.show_main_interface()
         self.show_login_interface()

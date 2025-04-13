@@ -37,6 +37,7 @@ class Fournisseur_dash:
         main_layout = QVBoxLayout(self.fournisseur_dash)
         label_titre = QLabel("Ajouter un fournisseur") 
         label_titre.setObjectName("TitrePage")
+        label_titre.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(label_titre)
         form_layout = QGridLayout()
         self.nom_input = QLineEdit()

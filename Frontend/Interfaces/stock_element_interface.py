@@ -31,6 +31,7 @@ class List_stock_dash:
 
         label_titre = QLabel("Liste des médicaments existants dans le stock") 
         label_titre.setObjectName("TitrePage")
+        label_titre.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(label_titre)
 
         # Premier widget: Tableau des médicaments avec date d'expiration < 2 mois

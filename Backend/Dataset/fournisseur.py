@@ -29,6 +29,8 @@ class Fournisseur:
         conn.commit()
         conn.close()
 
+        
+
     @staticmethod
     def ajouter_fournisseur(nom_fournisseur, telephone, email, adresse, ville, pays):
         conn = pymysql.connect(

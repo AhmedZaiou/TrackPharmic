@@ -1,5 +1,8 @@
-qtpy
+qtpy 
 PyQt5
 pandas
 mysql-connector-python
 matplotlib
+python-barcode 
+Pillow
+xhtml2pdf

@@ -187,7 +187,6 @@ class Commande_dash:
 
     def updateCompleter(self, text):
         results = Medicament.extraire_medicament_nom_like_name(text)
-        results
         model = QStringListModel(results)
         self.completer.setModel(model)
 
@@ -204,6 +203,14 @@ class Commande_dash:
             )
         else:
             self.commande.append([code_barre, nom_medicament, quantite])
+            test_existance = False
+            for item in self.commande: 
+                if item[0] == code_barre:
+                    item[2] += 1
+                    test_existance = True
+                    break
+            if not test_existance:
+                self.commande.append([code_barre, nom_medicament, quantite])
             self.product_table.setRowCount(len(self.commande))
             for row, product in enumerate(self.commande):
                 for col, data in enumerate(product):
@@ -221,7 +228,17 @@ class Commande_dash:
             return
         else:
             medicament = dict(medicament)
-            self.commande.append([code_barre_scanner, medicament["Nom"], 1])
+            #self.commande.append([code_barre_scanner, medicament["Nom"], 1])
+
+            test_existance = False
+            for item in self.commande: 
+                if item[0] == code_barre_scanner:
+                    item[2] += 1
+                    test_existance = True
+                    break
+            if not test_existance:
+                self.commande.append([code_barre_scanner, medicament["Nom"], 1])
+
             self.product_table.setRowCount(len(self.commande))
             for row, product in enumerate(self.commande):
                 for col, data in enumerate(product):
