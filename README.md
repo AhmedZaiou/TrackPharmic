@@ -17,3 +17,6 @@ https://dmp.sante.gov.ma/recherche-medicaments
 
 pyinstaller --onefile --windowed --name "Pharma" --add-data  "Frontend/images:Frontend/images" --add-data  "Frontend/style:Frontend/style"  --icon="Frontend/images/pharmacie_bloc.png" main.py
 
+
+
+pyinstaller --onefile --windowed --name "Pharma"   --add-data "Frontend/images:Frontend/images"   --add-data "Frontend/style:Frontend/style"   --icon="Frontend/images/pharmacie_bloc.png" main.py
