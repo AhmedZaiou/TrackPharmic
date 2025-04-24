@@ -646,7 +646,7 @@ class Vente_dash:
                     if quantite_traiter >= quantite_vendue:
                         break
 
-        total_facture_calculer = 0 if self.list_od_commande is None else -float(self.list_od_commande[0]['to_pay_now'])
+        total_facture_calculer = 0 if self.list_od_commande is None or len(self.list_od_commande)==0 else -float(self.list_od_commande[0]['to_pay_now'])
 
         message+= "<hr>"
         
@@ -756,7 +756,7 @@ class Vente_dash:
             pisa.CreatePDF(message_html, dest=f)
         
         if os.name == 'nt':  # 'nt' indique Windows 
-            cmd = [sumatra_path, "-print-to-default", pdf_path]
+            cmd = [sumatra_path, "-print-to-default", "-print-settings", "fit", pdf_path]
             subprocess.run(cmd, shell=False)
 
             #win32api.ShellExecute(0, "print", pdf_path, None, ".", 0)
