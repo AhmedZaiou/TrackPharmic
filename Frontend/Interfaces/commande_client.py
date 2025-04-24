@@ -40,6 +40,9 @@ from xhtml2pdf import pisa
 import barcode
 from barcode.writer import ImageWriter
 from PIL import Image
+import subprocess
+
+
 
 if os.name == 'nt': 
     import win32api
@@ -666,6 +669,7 @@ class Commande_client:
             pisa.CreatePDF(message_html, dest=f)
         
         if os.name == 'nt':  # 'nt' indique Windows 
+            cmd = [sumatra_path, "-print-to-default", "-print-settings", "noscale", pdf_path]
             win32api.ShellExecute(0, "print", pdf_path, None, ".", 0)
         else:
             os.system(f"lp {pdf_path}")

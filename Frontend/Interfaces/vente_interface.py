@@ -42,8 +42,7 @@ import barcode
 from barcode.writer import ImageWriter
 from PIL import Image
 
-import subprocess
-sumatra_path = r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
+import subprocess 
 
 if os.name == 'nt': 
     import win32api
