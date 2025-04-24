@@ -756,7 +756,7 @@ class Vente_dash:
             pisa.CreatePDF(message_html, dest=f)
         
         if os.name == 'nt':  # 'nt' indique Windows 
-            cmd = [sumatra_path, "-print-to-default", "-print-settings", "fit", pdf_path]
+            cmd = [sumatra_path, "-print-to-default", "-print-settings", "noscale", pdf_path]
             subprocess.run(cmd, shell=False)
 
             #win32api.ShellExecute(0, "print", pdf_path, None, ".", 0)
