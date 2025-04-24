@@ -6,3 +6,4 @@ matplotlib
 python-barcode 
 Pillow
 xhtml2pdf
+pywin32

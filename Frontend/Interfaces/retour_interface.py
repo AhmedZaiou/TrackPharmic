@@ -120,9 +120,9 @@ class Retour_dash:
         main_layout.addLayout(formul_layout)
 
 
-        self.medicament_table = QTableWidget(0, 3)  # (0 lignes, 3 colonnes)
+        self.medicament_table = QTableWidget(0, 4)  # (0 lignes, 3 colonnes)
         self.medicament_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.medicament_table.setHorizontalHeaderLabels(["Numéro facture", "Quantité","Date"])
+        self.medicament_table.setHorizontalHeaderLabels(["Numéro facture", "Nom","Quantité","Date"])
         self.remplire_table_retour()
         
 
@@ -150,17 +150,20 @@ class Retour_dash:
                 else:
                     self.medicament_table.setRowHidden(row, True)
     def remplire_table_retour(self):
-        medicaments = Retour.extraire_tous_retours()
+        medicaments = Retour.extraire_tous_table_retours()
         self.medicament_table.setRowCount(len(medicaments))
         for index, element in enumerate(medicaments): 
             self.medicament_table.setItem(
                 index, 0, QTableWidgetItem(str(element["numero_facture"]))
             )
             self.medicament_table.setItem(
-                index, 1, QTableWidgetItem(str(element["quantite_retour"]))
+                index, 1, QTableWidgetItem(str(element["nom_medicament"]))
             )
             self.medicament_table.setItem(
-                index, 2, QTableWidgetItem(str(element["date_retour"]))
+                index, 2, QTableWidgetItem(str(element["quantite_retour"]))
+            )
+            self.medicament_table.setItem(
+                index, 3, QTableWidgetItem(str(element["date_retour"]))
             ) 
 
     def confirmation_retour_seul(self):

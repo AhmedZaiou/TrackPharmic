@@ -1,7 +1,7 @@
 # TrackPharmic
 
 
-
+pyinstaller main.py
 
 https://dmp.sante.gov.ma/recherche-medicaments
 

@@ -36,7 +36,7 @@ smtp_password = "adck kohd tuqu iomh"  # Utiliser un mot de passe d'application
 
 # Définition de l'expéditeur et du destinataire
 sender_email = smtp_user
-receiver_email = "zaiou.ahm@gmail.com"
+receiver_email = "bichrjamai@icloud.com"
 
 
 class Caisse:
@@ -665,3 +665,4 @@ class Caisse:
         """
 
         return html_content
+    

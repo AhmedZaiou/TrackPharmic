@@ -192,7 +192,7 @@ class Clients:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Clients")
+        cursor.execute("SELECT * FROM Clients order by nom;")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -203,7 +203,7 @@ class Clients:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Clients WHERE credit_actuel > 0")
+        cursor.execute("SELECT * FROM Clients WHERE credit_actuel > 0 ORDER BY nom; ")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]

@@ -260,7 +260,16 @@ class Ventes:
         ax.legend()
         return fig
     
-
+    @staticmethod
+    def extraire_ventes_par_numero_facture(numero_facture):
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("SELECT * FROM Ventes WHERE numero_facture = %s", (numero_facture,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows] if rows else []
  
 
     @staticmethod

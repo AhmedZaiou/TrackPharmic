@@ -68,7 +68,44 @@ class Retour:
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
-
+    
+    def extraire_tous_table_retours():
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("""SELECT 
+                            r.id_retour, 
+                            r.id_medicament, 
+                            m.Nom AS nom_medicament,
+                            r.prix, 
+                            r.date_retour, 
+                            r.quantite_retour, 
+                            r.numero_facture, 
+                            r.id_salarie
+                        FROM 
+                            Retours r
+                        JOIN 
+                            Medicament m ON r.id_medicament = m.ID_Medicament
+                        WHERE 
+                            1
+                        LIMIT 30;""")
+        rows = cursor.fetchall()
+        
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    @staticmethod
+    def extraire_retours_par_numero_facture(numero_facture):
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("SELECT * FROM Retours WHERE numero_facture = %s", (numero_facture,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows] if rows else []
+    
     @staticmethod
     def cloture_journee():
         conn = pymysql.connect(

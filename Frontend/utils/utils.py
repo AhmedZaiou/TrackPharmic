@@ -11,7 +11,7 @@ images = Tracpharmic / "images"
 dataset = Tracpharmic / "dataset" / "pharmadataset.db"
 name_application = "TracPharmic"
 
-matricul_pharma = '01'
+matricul_pharma = '10'
 
 
 def set_styles():
@@ -40,11 +40,13 @@ fournisseur_logo = f"{Front_end}/images/fournisseurlogo.png"
 kpi_logo = f"{Front_end}/images/kpi.png"
 acceuil_logo = f"{Front_end}/images/logoacceuil.png"
 commande_logo = f"{Front_end}/images/commandelogo.png"
+commande_client_logo = f"{Front_end}/images/commande_client.png"
 credit_logo = f"{Front_end}/images/creditlogoa.png"
 vente_logo = f"{Front_end}/images/ventelogo.svg"
 client_logo = f"{Front_end}/images/clientlogo.png"
 echange_logo = f"{Front_end}/images/echangelogo.png"
 stock_logo = f"{Front_end}/images/stocklogo.png"
+stock_gestion_logo = f"{Front_end}/images/gestionstock_logo.png"
 medicament_logo = f"{Front_end}/images/medicamentlogo.png"
 ferme_logo = f"{Front_end}/images/ferme.png"
 retour_logo = f"{Front_end}/images/retour.png"
@@ -75,7 +77,7 @@ database = "u454999796_pharma"
 # Pharma information 
 Name_pharma = "RACHAD TAZA"
 Email_pharma = "bichrjamai@icloud.com"
-receiver_email = "zaiou.ahm@gmail.com"
+receiver_email = "ahmed1zaiou@gmail.com"
 Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
 Tel_pharma = "0535285298, 0680061368"
 

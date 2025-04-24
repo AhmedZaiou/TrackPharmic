@@ -23,7 +23,9 @@ from Backend.Dataset.ventes import Ventes
 from Backend.Dataset.credit import Credit
 
 from Backend.Dataset.client import Clients
+from Backend.Dataset.commande_client import CommandeClient
 from Frontend.utils.utils import *
+from decimal import Decimal
 
 from datetime import datetime
 
@@ -59,6 +61,7 @@ class Vente_dash:
             "max_credit": 0,
             "credit_actuel": 0,
         }
+        self.list_od_commande = None
         self.producs_table = pd.DataFrame()
         self.last_key_time = time.time()
         self.barcode_delay_threshold = 0.1
@@ -110,6 +113,46 @@ class Vente_dash:
         client_layout.addWidget(self.client_id_input, 0, 0)
         client_layout.addWidget(self.search_client_button, 0, 1)
         client_layout.addWidget(self.add_client_button, 0, 2)
+
+
+        # section commande :
+        self.label_commande = QLabel("Numéro commande : ")
+        self.commande_id_input = QLineEdit() 
+        self.commande_id_input.setPlaceholderText("Rechercher commande par ID")
+        self.commande_id_input.setValidator(int_validator)
+        self.commande_id_input.textChanged.connect(self.OntextChangeCommande)
+
+        self.completer_commande = QCompleter()
+        self.completer_commande.setCaseSensitivity(Qt.CaseInsensitive)
+        self.completer_commande.setCompletionMode(QCompleter.PopupCompletion)
+        self.commande_id_input.setCompleter(self.completer_commande)
+        self.completer_commande.activated.connect(self.selectionner_Commande) 
+
+        self.montant_facture_commande_label = QLabel("Montant facture : ")
+        self.montant_facture_commande_value = QLabel("None")
+
+        self.montant_payer_commande_label = QLabel("Montant payer : ")
+        self.montant_payer_commande_value = QLabel("None")
+
+        self.montant_rest_commande_label = QLabel("Montant rester : ")
+        self.montant_rest_commande_value = QLabel("None")
+
+
+        self.search_commande = QPushButton("Cherche commande")
+        self.search_commande.clicked.connect(self.search_commande_button)
+
+        commande_layout_tab = QGridLayout()
+        commande_layout_tab.addWidget(self.label_commande, 0, 0)
+        commande_layout_tab.addWidget(self.commande_id_input, 0, 1)
+        commande_layout_tab.addWidget(self.search_commande, 0, 2)
+        commande_layout_tab.addWidget(self.montant_facture_commande_label, 1, 0)
+        commande_layout_tab.addWidget(self.montant_facture_commande_value, 1, 1)
+        commande_layout_tab.addWidget(self.montant_facture_commande_label, 2, 0)
+        commande_layout_tab.addWidget(self.montant_facture_commande_value, 2, 1)
+        commande_layout_tab.addWidget(self.montant_payer_commande_label, 3, 0) 
+        commande_layout_tab.addWidget(self.montant_payer_commande_value, 3, 1)
+        commande_layout_tab.addWidget(self.montant_rest_commande_label, 4, 0)
+        commande_layout_tab.addWidget(self.montant_rest_commande_value,4, 1) 
 
         # Zone d'entrée pour le code-barres
         barcode_layout = QHBoxLayout()
@@ -163,8 +206,16 @@ class Vente_dash:
         client_layout_tab.addWidget(self.client_max_credit, 2, 1)
         client_layout_tab.addWidget(self.client_credit_actuel_, 2, 2)
         client_layout_tab.addWidget(self.client_credit_actuel, 2, 3)
+
+
+
+
+
+        aditional_information  = QHBoxLayout()
         main_layout.addLayout(client_layout)
-        main_layout.addLayout(client_layout_tab)
+        aditional_information.addLayout(client_layout_tab, 1)
+        aditional_information.addLayout(commande_layout_tab, 1)
+        main_layout.addLayout(aditional_information)
 
         # Paiement
         payment_layout = QHBoxLayout()
@@ -201,8 +252,27 @@ class Vente_dash:
 
         # Connecter les signaux
         self.confirm_button.clicked.connect(self.confirm_sale)
+    
+    def search_commande_button(self, code_commande = None):
+        if not code_commande: 
+            code_commande = self.commande_id_input.text() 
+        else:
+            if len(code_commande) == 13:
+                code_commande = code_commande[2:-1]          
+
+        self.list_od_commande = CommandeClient.get_commande(code_commande) 
+        self.commande_id_input.setText(code_commande)
+        self.montant_facture_commande_value.setText(str(self.list_od_commande[0]['total_facture_calculer']))
+        self.montant_payer_commande_value.setText(str(self.list_od_commande[0]['to_pay_now']))
+        self.montant_rest_commande_value.setText(str(self.list_od_commande[0]['total_facture_calculer'] - self.list_od_commande[0]['to_pay_now']))
+    
+        
 
     def OntextChangeClient(self, text):
+        if len(text) >= 3:
+            self.updateCompleter_fournisseur(text)
+    
+    def OntextChangeCommande(self, text):
         if len(text) >= 3:
             self.updateCompleter_fournisseur(text)
 
@@ -213,6 +283,9 @@ class Vente_dash:
         self.completer_client.setModel(model)
 
     def selectionner_client(self, text):
+        print(text)
+    
+    def selectionner_Commande(self, text):
         print(text)
 
     def toggle_inputs(self):
@@ -341,10 +414,18 @@ class Vente_dash:
                 ) 
 
                 if medicament_on_dtock is None:
+                    message = (
+                                f"<div style='border: 1px solid red; padding: 15px; border-radius: 8px;'>"
+                                f"<h2 style='color: red;'>Attention : le stock du médicament '{medicament['Nom']}' est épuisé.</h2>"
+                                f"<p><strong>Caractéristiques :</strong> {medicament['Caracteristique']}</p>"
+                                f"<p><strong>Prix public :</strong> {medicament['Prix_Public_De_Vente']} MAD</p>"
+                                f"<p>Veuillez vérifier la disponibilité. Vous pouvez passer une commande depuis la section <strong>'Commandes'</strong>.</p>"
+                                f"</div>"
+                            )
                     QMessageBox.information(
                         self.main_interface,
                         "Stock vide",
-                        "Le stock de ce médicament est vide. Veuillez vérifier la disponibilité.",
+                        message,   
                     )
                 else:
                     if len(np.unique(medicament_on_dtock["prix_vente"])) > 1:
@@ -389,10 +470,11 @@ class Vente_dash:
             if current_time - self.last_key_time < self.barcode_delay_threshold:
                 self.code_b = True
             self.last_key_time = current_time
-
             if key == "\r" and self.code_b:  # Lorsque le lecteur envoie un saut de ligne
                 self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
-                if self.code_barre_scanner != "":
+                if self.code_barre_scanner != "" and   self.code_barre_scanner[:2] == "10":
+                    self.search_commande_button(self.code_barre_scanner)
+                elif self.code_barre_scanner != "" :
                     self.add_medicament_to_vente(self.code_barre_scanner)
                     self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
                 self.code_b = False
@@ -497,21 +579,12 @@ class Vente_dash:
                     <p><strong>Nom :</strong> {self.client_info['nom']} {self.client_info['prenom']}</p>
                     <p><strong>CIN :</strong> {self.client_info['cin']}</p>
                     <p><strong>Crédit Actuel :</strong> {self.client_info['credit_actuel']} Dh</p>
-                    <hr>
                     """
-        message += f"""
-
-                <h4>Détails de la vente:</h4>
-                <table border="1" cellspacing="0" cellpadding="5">
-                <tr>
-                    <th>Produit</th>
-                    <th>Qu</th>
-                    <th>PU</th>
-                    <th>Total</th>
-                </tr>"""
+        message  += "<h4>Détails de la vente:</h4>"
         list_facture = []
         for index, items in self.producs_table.iterrows():
                 id_medicament = items["ID_Medicament"]
+                nom_medicament = items["Nom"]
                 id_commande_entre = items["id_commande"]
                 prix_achat = items["prix_achat"]
                 prix_v = items["prix_vente"]
@@ -528,7 +601,7 @@ class Vente_dash:
                     prix_achat_item,
                     prix_vente_item,
                     ID_Stock_item,
-                    quanti,
+                    quanti, 
                 ) in zip(
                     id_commande_entre, prix_achat, prix_v, ID_Stock, quantite_list
                 ):
@@ -544,7 +617,8 @@ class Vente_dash:
                             id_client,
                             numero_facture,
                             id_salarie,
-                            ID_Stock_item]
+                            ID_Stock_item, 
+                            nom_medicament]
                         )
                         
                         self.total_facture += prix_vente_item * quanti_rest_to_hand
@@ -561,31 +635,29 @@ class Vente_dash:
                             id_client,
                             numero_facture,
                             id_salarie,
-                            ID_Stock_item]
+                            ID_Stock_item,
+                            nom_medicament]
                         )
                         
                         self.total_facture += prix_vente_item * quanti
                     if quantite_traiter >= quantite_vendue:
                         break
+
+        total_facture_calculer = 0 if self.list_od_commande is None else -float(self.list_od_commande[0]['to_pay_now'])
+
+        message+= "<hr>"
         
-
-
-        
-
-
-        
-
-        total_facture_calculer = 0
-        for item in list_facture:
-            message += f"<tr><td>{item[0]}</td><td>{item[6]}</td><td>{item[4]} Dh</td><td>{item[4]*item[6]} Dh</td></tr>"
-            total_facture_calculer += item[4]*item[6]
+        for item in list_facture: 
+            message  += f"{item[-1]} <br>"
+            message += f"{item[0]}   &nbsp;&nbsp; {item[6]} x  &nbsp;&nbsp; {item[4]} Dh <br><br>"
+            total_facture_calculer += round(float(item[4]*item[6] ), 2)
         
         if self.checkbox.isChecked():
-            to_pay_now = self.amount_input.text()
+            to_pay_now = round(float(self.amount_input.text()), 2)
         else:
-            to_pay_now = total_facture_calculer
+            to_pay_now = round(float(total_facture_calculer), 2)  
         if (
-            total_facture_calculer - int(to_pay_now) + self.client_info["credit_actuel"]
+            total_facture_calculer - to_pay_now + self.client_info["credit_actuel"]
             > self.client_info["max_credit"]
         ):
             QMessageBox.information(
@@ -600,12 +672,19 @@ class Vente_dash:
         barcode_data = f'{matricul_pharma}{numero_facture}0'
         
         image_base64 = self.generate_barcode(barcode_data)
-        message +=  f"""
-                </table>
+        if self.list_od_commande is not None:
+            message +=  f""" 
+                    <p><strong> Commande N°::</strong> {self.list_od_commande[0]['numero_facture']}</p>
+                    <p><strong>Montant payé :</strong> {round(float(self.list_od_commande[0]['to_pay_now']),2)} Dh</p>
 
-                <p><strong>Total facture :</strong> {total_facture_calculer} Dh</p>
-                <p><strong>Montant payé :</strong> {to_pay_now} Dh</p>
-                <p><strong>Reste à payer :</strong> {total_facture_calculer - int(to_pay_now)} Dh</p>
+                    """
+        message +=  f""" 
+
+                <hr>
+
+                <p><strong>Total facture :</strong> {round(float(total_facture_calculer),2)} Dh</p>
+                <p><strong>Montant payé :</strong> {round(float(to_pay_now),2)} Dh</p>
+                <p><strong>Reste à payer :</strong> {round(float(total_facture_calculer - to_pay_now),2)} Dh</p>
                 <hr>
                 <p><img src="data:image/png;base64,{image_base64}" alt="Logo" style="max-width:10px;max-height:15px;"></p>
                 <p><em>Merci pour votre achat!</em></p>
@@ -649,6 +728,11 @@ class Vente_dash:
                 "Confirmation de vente",
                 "Vente confirmée avec succès!",
             )
+            self.commande_id_input.clear()
+            self.montant_facture_commande_value.setText("")
+            self.montant_payer_commande_value.setText("")
+            self.montant_rest_commande_value.setText("")
+            
 
             self.client_id_input.clear()
             self.barcode_input.clear()
@@ -686,6 +770,10 @@ class Vente_dash:
         id_salarie,
         ID_Stock_item,
     ):
+        if self.list_od_commande is not None:
+            CommandeClient.modifier_statut_commande_client(
+                self.list_od_commande[0]['numero_facture'], numero_facture
+            )
         Ventes.ajouter_vente(
             id_medicament,
             idcommande_item,

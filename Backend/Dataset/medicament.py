@@ -205,7 +205,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Medicament;")
+        cursor.execute("SELECT * FROM Medicament ORDER BY Nom;")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]

@@ -59,7 +59,7 @@ class Commande_dash:
         # Layout principal
         main_layout_add = QVBoxLayout(self.principale_dash_add)
 
-        titre_page = QLabel("Passer des comandes")
+        titre_page = QLabel("Passer des commandes")
         titre_page.setObjectName("TitrePage")
         titre_page.setAlignment(Qt.AlignCenter)
         main_layout_add.addWidget(titre_page)

@@ -249,7 +249,8 @@ class Stock:
                     JOIN 
                         Medicament m 
                     ON 
-                        s.id_medicament = m.id_medicament;"""
+                        s.id_medicament = m.id_medicament
+                    ORDER BY m.Nom;"""
         cursor.execute(query)
         rows = cursor.fetchall()
         conn.close()

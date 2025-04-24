@@ -13,11 +13,19 @@ from qtpy.QtWidgets import (
     QPushButton,
     QLineEdit,
     QCheckBox,
+    QTextEdit,
+    QMessageBox,
 )
 from qtpy.QtCore import Qt
 from Backend.Dataset.credit import Credit
 from Backend.Dataset.client import Clients
 from Backend.Dataset.payment import Payment
+from Backend.Dataset.credit import Credit
+from Backend.Dataset.retour import Retour
+from Backend.Dataset.ventes import Ventes
+from Backend.Dataset.medicament import Medicament
+from decimal import Decimal
+
 import pandas as pd
 from datetime import datetime
 
@@ -51,9 +59,33 @@ class Credit_dash:
         )
         self.remplir_tableau()
         self.table.cellClicked.connect(self.credit_selected)
+
+
+        # Search bar for filtering
+        self.search_bar = QLineEdit()
+        self.search_bar.setPlaceholderText("Chercher par 'Nom'...")
+        self.search_bar.textChanged.connect(self.filter_table)  # Trigger filter when text changes
+
+        main_layout.addWidget(self.search_bar)
+
         main_layout.addWidget(self.table)
 
         self.main_interface.content_layout.addWidget(self.credit_dash)
+    
+    def filter_table(self):
+        #if not self.all_data:
+        #    self.load_all_data()
+        # Get the filter text from the search bar
+        filter_text = self.search_bar.text().lower()
+
+        # Loop through all rows and hide/show them based on the search
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, 1)  # Assuming column 0 is 'Nom'
+            if item is not None:
+                if filter_text in item.text().lower():  # Case-insensitive comparison
+                    self.table.setRowHidden(row, False)
+                else:
+                    self.table.setRowHidden(row, True) 
 
     def remplir_tableau(self):
         # Exemple de données fictives
@@ -134,6 +166,131 @@ class Credit_dash:
         self.remplire_table()
         main_layout.addWidget(self.list_factures)
         self.main_interface.content_layout.addWidget(self.credit_dash)
+        self.list_factures.cellClicked.connect(self.show_facture)
+
+        # add click
+    
+
+
+    def show_facture(self, row, column):
+        numero_facture = self.list_factures.item(row, 1).text()
+        if self.list_factures.item(row, 0).text() != "Credit":
+            return
+        vente = Ventes.extraire_ventes_par_numero_facture(numero_facture)
+        payment = Payment.extraire_paiements_par_numero_facture(numero_facture)  
+        credit = Credit.extraire_credits_par_numero_facture(numero_facture)
+        retour = Retour.extraire_retours_par_numero_facture(numero_facture)
+
+        client = Clients.extraire_client(vente[0]['id_client'])
+
+       # Construction du message
+        message = f"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+            <h2>RACHAD TAZA</h2>
+            <p><strong>Adresse :</strong> Hay Rachad, Bloc2, n:75, Taza</p>
+            <p><strong>Téléphone :</strong> 0535285298, 0680061368</p>  
+            <p>Facture n°: {numero_facture}</p>
+            <p><strong>Agent :</strong> {vente[0]['id_salarie']}</p>
+            <hr>
+        """
+
+        if client['nom'] != "Anonyme":
+            message += f"""
+            <h4>Client:</h4>
+            <p><strong>Nom :</strong> {client['nom']} {client['prenom']}</p>
+            <p><strong>CIN :</strong> {client['cin']}</p>
+            <p><strong>Crédit Actuel :</strong> {client['credit_actuel']} Dh</p>
+            <hr>
+            """
+
+        message += """
+            <h4>Détails de la vente:</h4>
+            <table border="1" cellspacing="0" cellpadding="5">
+            <tr>
+                <th>Produit</th>
+                <th>Qu</th>
+                <th>PU</th>
+                <th>Total</th>
+            </tr>
+        """
+        total_facture_calculer = 0
+
+        for item in vente:
+            medicament = Medicament.extraire_medicament(item['id_medicament'])
+            message += f"<tr><td>{medicament['Nom']}</td><td>{item['quantite_vendue']}</td><td>{item['prix_vente']} Dh</td><td>{item['quantite_vendue']*item['prix_vente']} Dh</td></tr>"
+            total_facture_calculer += item['quantite_vendue'] * item['prix_vente']
+        message += """
+            </table>
+            <hr> 
+        """
+ 
+        message1 = """ 
+            <h4>Paiements:</h4>
+            <pre>
+        """
+        if payment:
+            for p in payment:
+                message1 += f"  - Paiement: {p}\n"
+        else:
+            message1 += "  Aucun paiement enregistré.\n"
+
+        message1 += """
+            </pre>
+            <h4>Crédits:</h4>
+            <pre>
+        """
+
+        message1 += """ 
+            <table border="1" cellspacing="0" cellpadding="5">
+            <tr>
+                <th>Montant payé</th>
+                <th>Reste</th>
+                <th>Date dernier paiement</th>
+                <th>Statut </th>
+            </tr>
+        """
+        rest_a_payer = 0
+        for c in credit:
+            message1 += f"<tr><td>{c['montant_paye']} Dh</td><td>{c['reste_a_payer']} Dh</td><td>{c['date_dernier_paiement']} Dh</td><td>{c['statut']} </td></tr>"
+            rest_a_payer += c['reste_a_payer']
+        message1 += """
+                    </table>
+                    <hr> 
+                """
+        message1 += """
+            </pre>
+            <h4>Retours:</h4>
+            <pre>
+        """
+        if retour:
+            for r in retour:
+                message1 += f"  - Retour: {r}\n"
+        else:
+            message1 += "  Aucun retour enregistré.\n"
+
+        message += f"""
+            </pre>
+            <hr>
+            <p><strong>Total facture :</strong> {total_facture_calculer} Dh</p>
+            <p><strong>Montant payé :</strong> {0} Dh</p>
+            <p><strong>Reste à payer :</strong> {rest_a_payer} Dh</p>
+            <hr> 
+            <p><em>Merci pour votre achat!</em></p>
+            <p><strong>Date :</strong> {vente[0]['date_vente']}</p>
+        </body>
+        </html>
+        """
+
+        # Affichage
+        QMessageBox.information(
+            self.main_interface,
+            "Crédit insuffisant",
+            message
+        )  
+
+
 
     def add_paiment(self):
         now = datetime.now()
