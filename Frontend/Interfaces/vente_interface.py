@@ -42,6 +42,9 @@ import barcode
 from barcode.writer import ImageWriter
 from PIL import Image
 
+import subprocess
+sumatra_path = r"C:\Program Files\SumatraPDF\SumatraPDF.exe"
+
 if os.name == 'nt': 
     import win32api
     import win32print
@@ -657,8 +660,8 @@ class Vente_dash:
         else:
             to_pay_now = round(float(total_facture_calculer), 2)  
         if (
-            total_facture_calculer - to_pay_now + self.client_info["credit_actuel"]
-            > self.client_info["max_credit"]
+            float(total_facture_calculer) - float(to_pay_now) + float(self.client_info["credit_actuel"])
+            > float(self.client_info["max_credit"])
         ):
             QMessageBox.information(
                 self.main_interface,
@@ -753,7 +756,10 @@ class Vente_dash:
             pisa.CreatePDF(message_html, dest=f)
         
         if os.name == 'nt':  # 'nt' indique Windows 
-            win32api.ShellExecute(0, "print", pdf_path, None, ".", 0)
+            cmd = [sumatra_path, "-print-to-default", pdf_path]
+            subprocess.run(cmd, shell=False)
+
+            #win32api.ShellExecute(0, "print", pdf_path, None, ".", 0)
         else:
             os.system(f"lp {pdf_path}")
 
