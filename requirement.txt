@@ -7,5 +7,4 @@ python-barcode
 Pillow
 xhtml2pdf
 pywin32
-subprocess
 pymysql
