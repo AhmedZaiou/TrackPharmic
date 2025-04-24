@@ -44,9 +44,6 @@ from PIL import Image
 
 import subprocess 
 
-if os.name == 'nt': 
-    import win32api
-    import win32print
 
 class Vente_dash:
     def __init__(self, main_interface):

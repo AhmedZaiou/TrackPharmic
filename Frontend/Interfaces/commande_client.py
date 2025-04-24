@@ -43,11 +43,6 @@ from PIL import Image
 import subprocess
 
 
-
-if os.name == 'nt': 
-    import win32api
-    import win32print
-
 class Commande_client:
     def __init__(self, main_interface):
         self.main_interface = main_interface
@@ -670,7 +665,8 @@ class Commande_client:
         
         if os.name == 'nt':  # 'nt' indique Windows 
             cmd = [sumatra_path, "-print-to-default", "-print-settings", "noscale", pdf_path]
-            win32api.ShellExecute(0, "print", pdf_path, None, ".", 0)
+            subprocess.run(cmd, shell=False)
+
         else:
             os.system(f"lp {pdf_path}")
 
