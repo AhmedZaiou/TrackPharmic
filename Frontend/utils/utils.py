@@ -51,7 +51,7 @@ medicament_logo = f"{Front_end}/images/medicamentlogo.png"
 ferme_logo = f"{Front_end}/images/ferme.png"
 retour_logo = f"{Front_end}/images/retour.png"
 
-sumatra_path = r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
+sumatra_path = "C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 
 # Informations de connexion Gmail
