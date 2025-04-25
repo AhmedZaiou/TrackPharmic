@@ -4,6 +4,9 @@ from Frontend.utils.validators import *
 from qtpy.QtGui import QRegularExpressionValidator
 from qtpy.QtCore import QRegularExpression
 
+import os
+
+
 current_directory = Path(__file__).parent
 Front_end = current_directory.parent
 Tracpharmic = Path.home() / "Tracpharmic"
@@ -51,9 +54,10 @@ medicament_logo = f"{Front_end}/images/medicamentlogo.png"
 ferme_logo = f"{Front_end}/images/ferme.png"
 retour_logo = f"{Front_end}/images/retour.png"
 
-sumatra_path = "C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
+from pathlib import Path
 
+sumatra_path = Path("C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe")
 # Informations de connexion Gmail
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
