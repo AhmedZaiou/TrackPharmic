@@ -56,7 +56,7 @@ retour_logo = f"{Front_end}/images/retour.png"
 
 #"C:\\Users\\Admin\AppData\\Local\\SumatraPDF\\SumatraPDF.exe"
 
-sumatra_path = "C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
+sumatra_path = "C:/Users/Admin/AppData/Local/SumatraPDF/SumatraPDF.exe"
 
 # Informations de connexion Gmail
 smtp_server = "smtp.gmail.com"
