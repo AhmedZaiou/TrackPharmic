@@ -55,9 +55,8 @@ ferme_logo = f"{Front_end}/images/ferme.png"
 retour_logo = f"{Front_end}/images/retour.png"
 
 
-from pathlib import Path
 
-sumatra_path = Path("C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe")
+sumatra_path = r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 # Informations de connexion Gmail
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
