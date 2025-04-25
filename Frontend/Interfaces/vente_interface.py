@@ -35,18 +35,17 @@ import time
 from io import BytesIO
 import base64
 
-import tempfile
 import os
 from xhtml2pdf import pisa
 import barcode
 from barcode.writer import ImageWriter
-from PIL import Image
 
 import subprocess 
 
 
 class Vente_dash:
     def __init__(self, main_interface):
+        print("aaaaa")
         self.main_interface = main_interface
         self.show_vente_interface()
         self.client_info = {

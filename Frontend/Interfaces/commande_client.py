@@ -33,13 +33,11 @@ import numpy as np
 import time
 from io import BytesIO
 import base64
-
-import tempfile
+ 
 import os
 from xhtml2pdf import pisa
 import barcode
-from barcode.writer import ImageWriter
-from PIL import Image
+from barcode.writer import ImageWriter 
 import subprocess
 
 

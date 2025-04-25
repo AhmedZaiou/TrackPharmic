@@ -500,11 +500,11 @@ class MainInterface(QMainWindow):
 
     def commande_client_click(self): 
         from .commande_client import Commande_client
+        
         self.main_interface = Commande_client(self)
 
     def credit_click(self):
         from .credit_interface import Credit_dash
-
         self.main_interface = Credit_dash(self)
 
     def echange_click(self):
