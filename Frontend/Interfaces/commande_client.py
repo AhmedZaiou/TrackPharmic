@@ -634,7 +634,7 @@ class Commande_client:
                     "in progresse",
                     )
 
-            #self.print_ticket(message)
+            self.print_ticket(message)
 
             QMessageBox.information(
                 self.main_interface,
