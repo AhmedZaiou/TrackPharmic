@@ -25,18 +25,12 @@ import os
 class MainInterface(QMainWindow):
     def __init__(self):
         super().__init__()
-
         self.setWindowTitle(name_application)
         self.setGeometry(100, 100, 1200, 800)  # merci de remplire
         self.showFullScreen()
         self.setStyleSheet(set_styles())
         # self.show_main_interface()
-        if os.name == 'nt': 
-            QMessageBox.information(
-                self.main_interface,
-                "Confirmation de vente",
-                f"Windows",
-                ) 
+        
         self.show_login_interface()
         self.setFocusPolicy(Qt.StrongFocus)
         # self.create_database()
@@ -96,6 +90,13 @@ class MainInterface(QMainWindow):
         self.central_widget.setObjectName("widgetGeneral")
         self.central_widget = QWidget()
         self.central_widget.setObjectName("widgetGeneral")
+
+        if os.name == 'nt': 
+            QMessageBox.information(
+                self,
+                "Confirmation de vente",
+                f"Windows",
+                ) 
 
         self.main_layout_p = QVBoxLayout(self.central_widget)
 
