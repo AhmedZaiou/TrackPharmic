@@ -609,6 +609,13 @@ class Commande_client:
             </body>
             </html>
             """
+        
+        QMessageBox.information(
+                self.main_interface,
+                "Confirmation de vente",
+                "Vente confirmée avec succès!",
+            )
+        return
 
         
         reply =  confirm_sale(self.main_interface,"Confirmation de vente", message )
