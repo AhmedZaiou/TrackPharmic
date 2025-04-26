@@ -663,10 +663,23 @@ class Commande_client:
         
         if os.name == 'nt':  # 'nt' indique Windows 
             cmd = [sumatra_path, "-print-to-default", "-print-settings", "noscale", pdf_path]
-            subprocess.run(cmd, shell=False)
-
+            try:
+                subprocess.run(cmd, shell=False, check=True)
+            except Exception as e:
+                QMessageBox.information(
+                self.main_interface,
+                "Confirmation de vente",
+                f"Unexpected error: {e}",
+                ) 
         else:
-            os.system(f"lp {pdf_path}")
+            try:
+                os.system(f"lp {pdf_path}")
+            except Exception as e:
+                QMessageBox.information(
+                self.main_interface,
+                "Confirmation de vente",
+                f" {os.name} Unexpected error: {e}",
+                ) 
 
     def ajouter_vente_with_all_operation(
         self,
