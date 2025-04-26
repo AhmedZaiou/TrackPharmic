@@ -634,9 +634,7 @@ class Commande_client:
                     "in progresse",
                     )
 
-
-                
-            self.print_ticket(message)
+            #self.print_ticket(message)
 
             QMessageBox.information(
                 self.main_interface,
@@ -662,8 +660,8 @@ class Commande_client:
             pisa.CreatePDF(message_html, dest=f)
         
         if os.name == 'nt':  # 'nt' indique Windows 
-            cmd = [sumatra_path, "-print-to-default", "-print-settings", "noscale", pdf_path]
             try:
+                cmd = [sumatra_path, "-print-to-default", "-print-settings", "noscale", pdf_path]
                 subprocess.run(cmd, shell=False, check=True)
             except Exception as e:
                 QMessageBox.information(
