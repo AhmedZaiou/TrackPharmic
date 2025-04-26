@@ -31,6 +31,12 @@ class MainInterface(QMainWindow):
         self.showFullScreen()
         self.setStyleSheet(set_styles())
         # self.show_main_interface()
+        if os.name == 'nt': 
+            QMessageBox.information(
+                self.main_interface,
+                "Confirmation de vente",
+                f"Windows",
+                ) 
         self.show_login_interface()
         self.setFocusPolicy(Qt.StrongFocus)
         # self.create_database()
