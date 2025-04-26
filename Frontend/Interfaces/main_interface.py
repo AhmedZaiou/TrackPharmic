@@ -91,13 +91,6 @@ class MainInterface(QMainWindow):
         self.central_widget = QWidget()
         self.central_widget.setObjectName("widgetGeneral")
 
-        if os.name == 'nt': 
-            QMessageBox.information(
-                self,
-                "Confirmation de vente",
-                f"Windows",
-                ) 
-
         self.main_layout_p = QVBoxLayout(self.central_widget)
 
         self.setCentralWidget(self.central_widget)
