@@ -676,7 +676,7 @@ class Vente_dash:
                 <p><strong>Montant payé :</strong> {round(float(to_pay_now),2)} Dh</p>
                 <p><strong>Reste à payer :</strong> {round(float(total_facture_calculer - to_pay_now),2)} Dh</p>
                 <hr>
-                <p><img src="data:image/png;base64,{image_base64}" alt="Logo" style="max-width:10px;max-height:15px;"></p>
+                <p style="text-align: center;"><img src="data:image/png;base64,{image_base64}" alt="Logo" width="200" height="85"></p>
                 <p style="text-align: center;">{barcode_data}</p>
                 <p><em>Merci pour votre achat!</em></p>
                 <p><strong>Date :</strong> {now_str}</p>
