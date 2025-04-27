@@ -607,7 +607,7 @@ class Commande_client:
                 <p><strong>Montant payé :</strong> {to_pay_now} Dh</p>
                 <p><strong>Reste à payer :</strong> {total_facture_calculer - Decimal(to_pay_now)} Dh</p>
                 <hr>
-                <p style="text-align: center;"><img src="data:image/png;base64,{image_base64}" alt="Logo" width="130" height="45"></p>
+                <p style="text-align: center;"><img src="data:image/png;base64,{image_base64}" alt="Logo" ></p>
                 <p style="text-align: center;">{barcode_data}</p>
                 <p><em>Merci pour votre achat!</em></p>
                 <p><strong>Date :</strong> {now_str}</p>
