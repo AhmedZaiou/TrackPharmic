@@ -57,7 +57,7 @@ font_path = f"{Front_end}/Monopoly.ttf"
 
 #"C:\\Users\\Admin\AppData\\Local\\SumatraPDF\\SumatraPDF.exe"
 
-sumatra_path = r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
+sumatra_path = r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 # Informations de connexion Gmail
 smtp_server = "smtp.gmail.com"
