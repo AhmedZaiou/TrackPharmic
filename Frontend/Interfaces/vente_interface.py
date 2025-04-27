@@ -34,7 +34,7 @@ import numpy as np
 import time
 from io import BytesIO
 import base64
-
+import treepoem
 import os
 from xhtml2pdf import pisa
 import barcode
@@ -521,23 +521,15 @@ class Vente_dash:
             self.main_interface = Vente_dash(self.main_interface)
 
     def generate_barcode(self, barcode_data): 
-        options = {
-        'module_width': 200 / 1000,  # Adjust module width (barcode thickness)
-        'module_height':2.5,  # Barcode height
-        'font_size': 3,  # Font size for the label (you can adjust this)
-        'text_distance': 2,  # Distance between the barcode and text
-        'quiet_zone': 1,  # Quiet zone (padding) around the barcode
-        } 
-        barcode_format = barcode.get_barcode_class('EAN13')  # Barcode format (EAN13 in this case)
-        barcode_instance = barcode_format(barcode_data, writer=ImageWriter())
-
-        # Save the barcode as an image file
-        barcode_image = barcode_instance.render(options)  # Generate the barcode image
-        # Save the barcode to a BytesIO object 
-
-        # Resize the image  
+        # Generate the barcode
+        check_degit = calculate_check_digit(barcode_data[:12])
+        barcode_data = barcode_data[:12] + str(check_degit)
+        barcode_image = treepoem.generate_barcode('ean13', barcode_data)
+        # Save the barcode image to a BytesIO object
         buffered = BytesIO()
         barcode_image.save(buffered, format="PNG")
+        buffered.seek(0)
+
         # Convert the image to base64
         barcode_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
@@ -685,6 +677,7 @@ class Vente_dash:
                 <p><strong>Reste à payer :</strong> {round(float(total_facture_calculer - to_pay_now),2)} Dh</p>
                 <hr>
                 <p><img src="data:image/png;base64,{image_base64}" alt="Logo" style="max-width:10px;max-height:15px;"></p>
+                <p style="text-align: center;">{barcode_data}</p>
                 <p><em>Merci pour votre achat!</em></p>
                 <p><strong>Date :</strong> {now_str}</p>
             </body>

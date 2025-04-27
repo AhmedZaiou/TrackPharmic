@@ -24,6 +24,8 @@ from Backend.Dataset.commande_client import CommandeClient
 from decimal import Decimal
 from Backend.Dataset.client import Clients
 
+import matplotlib.pyplot as plt
+from PIL import ImageFont
 from Frontend.utils.utils import *
 
 from datetime import datetime
@@ -33,11 +35,19 @@ import numpy as np
 import time
 from io import BytesIO
 import base64
- 
+from PIL import Image
+import io
+import treepoem
+
+import os
+from xhtml2pdf import pisa
+
 import os
 from xhtml2pdf import pisa
 import barcode
-from barcode.writer import ImageWriter 
+from barcode.writer import ImageWriter
+
+import qrcode
 import subprocess
 
 
@@ -493,29 +503,23 @@ class Commande_client:
                 "La vente a été annulée avec succès.",
             )
             self.main_interface = Commande_client(self.main_interface)
-
+     
+    
     def generate_barcode(self, barcode_data): 
-        options = {
-        'module_width': 200 / 1000,  # Adjust module width (barcode thickness)
-        'module_height':2.5,  # Barcode height
-        'font_size': 3,  # Font size for the label (you can adjust this)
-        'text_distance': 2,  # Distance between the barcode and text
-        'quiet_zone': 1,  # Quiet zone (padding) around the barcode
-        } 
-        barcode_format = barcode.get_barcode_class('EAN13')  # Barcode format (EAN13 in this case)
-        barcode_instance = barcode_format(barcode_data, writer=ImageWriter())
-
-        # Save the barcode as an image file
-        barcode_image = barcode_instance.render(options)  # Generate the barcode image
-        # Save the barcode to a BytesIO object 
-
-        # Resize the image  
+        # Generate the barcode
+        check_degit = calculate_check_digit(barcode_data[:12])
+        barcode_data = barcode_data[:12] + str(check_degit)
+        barcode_image = treepoem.generate_barcode('ean13', barcode_data)
+        # Save the barcode image to a BytesIO object
         buffered = BytesIO()
         barcode_image.save(buffered, format="PNG")
+        buffered.seek(0)
+
         # Convert the image to base64
         barcode_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
         return barcode_base64
+    
 
     def confirm_sale(self):
         now = datetime.now()
@@ -603,19 +607,19 @@ class Commande_client:
                 <p><strong>Montant payé :</strong> {to_pay_now} Dh</p>
                 <p><strong>Reste à payer :</strong> {total_facture_calculer - Decimal(to_pay_now)} Dh</p>
                 <hr>
-                <p><img src="data:image/png;base64,{image_base64}" alt="Logo" style="max-width:10px;max-height:15px;"></p>
+                <p style="text-align: center;"><img src="data:image/png;base64,{image_base64}" alt="Logo" width="200" height="85"></p>
+                <p style="text-align: center;">{barcode_data}</p>
                 <p><em>Merci pour votre achat!</em></p>
                 <p><strong>Date :</strong> {now_str}</p>
             </body>
             </html>
             """
-        
+
         QMessageBox.information(
                 self.main_interface,
                 "Confirmation de vente",
                 "Vente confirmée avec succès!",
             )
-        return
 
         
         reply =  confirm_sale(self.main_interface,"Confirmation de vente", message )

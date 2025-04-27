@@ -53,10 +53,11 @@ stock_gestion_logo = f"{Front_end}/images/gestionstock_logo.png"
 medicament_logo = f"{Front_end}/images/medicamentlogo.png"
 ferme_logo = f"{Front_end}/images/ferme.png"
 retour_logo = f"{Front_end}/images/retour.png"
+font_path = f"{Front_end}/Monopoly.ttf"
 
 #"C:\\Users\\Admin\AppData\\Local\\SumatraPDF\\SumatraPDF.exe"
 
-#sumatra_path = r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
+sumatra_path = r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 # Informations de connexion Gmail
 smtp_server = "smtp.gmail.com"
@@ -99,3 +100,16 @@ def confirm_sale( interface, titre, message):
     msg_box.setText(message)
     msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
     return msg_box.exec_()
+
+
+def calculate_check_digit(ean12):
+        total = 0
+        for i, digit in enumerate(ean12):
+            digit = int(digit)
+            if i % 2 == 0:
+                total += digit  # Chiffres impairs (index pair)
+            else:
+                total += digit * 3  # Chiffres pairs (index impair)
+        remainder = total % 10
+        check_digit = (10 - remainder) % 10
+        return check_digit
