@@ -8,3 +8,6 @@ Pillow
 xhtml2pdf
 pywin32
 pymysql
+treepoem
+pymupdf
+seaborn

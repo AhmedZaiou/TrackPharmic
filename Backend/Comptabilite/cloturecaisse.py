@@ -26,6 +26,7 @@ from Backend.Dataset.payment import Payment
 from Backend.Dataset.pharmacie import Pharmacies
 from Backend.Dataset.ventes import Ventes
 from Backend.Dataset.retour import Retour
+from Backend.Dataset.commande_client import CommandeClient
 
 
 # Informations de connexion Gmail
@@ -36,7 +37,7 @@ smtp_password = "adck kohd tuqu iomh"  # Utiliser un mot de passe d'application
 
 # Définition de l'expéditeur et du destinataire
 sender_email = smtp_user
-receiver_email = "bichrjamai@icloud.com"
+receiver_email = "zaiou.ahm@gmail.com"#"bichrjamai@icloud.com"
 
 
 class Caisse:
@@ -54,6 +55,7 @@ class Caisse:
         cloture_dict["Retour statistique"] = Retour.cloture_journee()
         cloture_dict["Stock statistique"] = Stock.cloture_journee()
         cloture_dict["Vente statistique"] = Ventes.cloture_journee()
+        cloture_dict["Commande client statistique"] = CommandeClient.cloture_journee()
         cloture_dict = json.loads(json.dumps(cloture_dict, default=str))
         data = cloture_dict
         # Restructuration du dictionnaire
@@ -69,6 +71,15 @@ class Caisse:
                     "credit_actuel_pharmacie"
                 ],
             },
+            "Commande_client_situation_general": {
+                "nombre_de_commande_client": data["Commande client statistique"][
+                    "Nombre total de commandes clients effectuées aujourdhui"
+                ],
+                "totale_commande_client": data["Commande client statistique"][
+                    "Montant total des commandes clients effectuées aujourdhui"
+                ],
+            },
+
             "Credit_situation_aujourdhui": {
                 "total_restant_a_payer": data["Credit statistique"][
                     "Total restant à payer aujourd'hui"
@@ -162,10 +173,7 @@ class Caisse:
                     for item in data["Commande statistique"]["statistique par salarie"]
                 ]
             },
-        }
-
-        print(result)
-
+        } 
         # Générer le HTML
         html_content = self.generate_htmla(result)
         self.send_email(html_content)
@@ -554,6 +562,10 @@ class Caisse:
                         <td>{data["Vente_situation"]["montant_total_ventes"]} Dh</td>
                     </tr>
                     <tr>
+                        <th>Total des commande clients aujourd'hui</th>
+                        <td>{data["Commande_client_situation_general"]["totale_commande_client"]} Dh</td>
+                    </tr>
+                    <tr>
                         <th>Total des crédits accordés aujourd'hui</th>
                         <td>{data['Credit_situation_aujourdhui']['total_restant_a_payer']} Dh</td>
                     </tr>
@@ -567,7 +579,7 @@ class Caisse:
                     </tr>
                     <tr>
                         <th>Total de la caisse provisoire aujourd'hui</th>
-                        <td>{float(data["Vente_situation"]["montant_total_ventes"]) - float(data['Vente_situation']['total_retours']) - float(data['Credit_situation_aujourdhui']['total_restant_a_payer']) + float(data['Credit_situation_aujourdhui']['total_paiements_effectues']) } Dh</td>
+                        <td>{float(data["Vente_situation"]["montant_total_ventes"]) - float(data['Vente_situation']['total_retours']) - float(data['Credit_situation_aujourdhui']['total_restant_a_payer']) + float(data['Credit_situation_aujourdhui']['total_paiements_effectues']) + float(data["Commande_client_situation_general"]["totale_commande_client"]) } Dh</td>
                     </tr>
                 </table>
 

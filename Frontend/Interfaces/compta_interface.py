@@ -130,6 +130,62 @@ class Compta_dash:
         return data_transformee
 
     def generate_plots(self):
+
+        # Définir un style global plus lisible
+        plt.style.use('bmh')
+        font_properties = {'fontsize': 10}
+        
+        # --- Figure quotidienne ---
+        fig1, ax1 = plt.subplots(figsize=(10, 5))
+        ax1.plot(self.all_data_jour["jours"], self.all_data_jour["ventes"], label="Ventes", marker='o', linewidth=2)
+        ax1.plot(self.all_data_jour["jours"], self.all_data_jour["credits"], label="Crédits", linestyle='--', marker='s', linewidth=2)
+        ax1.plot(self.all_data_jour["jours"], self.all_data_jour["echanges_envoyer"], label="Échanges envoyés", linestyle='-.', marker='^', linewidth=2)
+        ax1.plot(self.all_data_jour["jours"], self.all_data_jour["echanges_recu"], label="Échanges reçus", linestyle=':', marker='v', linewidth=2)
+        ax1.plot(self.all_data_jour["jours"], self.all_data_jour["paiements"], label="Paiements", linestyle='-.', marker='D', linewidth=2)
+        ax1.plot(self.all_data_jour["jours"], self.all_data_jour["retours"], label="Retours", linestyle='--', marker='x', linewidth=2)
+        
+        ax1.set_title(f" Les tendances quotidiennes pour le mois {self.all_data_jour['jours'][0].split('-')[1]}", fontsize=12, weight='bold')
+        ax1.set_xlabel("Jours", **font_properties)
+        ax1.set_ylabel("Valeur en DH", **font_properties)
+        ax1.tick_params(axis='x', rotation=45)
+        ax1.legend(loc='upper left', fontsize=9)
+        ax1.grid(True)
+
+        # --- Figure mensuelle ---
+        fig2, ax2 = plt.subplots(figsize=(10, 5))
+        ax2.plot(self.all_data_moi["mois"], self.all_data_moi["ventes"], label="Ventes", color="tab:orange", marker='o', linewidth=2)
+        ax2.plot(self.all_data_moi["mois"], self.all_data_moi["credits"], label="Crédits", linestyle='--', marker='s', linewidth=2)
+        ax2.plot(self.all_data_moi["mois"], self.all_data_moi["echanges_envoyer"], label="Échanges envoyés", linestyle='-.', marker='^', linewidth=2)
+        ax2.plot(self.all_data_moi["mois"], self.all_data_moi["echanges_recu"], label="Échanges reçus", linestyle=':', marker='v', linewidth=2)
+        ax2.plot(self.all_data_moi["mois"], self.all_data_moi["paiements"], label="Paiements", linestyle='-.', marker='D', linewidth=2)
+        ax2.plot(self.all_data_moi["mois"], self.all_data_moi["retours"], label="Retours", linestyle='--', marker='x', linewidth=2)
+        
+        ax2.set_title(f"Les tendances mensuelles pour l'année {self.all_data_moi['mois'][0].split('-')[0]}", fontsize=12, weight='bold')
+        ax2.set_xlabel("Mois", **font_properties)
+        ax2.set_ylabel("Valeur en DH", **font_properties)
+        ax2.tick_params(axis='x', rotation=45)
+        ax2.legend(loc='upper left', fontsize=9)
+        ax2.grid(True)
+
+        # Création des canvases
+        self.canvas1 = FigureCanvas(fig1)
+        self.canvas2 = FigureCanvas(fig2)
+
+        # Ajout à la layout
+        layout = QVBoxLayout()
+        for title, canvas in [
+            ("Ventes quotidiennes et autres données", self.canvas1),
+            ("Ventes mensuelles et autres données", self.canvas2)
+        ]:
+            label = QLabel(title)
+            label.setAlignment(Qt.AlignCenter)
+            label.setObjectName("TitrePage")
+            layout.addWidget(label)
+            layout.addWidget(canvas)
+
+        self.vente_dash.setLayout(layout)
+
+    def generate_plots__(self):
         # Create figures for the daily data 
         fig1, ax1 = plt.subplots()
         plt.xticks(rotation=90)

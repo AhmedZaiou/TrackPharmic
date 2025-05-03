@@ -126,3 +126,35 @@ class CommandeClient:
         conn.commit()
         conn.close()
         return [dict(row) for row in rows]
+    
+    @staticmethod
+    def cloture_journee(date_jour=None):
+        if date_jour is None:
+            date_jour = datetime.now().strftime("%Y-%m-%d")
+
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        cursor.execute( 
+            """SELECT COUNT(*) as count, SUM(to_pay_now) as total
+                    FROM Commandes_client
+                    WHERE DATE(date_vente) = %s
+                    AND id_commande_client IN (
+                        SELECT MIN(id_commande_client)
+                        FROM Commandes_client
+                        GROUP BY numero_facture
+                    );""",
+            (date_jour,),
+        )
+        resultats = cursor.fetchone()
+        total_ventes_jour = resultats["count"]
+        total_vente_jour = resultats["total"] 
+
+        statistiques_ventes_jour = {
+            "Nombre total de commandes clients effectuées aujourdhui": total_ventes_jour or 0,
+            "Montant total des commandes clients effectuées aujourdhui": total_vente_jour or 0
+        }
+        conn.close()
+        return statistiques_ventes_jour

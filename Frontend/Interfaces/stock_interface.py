@@ -27,6 +27,16 @@ from Backend.Dataset.fournisseur import Fournisseur
 
 from Frontend.utils.utils import *
 
+from PyQt5.QtWidgets import QLabel, QWidget, QVBoxLayout, QScrollArea
+from PyQt5.QtGui import QPixmap, QImage
+import fitz
+
+import imaplib
+import email
+from email.header import decode_header 
+from Backend.Dataset.justificatifs import JustificatifsManager
+from Frontend.utils.utils import smtp_user, smtp_password
+
 
 class Stock_dash:
     def __init__(self, main_interface):
@@ -48,7 +58,186 @@ class Stock_dash:
         self.add_stock_menu = QPushButton("Ajouter dans le stock")
         self.add_stock_menu.clicked.connect(self.add_stock_menu_fc)
         menu_layout.addWidget(self.add_stock_menu)
+
+        self.justificatifs = QPushButton("Lister les justificatifs")
+        self.justificatifs.clicked.connect(self.justificatifs_fc)
+        menu_layout.addWidget(self.justificatifs)
         return menu_layout
+    
+    def justificatifs_fc(self):
+        self.main_interface.clear_content_frame()
+        self.main_interface.keyPressEvent = self.keyPressEvent
+
+        
+
+        self.Justif_dash = QWidget()
+        self.Justif_dash.setObjectName("vente_dash")
+
+        # Widget central
+        # Layout principal
+        main_layout = QVBoxLayout(self.Justif_dash)
+
+        titre_page = QLabel("Liste des justificatifs")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(titre_page)
+        self.telecharger_pieces_jointes()
+
+        menu_layout = self.create_menu_commande()
+        main_layout.addLayout(menu_layout)
+
+        self.Justificatifs_table = QTableWidget(0, 5)
+        self.Justificatifs_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.Justificatifs_table.setHorizontalHeaderLabels(
+            [
+                "ID",
+                "Doté du justificatif",
+                "Description",
+                "filename", 
+                "ID Justificatif",
+            ]
+        )
+        self.Justificatifs_table.cellClicked.connect(self.justificatifs_select)
+        main_layout.addWidget(self.Justificatifs_table)
+        self.charger_Justificatifs_table()
+
+        self.main_interface.content_layout.addWidget(self.Justif_dash)
+    
+    def charger_Justificatifs_table(self):
+        self.Liste_justificatifes = JustificatifsManager.lister_justificatifs()
+        self.Justificatifs_table.setRowCount(len(self.Liste_justificatifes))
+        for row, product in enumerate(self.Liste_justificatifes):
+            self.Justificatifs_table.setItem(
+                row, 0, QTableWidgetItem(str(product["id"]))
+            ) 
+            self.Justificatifs_table.setItem(
+                row, 1, QTableWidgetItem(str(product["date_reception"]))
+            )
+            self.Justificatifs_table.setItem(
+                row, 2, QTableWidgetItem(str(product["subject"]))
+            )
+            self.Justificatifs_table.setItem(
+                row, 3, QTableWidgetItem(str(product["filename"]))
+            ) 
+            self.Justificatifs_table.setItem(
+                row, 4, QTableWidgetItem(str(product["mail_id"]))
+            ) 
+    
+    def telecharger_pieces_jointes(self, email_user = smtp_user, email_pass= smtp_password):
+        imap = imaplib.IMAP4_SSL("imap.gmail.com")
+        imap.login(email_user, email_pass)
+        imap.select("INBOX")
+        status, messages = imap.search(None, "UNSEEN")
+        if status != "OK":
+            print("Erreur lors de la récupération des messages.")
+            return
+        mail_ids = messages[0].split() 
+        infos_fichiers = []
+        for mail_id in mail_ids:
+            status, msg_data = imap.fetch(mail_id, "(RFC822)")
+            if status != "OK":
+                continue
+            for response_part in msg_data:
+                if isinstance(response_part, tuple):
+                    msg = email.message_from_bytes(response_part[1])
+                    date = msg.get("Date")
+                    subject, encoding = decode_header(msg.get("Subject"))[0]
+                    if isinstance(subject, bytes):
+                        subject = subject.decode(encoding if encoding else "utf-8", errors="ignore")
+                    from_ = msg.get("From")
+
+                    for part in msg.walk():
+                        if part.get_content_maintype() == 'multipart':
+                            continue
+                        if part.get('Content-Disposition') is None:
+                            continue
+
+                        filename = part.get_filename()
+                        if filename:
+                            filename, encoding = decode_header(filename)[0]
+                            if isinstance(filename, bytes):
+                                filename = filename.decode(encoding if encoding else "utf-8", errors="ignore")
+    
+                            infos_fichiers.append({
+                                "from": from_,
+                                "date": date,
+                                "subject": subject,
+                                "filename": filename, 
+                                "mail_id": mail_id, 
+                            })
+                            JustificatifsManager.ajouter_justificatif(infos_fichiers[-1]) 
+        imap.logout()
+    
+
+    def telecharger_documents(self, email_user = smtp_user, email_pass= smtp_password, mail_id = None, nom_justificatif = None):
+        imap = imaplib.IMAP4_SSL("imap.gmail.com")
+        imap.login(email_user, email_pass)
+        imap.select("INBOX") 
+        infos_fichiers = [] 
+        status, msg_data = imap.fetch(mail_id, "(RFC822)")
+        if status != "OK":
+            imap.logout()
+            return
+        for response_part in msg_data:
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                date = msg.get("Date") 
+
+                for part in msg.walk():
+                    if part.get_content_maintype() == 'multipart':
+                        continue
+                    if part.get('Content-Disposition') is None:
+                        continue
+
+                    filename = part.get_filename()
+                    if filename:
+                        filename, encoding = decode_header(filename)[0]
+                        if isinstance(filename, bytes):
+                            filename = filename.decode(encoding if encoding else "utf-8", errors="ignore")
+                        if filename == nom_justificatif:
+                            imap.logout()
+                            return part.get_payload(decode=True)
+        
+
+
+    
+
+
+    
+    
+    def justificatifs_select(self, row, column):
+        print(self.Justificatifs_table.item(0, 3).text())
+        mail_id = self.Justificatifs_table.item(row, 4).text()
+        nom_justificatif = self.Justificatifs_table.item(row, 3).text()
+        document = self.telecharger_documents(mail_id=mail_id, nom_justificatif=nom_justificatif)
+ 
+
+        doc = fitz.open(stream=document, filetype="pdf")
+        container_widget = QWidget()
+        layout = QVBoxLayout(container_widget)
+
+        for page_num in range(len(doc)):
+            page = doc.load_page(page_num)
+            pix = page.get_pixmap()
+            img = QImage(pix.samples, pix.width, pix.height, pix.stride, QImage.Format_RGB888)
+            label = QLabel()
+            label.setPixmap(QPixmap.fromImage(img))
+            layout.addWidget(label)
+
+        # Créer la fenêtre de visualisation avec scroll
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(container_widget)
+
+        self.viewer = QWidget()  # garder la référence
+        main_layout = QVBoxLayout(self.viewer)
+        main_layout.addWidget(scroll_area)
+
+        self.viewer.setWindowTitle("Aperçu du document")
+        self.viewer.resize(800, 1000)
+        self.viewer.show()
+        print("Justificatif selectionner")
+
 
     def reception_commande_fc(self):
         self.show_reception_interface()

@@ -33,7 +33,7 @@ class MainInterface(QMainWindow):
         
         self.show_login_interface()
         self.setFocusPolicy(Qt.StrongFocus)
-        # self.create_database()
+        
 
     def create_database(self):
         import json

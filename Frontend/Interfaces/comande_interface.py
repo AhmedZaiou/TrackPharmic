@@ -25,6 +25,7 @@ from Backend.Dataset.fournisseur import Fournisseur
 from Backend.Dataset.medicament import Medicament
 
 
+
 from Frontend.utils.utils import *
 
 
@@ -420,3 +421,4 @@ class Commande_dash:
                 self.code_barre_scanner += key  # Ajouter le caractère au code en cours
         except:
             print("erreur")
+    
