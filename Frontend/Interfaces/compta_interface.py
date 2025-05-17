@@ -8,11 +8,12 @@ from qtpy.QtWidgets import (
     QPushButton,
     QGridLayout,
     QFileDialog,
+    QMessageBox,
 )
 from qtpy.QtCore import Qt
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
+import shutil
 from Backend.Dataset.credit import Credit
 from Backend.Dataset.echanges import Echanges
 from Backend.Dataset.payment import Payment
@@ -34,6 +35,9 @@ class Compta_dash:
 
         self.vente_dash = QWidget()
         self.vente_dash.setObjectName("vente_dash")
+
+        
+        
 
         # Fetch data
         credit_jours = Credit.evolution_par_jour_moiis_courant()
@@ -88,13 +92,46 @@ class Compta_dash:
             "ventes": list(ventes_mois.values())[1],
         }
 
+
+
+        # create a button that will allow the user to download the data
+        self.btn_ajouter = QPushButton("Télécharger le rapport")
+        self.btn_ajouter.clicked.connect(self.telecharger_document)
+        self.main_layout = QVBoxLayout(self.vente_dash)
         
 
         # Generate and display figures
         self.generate_plots()
+        self.main_layout.addWidget(self.btn_ajouter)
 
         # Add the widget to the main layout
         self.main_interface.content_layout.addWidget(self.vente_dash)
+    
+    def telecharger_document(self):
+        from Backend.Dataset.compta_files import ComptaFilesGeneration
+
+        try:
+            # 1. Génère le fichier avec ta classe métier
+            chemin_fichier = ComptaFilesGeneration.extraire_vente()  # Suppose que cela retourne le chemin du fichier généré
+            
+            if not chemin_fichier:
+                QMessageBox.warning(self.main_interface, "Erreur", "La génération du fichier a échoué.")
+                return
+
+            # 2. Demande à l'utilisateur où enregistrer le fichier
+            chemin_dest, _ = QFileDialog.getSaveFileName(
+                self.main_interface, "Enregistrer le fichier", "Rapport.xlsx", "Fichiers Excel (*.xlsx);;Tous les fichiers (*)"
+            )
+
+            if chemin_dest:
+                shutil.copy(chemin_fichier, chemin_dest)
+                QMessageBox.information(self.main_interface, "Succès", "Le document a été téléchargé avec succès.")
+            else:
+                QMessageBox.information(self.main_interface, "Annulé", "Téléchargement annulé par l'utilisateur.")
+        
+        except Exception as e:
+            QMessageBox.critical(self.main_interface, "Erreur", f"Une erreur est survenue :\n{str(e)}")
+
 
     def transformer_donnees(self, donnees):
         data_transformee = {'jours': [], 'ventes': []}
@@ -182,8 +219,10 @@ class Compta_dash:
             label.setObjectName("TitrePage")
             layout.addWidget(label)
             layout.addWidget(canvas)
+        
+        self.main_layout.addLayout(layout)
 
-        self.vente_dash.setLayout(layout)
+        #self.vente_dash.setLayout(layout)
 
     def generate_plots__(self):
         # Create figures for the daily data 

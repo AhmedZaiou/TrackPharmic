@@ -11,3 +11,6 @@ pymysql
 treepoem
 pymupdf
 seaborn
+fitz
+pytest-shutil
+openpyxl
