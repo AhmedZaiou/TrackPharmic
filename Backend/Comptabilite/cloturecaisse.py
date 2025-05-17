@@ -28,16 +28,8 @@ from Backend.Dataset.ventes import Ventes
 from Backend.Dataset.retour import Retour
 from Backend.Dataset.commande_client import CommandeClient
 
+from Frontend.utils.utils import *
 
-# Informations de connexion Gmail
-smtp_server = "smtp.gmail.com"
-smtp_port = 587
-smtp_user = "pharmacieapplication@gmail.com"  # Remplace par ton email
-smtp_password = "adck kohd tuqu iomh"  # Utiliser un mot de passe d'application
-
-# Définition de l'expéditeur et du destinataire
-sender_email = smtp_user
-receiver_email = "zaiou.ahm@gmail.com"#"bichrjamai@icloud.com"
 
 
 class Caisse:
