@@ -30,7 +30,6 @@ class MainInterface(QMainWindow):
         self.showFullScreen()
         self.setStyleSheet(set_styles())
         # self.show_main_interface()
-        
         self.show_login_interface()
         self.setFocusPolicy(Qt.StrongFocus)
         
@@ -94,6 +93,7 @@ class MainInterface(QMainWindow):
         self.main_layout_p = QVBoxLayout(self.central_widget)
 
         self.setCentralWidget(self.central_widget)
+        
 
         self.central_widget = QWidget()
         self.central_widget.setObjectName("main")

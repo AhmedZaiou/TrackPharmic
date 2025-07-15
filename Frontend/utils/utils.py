@@ -73,24 +73,24 @@ sender_email = smtp_user
 
 # data base original 
 
-"""
+
 host = "srv1653.hstgr.io"
 user = "u454999796_root"
 password = "Ah@2019@"
 database = "u454999796_pharma"
-"""
 
+"""
 host = "srv1905.hstgr.io"
 user = "u791384722_pharma"
 password = "@sCM^n4L"
 database = "u791384722_pharma"
-
+"""
 
 
 # Pharma information 
 Name_pharma = "RACHAD TAZA"
 Email_pharma = "bichrjamai@icloud.com"
-receiver_email = "bichrjamai@icloud.com" # "zaiou.ahm@gmail.com" #
+receiver_email =  "zaiou.ahm@gmail.com" #"bichrjamai@icloud.com" #
 Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
 Tel_pharma = "0535285298, 0680061368"
 

@@ -48,6 +48,70 @@ class Medicament:
         conn.close()
 
     @staticmethod
+    def create_table_new_medicament():
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute(
+            """
+        CREATE TABLE IF NOT EXISTS New_medicament (
+            ID_Medicament INT AUTO_INCREMENT PRIMARY KEY,
+            Nom VARCHAR(255) NOT NULL,
+            Caracteristique TEXT,
+            Code_EAN_13 VARCHAR(13),
+            Medicament_Generique VARCHAR(255),
+            Prix_Officine DECIMAL(10, 2),
+            Prix_Public_De_Vente DECIMAL(10, 2),
+            Prix_Base_Remboursement DECIMAL(10, 2),
+            Prix_Hospitalier DECIMAL(10, 2),
+            Substance_Active_DCI VARCHAR(255),
+            Classe_Therapeutique VARCHAR(255),
+            Min_Stock INT,
+            Stock_Actuel INT
+        );
+        """
+        )
+        conn.commit()
+        conn.close()
+    
+    @staticmethod
+    def ajouter_medicament_code_barre(code_barre):
+        """
+        Ajoute un médicament à la base de données à partir du code-barres.
+        Le code-barres est utilisé pour extraire les informations du médicament.
+        """
+        from Backend.Datascraping.extraire_medicament import scrap_page_url
+
+        values = scrap_page_url(code_barre)
+        if values[0] is 'Page not found':
+            return None
+
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("""INSERT INTO Medicament (
+            Nom,
+            Caracteristique,
+            Code_EAN_13,
+            Medicament_Generique,
+            Prix_Officine,
+            Prix_Public_De_Vente,
+            Prix_Base_Remboursement,
+            Prix_Hospitalier,
+            Substance_Active_DCI,
+            Classe_Therapeutique,
+            Min_Stock,
+            Stock_Actuel
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", values)
+        conn.commit()
+        conn.close()
+        return True
+
+            
+
+    @staticmethod
     def ajouter_medicament(
         nom,
         caracteristique,
