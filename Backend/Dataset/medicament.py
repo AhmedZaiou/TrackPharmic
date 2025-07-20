@@ -20,34 +20,6 @@ class Medicament:
         conn.close()
 
     @staticmethod
-    def create_table_medicament():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-        CREATE TABLE IF NOT EXISTS Medicament (
-            ID_Medicament INT AUTO_INCREMENT PRIMARY KEY,
-            Nom VARCHAR(255) NOT NULL,
-            Caracteristique TEXT,
-            Code_EAN_13 VARCHAR(13),
-            Medicament_Generique VARCHAR(255),
-            Prix_Officine DECIMAL(10, 2),
-            Prix_Public_De_Vente DECIMAL(10, 2),
-            Prix_Base_Remboursement DECIMAL(10, 2),
-            Prix_Hospitalier DECIMAL(10, 2),
-            Substance_Active_DCI VARCHAR(255),
-            Classe_Therapeutique VARCHAR(255),
-            Min_Stock INT,
-            Stock_Actuel INT
-        );
-        """
-        )
-        conn.commit()
-        conn.close()
-
-    @staticmethod
     def create_table_new_medicament():
         conn = pymysql.connect(
             host=host, user=user, password=password, database=database
@@ -55,20 +27,25 @@ class Medicament:
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
-        CREATE TABLE IF NOT EXISTS New_medicament (
-            ID_Medicament INT AUTO_INCREMENT PRIMARY KEY,
-            Nom VARCHAR(255) NOT NULL,
-            Caracteristique TEXT,
-            Code_EAN_13 VARCHAR(13),
-            Medicament_Generique VARCHAR(255),
-            Prix_Officine DECIMAL(10, 2),
-            Prix_Public_De_Vente DECIMAL(10, 2),
-            Prix_Base_Remboursement DECIMAL(10, 2),
-            Prix_Hospitalier DECIMAL(10, 2),
-            Substance_Active_DCI VARCHAR(255),
-            Classe_Therapeutique VARCHAR(255),
+        CREATE TABLE new_Medicaments (
+            ID_Medicament INT PRIMARY KEY AUTO_INCREMENT,
+            Code_EAN_13 VARCHAR(20),
+            Nom VARCHAR(255),
+            Image_URL TEXT,
+            Présentation TEXT,
+            Dosage VARCHAR(100),
+            Distributeur_ou_fabriquant VARCHAR(255),
+            Composition TEXT,
+            Classe_thérapeutique VARCHAR(255),
+            Statut VARCHAR(100),
+            Code_ATC VARCHAR(20),
+            PPV DECIMAL(10, 2),
+            Prix_hospitalier DECIMAL(10, 2),
+            Tableau VARCHAR(50),
+            Indications TEXT,
             Min_Stock INT,
-            Stock_Actuel INT
+            Stock_Actuel INT,
+            url_medicament TEXT
         );
         """
         )
@@ -81,50 +58,112 @@ class Medicament:
         Ajoute un médicament à la base de données à partir du code-barres.
         Le code-barres est utilisé pour extraire les informations du médicament.
         """
-        from Backend.Datascraping.extraire_medicament import scrap_page_url
+        from Backend.Datascraping.extraire_medicament import Scraper_medicament
 
-        values = scrap_page_url(code_barre)
-        if values[0] is 'Page not found':
-            return None
+        values = Scraper_medicament.get_medicament_codeBarre(code_barre)
+         
+        
+        #if values[0]['Nom'] == 'Page non trouvée.':
+        #    print('medicament not found')
+        #    #return None 
+        
+         
+        #if Medicament.test_existance_url(values.get('url')):
+        #        return None
+        Code_EAN_13 = values.get('Code_EAN_13')
+        Nom = values.get('Nom')
+        Image_URL = values.get('Image URL')
+        Présentation = values.get('Présentation')
+        Dosage = values.get('Dosage')
+        Distributeur_ou_fabriquant = values.get('Distributeur ou fabriquant')
+        Composition = values.get('Composition')
+        Classe_thérapeutique = values.get('Classe thérapeutique')
+        Statut = values.get('Statut')
+        Code_ATC = values.get('Code ATC')
+        PPV = values.get('PPV')
+        Prix_hospitalier =  values.get('Prix hospitalier')
+        Tableau =   values.get('Tableau')
+        Indications =   values.get('Indication(s)') 
+        Min_Stock   = 0
+        Stock_Actuel =  0
+        url_medicament = values.get('url')
+        print('all good')
+        Medicament.ajouter_medicament(Code_EAN_13,
+            Nom,
+            Image_URL,
+            Présentation,
+            Dosage,
+            Distributeur_ou_fabriquant,
+            Composition,
+            Classe_thérapeutique,
+            Statut,
+            Code_ATC,
+            PPV,
+            Prix_hospitalier,
+            Tableau,
+            Indications,
+            Min_Stock,
+            Stock_Actuel,
+            url_medicament) 
+        return values
 
+    @staticmethod
+    def ajouter_medicament_data_frame(dataframe):
         conn = pymysql.connect(
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("""INSERT INTO Medicament (
-            Nom,
-            Caracteristique,
-            Code_EAN_13,
-            Medicament_Generique,
-            Prix_Officine,
-            Prix_Public_De_Vente,
-            Prix_Base_Remboursement,
-            Prix_Hospitalier,
-            Substance_Active_DCI,
-            Classe_Therapeutique,
-            Min_Stock,
-            Stock_Actuel
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", values)
+        cursor.executemany(
+            """
+        INSERT INTO new_Medicaments (
+                            Code_EAN_13,
+                            Nom,
+                            Image_URL,
+                            Présentation,
+                            Dosage,
+                            Distributeur_ou_fabriquant,
+                            Composition,
+                            Classe_thérapeutique,
+                            Statut,
+                            Code_ATC,
+                            PPV,
+                            Prix_hospitalier,
+                            Tableau,
+                            Indications,
+                            Min_Stock,
+                            Stock_Actuel, 
+                            url_medicament
+                        ) VALUES (
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                        );""",  
+            (
+                 list(dataframe.itertuples(index=False, name=None))
+            ),
+        )
         conn.commit()
         conn.close()
-        return True
 
             
 
     @staticmethod
     def ajouter_medicament(
-        nom,
-        caracteristique,
-        code_ean_13,
-        generique,
-        prix_officine,
-        prix_public,
-        prix_remboursement,
-        prix_hospitalier,
-        substance_active,
-        classe_therapeutique,
-        min_stock,
-        stock_actuel,
+        Code_EAN_13,
+        Nom,
+        Image_URL,
+        Présentation,
+        Dosage,
+        Distributeur_ou_fabriquant,
+        Composition,
+        Classe_thérapeutique,
+        Statut,
+        Code_ATC,
+        PPV,
+        Prix_hospitalier,
+        Tableau,
+        Indications,
+        Min_Stock,
+        Stock_Actuel,
+        url_medicament,
     ):
         conn = pymysql.connect(
             host=host, user=user, password=password, database=database
@@ -132,22 +171,45 @@ class Medicament:
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
-        INSERT INTO Medicament (Nom, Caracteristique, Code_EAN_13, Medicament_Generique, Prix_Officine, Prix_Public_De_Vente, Prix_Base_Remboursement, Prix_Hospitalier, Substance_Active_DCI, Classe_Therapeutique, Min_Stock, Stock_Actuel)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
-        """,
+        INSERT INTO new_Medicaments (
+                            Code_EAN_13,
+                            Nom,
+                            Image_URL,
+                            Présentation,
+                            Dosage,
+                            Distributeur_ou_fabriquant,
+                            Composition,
+                            Classe_thérapeutique,
+                            Statut,
+                            Code_ATC,
+                            PPV,
+                            Prix_hospitalier,
+                            Tableau,
+                            Indications,
+                            Min_Stock,
+                            Stock_Actuel, 
+                            url_medicament
+                        ) VALUES (
+                             %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                        );""",  
             (
-                nom,
-                caracteristique,
-                code_ean_13,
-                generique,
-                prix_officine,
-                prix_public,
-                prix_remboursement,
-                prix_hospitalier,
-                substance_active,
-                classe_therapeutique,
-                min_stock,
-                stock_actuel,
+                Code_EAN_13,
+                Nom,
+                Image_URL,
+                Présentation,
+                Dosage,
+                Distributeur_ou_fabriquant,
+                Composition,
+                Classe_thérapeutique,
+                Statut,
+                Code_ATC,
+                PPV,
+                Prix_hospitalier,
+                Tableau,
+                Indications,
+                Min_Stock,
+                Stock_Actuel,
+                url_medicament,
             ),
         )
         conn.commit()
@@ -160,21 +222,72 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            "DELETE FROM Medicament WHERE ID_Medicament = %s;", (id_medicament,)
+            "DELETE FROM new_Medicaments WHERE ID_Medicament = %s;", (id_medicament,)
         )
         conn.commit()
         conn.close()
 
     @staticmethod
-    def modifier_medicament(id_medicament, **kwargs):
+    def modifier_medicament(id_medicament, 
+                Code_EAN_13,
+                Nom,
+                Image_URL,
+                Présentation,
+                Dosage,
+                Distributeur_ou_fabriquant,
+                Composition,
+                Classe_thérapeutique,
+                Statut,
+                Code_ATC,
+                PPV,
+                Prix_hospitalier,
+                Tableau,
+                Indications,
+                Min_Stock,
+                Stock_Actuel,
+                url_medicament,
+            ):
         conn = pymysql.connect(
             host=host, user=user, password=password, database=database
         )
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        columns = [f"{key} = %s" for key in kwargs.keys()]
-        values = list(kwargs.values()) + [id_medicament]
-        query = f"UPDATE Medicament SET {', '.join(columns)} WHERE ID_Medicament = %s;"
-        cursor.execute(query, values)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)  
+        query = f"UPDATE new_Medicaments SET Code_EAN_13 = %s, \
+                    Nom = %s, \
+                    Image_URL = %s, \
+                    Présentation = %s, \
+                    Dosage = %s, \
+                    Distributeur_ou_fabriquant = %s, \
+                    Composition = %s, \
+                    Classe_thérapeutique = %s, \
+                    Statut = %s, \
+                    Code_ATC = %s, \
+                    PPV = %s, \
+                    Prix_hospitalier = %s, \
+                    Tableau = %s, \
+                    Indications = %s, \
+                    Min_Stock = %s, \
+                    Stock_Actuel = %s, \
+                    url_medicament = %s WHERE ID_Medicament = %s;"
+        cursor.execute(query, (
+                Code_EAN_13,
+                Nom,
+                Image_URL,
+                Présentation,
+                Dosage,
+                Distributeur_ou_fabriquant,
+                Composition,
+                Classe_thérapeutique,
+                Statut,
+                Code_ATC,
+                PPV,
+                Prix_hospitalier,
+                Tableau,
+                Indications,
+                Min_Stock,
+                Stock_Actuel,
+                url_medicament,
+                id_medicament,
+            ))
         conn.commit()
         conn.close()
 
@@ -185,32 +298,19 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            "SELECT * FROM Medicament WHERE ID_Medicament = %s;", (id_medicament,)
+            "SELECT * FROM new_Medicaments WHERE ID_Medicament = %s;", (id_medicament,)
         )
         row = cursor.fetchone()
         conn.close()
         return dict(row) if row else None
-
+    @staticmethod
     def effectuer_vente_medicament(id_medicament, quantite_vendu):
         conn = pymysql.connect(
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
-        UPDATE Medicament SET Stock_Actuel = Stock_Actuel - %s
-        WHERE ID_Medicament = %s;
-        """
-        cursor.execute(query, (quantite_vendu, id_medicament))
-        conn.commit()
-        conn.close()
-
-    def effectuer_stock_medicament(id_medicament, quantite_vendu):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = """
-        UPDATE Medicament SET Stock_Actuel = Stock_Actuel + %s
+        UPDATE new_Medicaments SET Stock_Actuel = Stock_Actuel - %s
         WHERE ID_Medicament = %s;
         """
         cursor.execute(query, (quantite_vendu, id_medicament))
@@ -218,17 +318,51 @@ class Medicament:
         conn.close()
 
     @staticmethod
-    def extraire_medicament_code_barre(code_barre):
+    def test_existance_url(url):
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        query = """
+        SELECT 1 FROM new_Medicaments WHERE url_medicament = %s LIMIT 1;
+        """
+        cursor.execute(query, (url,))
+        result = cursor.fetchone()  # récupère une ligne si elle existe
+        conn.close()
+        return result is not None
+
+    def effectuer_stock_medicament(id_medicament, quantite_vendu):
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        query = """
+        UPDATE new_Medicaments SET Stock_Actuel = Stock_Actuel + %s
+        WHERE ID_Medicament = %s;
+        """
+        cursor.execute(query, (quantite_vendu, id_medicament))
+        conn.commit()
+        conn.close()
+    
+    @staticmethod
+    def get_medicament_by_code_barre(code_barre):
         conn = pymysql.connect(
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            "SELECT * FROM Medicament WHERE Code_EAN_13 = %s;", (code_barre,)
+            "SELECT * FROM new_Medicaments WHERE Code_EAN_13 = %s;", (code_barre,)
         )
         row = cursor.fetchone()
         conn.close()
         return dict(row) if row else None
+
+    @staticmethod
+    def extraire_medicament_code_barre(code_barre):
+        row = Medicament.get_medicament_by_code_barre(code_barre)
+        if not row:
+            Medicament.ajouter_medicament_code_barre(code_barre)
+        return Medicament.get_medicament_by_code_barre(code_barre)
 
     @staticmethod
     def extraire_medicament_code_barre_like(pattern):
@@ -237,7 +371,7 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            "SELECT * FROM Medicament WHERE Code_EAN_13 LIKE %s;", (f"%{pattern}%",)
+            "SELECT * FROM new_Medicaments WHERE Code_EAN_13 LIKE %s;", (f"%{pattern}%",)
         )
         rows = cursor.fetchall()
         conn.close()
@@ -249,7 +383,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",))
+        cursor.execute("SELECT * FROM new_Medicaments WHERE Nom LIKE %s;", (f"%{pattern}%",))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -258,7 +392,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT Nom FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",))
+        cursor.execute("SELECT Nom FROM new_Medicaments WHERE Nom LIKE %s;", (f"%{pattern}%",))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row)['Nom'] for row in rows]
@@ -269,7 +403,17 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Medicament ORDER BY Nom;")
+        cursor.execute("SELECT * FROM new_Medicaments WHERE Code_EAN_13 IS NOT NULL ORDER BY Nom;")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    @staticmethod
+    def extraire_tous_new_medicament():
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor.execute("SELECT * FROM new_Medicaments WHERE Code_EAN_13 IS NULL ORDER BY Nom;")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -280,7 +424,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Medicament WHERE Min_Stock > 0;")
+        cursor.execute("SELECT * FROM new_Medicaments WHERE Min_Stock > 0;")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -291,7 +435,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Medicament WHERE Min_Stock > 0 and Stock_Actuel<Min_Stock; ")
+        cursor.execute("SELECT * FROM new_Medicaments WHERE Min_Stock > 0 and Stock_Actuel<Min_Stock; ")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -307,7 +451,7 @@ class Medicament:
         cursor.execute(
             """
             SELECT COUNT(ID_Medicament) as total_medicaments
-            FROM Medicament
+            FROM new_Medicaments
         """
         )
         total_medicaments = cursor.fetchone()
@@ -317,7 +461,7 @@ class Medicament:
         cursor.execute(
             """
             SELECT COUNT(ID_Medicament) as medicaments_en_rupture
-            FROM Medicament
+            FROM new_Medicaments
             WHERE Stock_Actuel < Min_Stock
         """
         )
@@ -328,7 +472,7 @@ class Medicament:
         cursor.execute(
             """
             SELECT COUNT(ID_Medicament) as medicaments_avec_stock
-            FROM Medicament
+            FROM new_Medicaments
             WHERE Stock_Actuel > 0
         """
         )
@@ -339,7 +483,7 @@ class Medicament:
         cursor.execute(
             """
             SELECT SUM(Stock_Actuel) as total_stock
-            FROM Medicament
+            FROM new_Medicaments
         """
         )
         total_stock = cursor.fetchone()

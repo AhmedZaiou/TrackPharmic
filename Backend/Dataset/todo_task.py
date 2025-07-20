@@ -56,6 +56,43 @@ class Todo_Task:
         )
         conn.commit()
         conn.close()
+    @staticmethod
+    def scraper_today():
+        date_execution = datetime.today().date()
+        task = 'get_new_medicament'
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor() 
+        cursor.execute(
+            """
+            UPDATE todo_task
+            SET date_execution = %s
+            WHERE task = %s
+        """,
+            (date_execution, task),
+        )
+        conn.commit()
+        conn.close()
+    @staticmethod
+    def test_scrapper():
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT date_execution FROM todo_task WHERE task = 'get_new_medicament';
+        """
+        )
+        result = cursor.fetchone()
+        conn.close()
+
+        
+        if result:
+            date_scrap = result[0] == datetime.today().date() 
+            return not date_scrap
+        return None
 
  
         

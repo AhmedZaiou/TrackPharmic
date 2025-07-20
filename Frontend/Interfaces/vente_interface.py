@@ -44,8 +44,7 @@ import subprocess
 
 
 class Vente_dash:
-    def __init__(self, main_interface):
-        print("aaaaa")
+    def __init__(self, main_interface): 
         self.main_interface = main_interface
         self.show_vente_interface()
         self.client_info = {
@@ -342,13 +341,13 @@ class Vente_dash:
             )
             self.cart_table.setItem(row, 1, QTableWidgetItem(str(product["Nom"])))
             self.cart_table.setItem(
-                row, 2, QTableWidgetItem(str(product["Caracteristique"]))
+                row, 2, QTableWidgetItem(str(product["Présentation"]))
             )
             self.cart_table.setItem(
                 row, 3, QTableWidgetItem(str(product["quantite_actuelle"]))
             )
             self.cart_table.setItem(
-                row, 4, QTableWidgetItem(str(product["Prix_Public_de_Vente"]))
+                row, 4, QTableWidgetItem(str(product["PPV"]))
             )
             line_edit = QSpinBox()
             line_edit.setValue(product["Quantite"])
@@ -376,12 +375,12 @@ class Vente_dash:
         new_quantity = int(new_value)
         self.producs_table.loc[row, "Quantite"] = new_quantity
         self.producs_table.loc[row, "Prix_total"] = (
-            new_quantity * self.producs_table.loc[row, "Prix_Public_de_Vente"]
+            new_quantity * self.producs_table.loc[row, "PPV"]
         )
         self.producs_table = self.producs_table[self.producs_table["Quantite"] != 0]
         self.update_table()
 
-    def add_medicament_to_vente(self, code_barre_scanner):
+    def add_medicament_to_vente(self, code_barre_scanner): 
         if (
             not self.producs_table.empty
             and code_barre_scanner in self.producs_table["Code_EAN_13"].values
@@ -393,11 +392,12 @@ class Vente_dash:
                 self.producs_table["Code_EAN_13"] == code_barre_scanner, "Prix_total"
             ] += self.producs_table.loc[
                 self.producs_table["Code_EAN_13"] == code_barre_scanner,
-                "Prix_Public_de_Vente",
+                "PPV",
             ]
             self.update_table()
         else:
             medicament = Medicament.extraire_medicament_code_barre(code_barre_scanner)
+            print(medicament)
 
             if medicament is None:
                 QMessageBox.information(
@@ -415,8 +415,8 @@ class Vente_dash:
                     message = (
                                 f"<div style='border: 1px solid red; padding: 15px; border-radius: 8px;'>"
                                 f"<h2 style='color: red;'>Attention : le stock du médicament '{medicament['Nom']}' est épuisé.</h2>"
-                                f"<p><strong>Caractéristiques :</strong> {medicament['Caracteristique']}</p>"
-                                f"<p><strong>Prix public :</strong> {medicament['Prix_Public_De_Vente']} MAD</p>"
+                                f"<p><strong>Caractéristiques :</strong> {medicament['Présentation']}</p>"
+                                f"<p><strong>Prix public :</strong> {medicament['PPV']} MAD</p>"
                                 f"<p>Veuillez vérifier la disponibilité. Vous pouvez passer une commande depuis la section <strong>'Commandes'</strong>.</p>"
                                 f"</div>"
                             )
@@ -434,7 +434,7 @@ class Vente_dash:
                         )
 
                     medicament["Quantite"] = 1
-                    medicament["Prix_Public_de_Vente"] = medicament_on_dtock[
+                    medicament["PPV"] = medicament_on_dtock[
                         "prix_vente"
                     ][0]
                     medicament["prix_vente"] = medicament_on_dtock["prix_vente"]
@@ -447,7 +447,7 @@ class Vente_dash:
                     medicament["prix_achat"] = medicament_on_dtock["prix_achat"]
                     medicament["id_stock"] = medicament_on_dtock["id_stock"]
                     medicament["Prix_total"] = (
-                        medicament["Quantite"] * medicament["Prix_Public_de_Vente"]
+                        medicament["Quantite"] * medicament["PPV"]
                     )
                     df = pd.DataFrame([medicament])
                     if self.producs_table.empty:
@@ -578,7 +578,7 @@ class Vente_dash:
                 id_commande_entre = items["id_commande"]
                 prix_achat = items["prix_achat"]
                 prix_v = items["prix_vente"]
-                prix_vente = items["Prix_Public_de_Vente"]
+                prix_vente = items["PPV"]
                 date_vente = now_str
                 quantite_vendue = items["Quantite"]
                 quantite_list = items["list_quantity"]

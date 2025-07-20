@@ -315,8 +315,8 @@ class Stock_dash:
         self.statue_commande_value = QLabel("")
 
         code_barre = QLabel("Code EAN 13 :")
-        self.code_barre_value = QLineEdit()
-        self.code_barre_value.setValidator(int_validator)
+        self.code_barre_value = QLabel()#QLineEdit()
+        #self.code_barre_value.setValidator(int_validator)
         medicament_name = QLabel("Nom de medicament : ")
         self.medicament_name_value = QLabel("")
 
@@ -536,6 +536,8 @@ class Stock_dash:
 
     def finaliser_commande(self):
         Commandes.complet_commande(self.commande_current["id_commande"])
+        self.show_reception_interface()
+        
 
     def confirmation_ajout(self):
         if self.commande_current is None:
@@ -756,7 +758,7 @@ class Stock_dash:
                 str(self.medicament_search["Min_Stock"])
             )
             self.prix_vente_medicament_ajout.setText(
-                str(self.medicament_search["Prix_Public_De_Vente"])
+                str(self.medicament_search["PPV"])
             )
 
     def keyPressEvent(self, event):
@@ -802,5 +804,5 @@ class Stock_dash:
                 str(self.medicament_search["Nom"])
             )
             self.prix_vente_medicament.setText(
-                str(self.medicament_search["Prix_Public_De_Vente"])
+                str(self.medicament_search["PPV"])
             )

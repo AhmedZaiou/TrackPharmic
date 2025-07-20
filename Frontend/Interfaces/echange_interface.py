@@ -471,7 +471,7 @@ class Echange_dash:
                 id_commande_entre = items["id_commande"]
                 prix_achat = items["prix_achat"]
                 prix_v = items["prix_vente"]
-                prix_vente = items["Prix_Public_de_Vente"]
+                prix_vente = items["PPV"]
                 date_vente = now_str
                 quantite_vendue = items["Quantite"]
                 quantite_list = items["list_quantity"]
@@ -724,7 +724,7 @@ class Echange_dash:
                         )
 
                     medicament["Quantite"] = 1
-                    medicament["Prix_Public_de_Vente"] = medicament_on_dtock[
+                    medicament["PPV"] = medicament_on_dtock[
                         "prix_achat"
                     ][0]
                     medicament["prix_vente"] = medicament_on_dtock["prix_vente"]

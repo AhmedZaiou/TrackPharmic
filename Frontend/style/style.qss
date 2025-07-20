@@ -55,6 +55,14 @@ background-color: white;
     font-weight: bold;  
     
 }
+#Titresection{
+    font-size: 20px;
+    color: green; /* Couleur du texte */
+    text-align: center; /* Centrer le titre */
+    margin-bottom: 20px; /* Espacement sous le titre */    
+    font-weight: bold;  
+    
+}
 #logoTitle{
     display: flex;
     align-items: center;

@@ -16,6 +16,9 @@ from qtpy.QtCore import Qt
 
 from Backend.Dataset.stock import Stock
 from Backend.Dataset.medicament import Medicament
+from Frontend.utils.scraper import Worker, actualiser_medicament
+
+
 
 
 class Acceuil_dash:
@@ -81,6 +84,12 @@ class Acceuil_dash:
         # ...
         widget_statistique_layout.addWidget(label_widget_statistique)
         main_layout.addWidget(widget_statistique)
+
+        # actualisation medicaments
+        worker = Worker()
+        worker.finished.connect(lambda: print("Actualisation terminée !"))
+        worker.start() 
+        #actualiser_medicament()
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
 

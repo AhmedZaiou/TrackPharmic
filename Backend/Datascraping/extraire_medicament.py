@@ -9,19 +9,16 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import pandas as pd
 
+from Backend.Dataset.medicament import Medicament
 
 class Scraper_medicament:
-
-
-
     @staticmethod
-    def scrap_page_url(code_barre):
+    def get_medicament_codeBarre(code_barre):
         url = f"https://medicament.ma/?choice=barcode&s={code_barre}"
         return Scraper_medicament.scrap_medicament(url=url, code_barre = code_barre)
-
+    
     @staticmethod
     def scrap_medicament(url, code_barre = None , temps_sleep=3):
-        
         options = Options()
         options.add_argument('--headless')  # mode sans interface
         options.add_argument('--no-sandbox')
@@ -38,11 +35,10 @@ class Scraper_medicament:
         soup = BeautifulSoup(html, 'html.parser')
         data = {}
         h3_tag = soup.find("h3")
+        data["Code_EAN_13"] = code_barre if code_barre else None
         data["Nom"] = h3_tag.get_text(strip=True) if h3_tag else None 
-
         img_tag = soup.select_one("div.only-mobile img")
         data["Image URL"] = img_tag["src"] if img_tag else None
-
         rows = soup.select("table.table-details tr")
         for row in rows:
             field = row.find("td", class_="field")
@@ -56,23 +52,10 @@ class Scraper_medicament:
             if prix_str:
                 return float(prix_str.replace('dhs', '').strip())
             return None
-        print(data.keys())
-        values = (
-            data.get("Nom"),
-            data.get("Indication(s)"),  # Utilisé comme caractéristique
-            code_barre,  # Code_EAN_13 non fourni
-            None,  # Médicament générique non fourni
-            None,  # Prix Officine non fourni
-            parse_prix(data.get("PPV")),  # Ex: "36.20 dhs" → 36.20
-            data.get("Distributeur ou fabriquant"),  # Prix Base Remboursement non fourni
-            parse_prix(data.get("Prix hospitalier")),
-            data.get("Composition"),
-            data.get("Classe thérapeutique"),
-            0,  # Min_Stock par défaut
-            0   # Stock_Actuel par défaut
-        )
-
-        return values 
+        data["PPV"] = parse_prix(data.get("PPV"))
+        data["Prix hospitalier"] = parse_prix(data.get("Prix hospitalier"))
+        data["url"] = url 
+        return data 
     
 
     @staticmethod
@@ -105,10 +88,6 @@ class Scraper_medicament:
             results[full_url] = Scraper_medicament.scrap_medicament(url=full_url)
             
         return results
-
-data = Scraper_medicament.scrap_new_medicament()
-print(data)
-
             
 
 

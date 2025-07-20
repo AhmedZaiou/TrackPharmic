@@ -298,7 +298,7 @@ class Commande_client:
             results = Medicament.extraire_medicament_nom_like(text) 
             list_res = []
             for res in results:
-                list_res.append(f"{res['Nom']}, {res['Caracteristique']}, Prix : {res['Prix_Public_De_Vente']} Dh. {res['Code_EAN_13']}")  
+                list_res.append(f"{res['Nom']}, {res['Présentation']}, Prix : {res['PPV']} Dh. {res['Code_EAN_13']}")  
             model = QStringListModel(list_res)
             self.completer_client.setModel(model)
     def update_completer(self, text):
@@ -366,13 +366,13 @@ class Commande_client:
             )
             self.cart_table.setItem(row, 1, QTableWidgetItem(str(product["Nom"])))
             self.cart_table.setItem(
-                row, 2, QTableWidgetItem(str(product["Caracteristique"]))
+                row, 2, QTableWidgetItem(str(product["Présentation"]))
             )
             self.cart_table.setItem(
                 row, 3, QTableWidgetItem(str(1))
             )
             self.cart_table.setItem(
-                row, 4, QTableWidgetItem(str(product["Prix_Public_De_Vente"]))
+                row, 4, QTableWidgetItem(str(product["PPV"]))
             )
             line_edit = QSpinBox()
             line_edit.setValue(product["Quantite"])
@@ -399,7 +399,7 @@ class Commande_client:
         new_quantity = int(new_value)
         self.producs_table.loc[row, "Quantite"] = new_quantity
         self.producs_table.loc[row, "Prix_total"] = (
-            new_quantity * self.producs_table.loc[row, "Prix_Public_De_Vente"]
+            new_quantity * self.producs_table.loc[row, "PPV"]
         )
         self.producs_table = self.producs_table[self.producs_table["Quantite"] != 0]
         self.update_table()
@@ -417,13 +417,14 @@ class Commande_client:
                 self.producs_table["Code_EAN_13"] == code_barre_scanner, "Prix_total"
             ] += self.producs_table.loc[
                 self.producs_table["Code_EAN_13"] == code_barre_scanner,
-                "Prix_Public_De_Vente",
+                "PPV",
             ]
             self.update_table()
         else:
             medicament = Medicament.extraire_medicament_code_barre(code_barre_scanner)
+            
             medicament["Quantite"] = 1
-            medicament["Prix_total"] = medicament["Prix_Public_De_Vente"]
+            medicament["Prix_total"] = medicament["PPV"]
             
             if medicament is None:
                 QMessageBox.information(
@@ -565,9 +566,7 @@ class Commande_client:
                 
                 id_medicament = items["ID_Medicament"]
                 nom_medicament = items["Nom"]
-                prix_achat = items["Prix_Hospitalier"]  # tu n'avais pas "prix_achat", donc je prends "Prix_Hospitalier"
-                prix_v = items["Prix_Public_De_Vente"]
-                prix_vente = items["Prix_Public_De_Vente"]  # même chose
+                prix_vente = items["PPV"]  # même chose
                 date_vente = now_str
                 quantite_vendue = items["Quantite"]
                 quantite_list = items.get("list_quantity", [])  # au cas où "list_quantity" n'existe pas, pour éviter une erreur

@@ -378,7 +378,7 @@ class Commande_dash:
 
         self.main_interface = Fournisseur_dash(self.main_interface)
 
-    def process_barcode(self, codebare):
+    def process_barcode(self, codebare=""):
         if len(codebare) >= 13:
             return codebare[-13:]
         return ""
