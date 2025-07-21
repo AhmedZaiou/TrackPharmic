@@ -150,7 +150,7 @@ class Retour_dash:
                 else:
                     self.medicament_table.setRowHidden(row, True)
     def remplire_table_retour(self):
-        medicaments = Retour.extraire_tous_table_retours()
+        medicaments = Retour.extraire_tous_table_retours(self.main_interface.conn)
         self.medicament_table.setRowCount(len(medicaments))
         for index, element in enumerate(medicaments): 
             self.medicament_table.setItem(
@@ -176,7 +176,7 @@ class Retour_dash:
         numero_facture = self.numero_facture.text()
         client_iden = self.client_iden.text()
 
-        self.medicament_search = Medicament.extraire_medicament_code_barre(
+        self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
             code_barre_value_ajout
         )
         if (
@@ -202,7 +202,7 @@ class Retour_dash:
             QMessageBox.Cancel,
         )
         if reply == QMessageBox.Yes:
-            Retour.ajouter_retour(
+            Retour.ajouter_retour(self.main_interface.conn,
                 self.medicament_search["id_medicament"],
                 prix_achat_retour,
                 now,
@@ -211,7 +211,7 @@ class Retour_dash:
                 self.main_interface.user_session["id_salarie"],
             )
 
-            Stock.ajouter_stock(
+            Stock.ajouter_stock(self.main_interface.conn,
                 self.medicament_search["id_medicament"],
                 0,
                 self.main_interface.user_session["id_salarie"],

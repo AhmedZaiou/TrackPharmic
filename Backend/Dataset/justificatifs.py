@@ -9,10 +9,8 @@ import matplotlib.pyplot as plt
 
 class JustificatifsManager:
     @staticmethod
-    def create_table_justificatifs():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def create_table_justificatifs(conn):
+        
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS Justificatifs (
@@ -25,10 +23,10 @@ class JustificatifsManager:
             );
         """)
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def ajouter_justificatif(data_dict):
+    def ajouter_justificatif(conn,data_dict):
         """
         data_dict: dict like
         {
@@ -40,9 +38,7 @@ class JustificatifsManager:
         }
         """
         JustificatifsManager.create_table_justificatifs()
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor()
 
         sender = data_dict.get('from')
@@ -64,41 +60,35 @@ class JustificatifsManager:
         """, (sender, subject, filename, mail_id, date_reception))
 
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def extraire_justificatif(id_justificatif):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_justificatif(conn,id_justificatif):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             SELECT sender, subject, filename, mail_id, date_reception
             FROM Justificatifs WHERE id = %s
         """, (id_justificatif,))
         result = cursor.fetchone()
-        conn.close()
+        
         return result
 
     @staticmethod
-    def supprimer_justificatif(id_justificatif):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def supprimer_justificatif(conn,id_justificatif):
+        
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Justificatifs WHERE id = %s", (id_justificatif,))
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def lister_justificatifs():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def lister_justificatifs(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             SELECT id, sender, subject, filename, mail_id, date_reception FROM Justificatifs
         """)
         result = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in result]

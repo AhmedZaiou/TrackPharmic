@@ -27,10 +27,10 @@ class AffichageFacture:
     def __init__(self, main_interface, numero_facture):
         self.main_interface = main_interface
         self.numero_facture = numero_facture  # facture_data contient les infos à afficher
-        self.vente = Ventes.extraire_ventes_par_numero_facture(self.numero_facture)
-        self.payment = Payment.extraire_paiements_par_numero_facture(self.numero_facture)  
-        self.credit = Credit.extraire_credits_par_numero_facture(self.numero_facture)
-        self.retour = Retour.extraire_retours_par_numero_facture(self.numero_facture)
+        self.vente = Ventes.extraire_ventes_par_numero_facture(self.main_interface.conn,self.numero_facture)
+        self.payment = Payment.extraire_paiements_par_numero_facture(self.main_interface.conn,self.numero_facture)  
+        self.credit = Credit.extraire_credits_par_numero_facture(self.main_interface.conn,self.numero_facture)
+        self.retour = Retour.extraire_retours_par_numero_facture(self.main_interface.conn,self.numero_facture)
 
 
 

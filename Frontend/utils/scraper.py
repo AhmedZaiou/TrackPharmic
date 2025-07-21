@@ -7,12 +7,12 @@ import time
 
 
 
-def actualiser_medicament():
-    if Todo_Task.test_scrapper():  
+def actualiser_medicament(conn):
+    if Todo_Task.test_scrapper(conn):  
         data = Scraper_medicament.scrap_new_medicament()
         
         for key in data:  
-            if Medicament.test_existance_url(data[key].get('url')):
+            if Medicament.test_existance_url(conn,data[key].get('url')):
                 continue
             Code_EAN_13 = data[key].get('Code_EAN_13')
             Nom = data[key].get('Nom')
@@ -31,7 +31,7 @@ def actualiser_medicament():
             Min_Stock   = 0
             Stock_Actuel =  0
             url_medicament = data[key].get('url')
-            Medicament.ajouter_medicament(Code_EAN_13,
+            Medicament.ajouter_medicament(conn,Code_EAN_13,
                 Nom,
                 Image_URL,
                 Présentation,
@@ -54,5 +54,9 @@ def actualiser_medicament():
 from PyQt5.QtCore import QThread
 
 class Worker(QThread):
+
+    def __init__(self, conn):
+        super().__init__()
+        self.conn = conn
     def run(self):
-        actualiser_medicament() 
+        actualiser_medicament(self.conn) 

@@ -110,7 +110,7 @@ class Fournisseur_dash:
 
     def remplir_tableau(self):
         # Exemple de données fictives
-        fournisseurs = Fournisseur.extraire_tous_fournisseurs()
+        fournisseurs = Fournisseur.extraire_tous_fournisseurs(self.main_interface.conn)
 
         self.table.setRowCount(len(fournisseurs))
 
@@ -138,7 +138,7 @@ class Fournisseur_dash:
                 "Le nom et telephone sont obligatoires.",
             )
             return
-        Fournisseur.ajouter_fournisseur(nom, telephone, email, adresse, ville, pays)
+        Fournisseur.ajouter_fournisseur(self.main_interface.conn,nom, telephone, email, adresse, ville, pays)
         self.nom_input.clear()
         self.telephone_input.clear()
         self.email_input.clear()

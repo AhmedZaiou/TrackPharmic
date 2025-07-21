@@ -6,10 +6,8 @@ import os
 
 class Pharmacies:
     @staticmethod
-    def create_table_pharmacies():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def create_table_pharmacies(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -26,13 +24,11 @@ class Pharmacies:
         """
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def ajouter_pharmacie(nom, adresse, telephone, email, outvalue, invalue):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def ajouter_pharmacie(conn,nom, adresse, telephone, email, outvalue, invalue):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -42,16 +38,14 @@ class Pharmacies:
             (nom, adresse, telephone, email, outvalue, invalue),
         )
         conn.commit()
-        conn.close()
+        
     
 
     @staticmethod
-    def modifier_pharmacie(
+    def modifier_pharmacie(conn,
         id_pharmacie, nom, adresse, telephone, email, outvalue, invalue
     ):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -62,16 +56,14 @@ class Pharmacies:
             (nom, adresse, telephone, email, outvalue, invalue, id_pharmacie),
         )
         conn.commit()
-        conn.close()
+        
     
     @staticmethod
-    def modifier_pharmacie_echange(
+    def modifier_pharmacie_echange(conn,
         id_pharmacie, value, out_in
     ):
         value = float(value)
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         if out_in == 1:
             cursor.execute(
@@ -93,39 +85,33 @@ class Pharmacies:
                 (value, id_pharmacie),
             )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def extraire_tous_pharma():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_tous_pharma(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Pharmacies")
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_pharma_nom_like(nom_part):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_pharma_nom_like(conn,nom_part):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT nom FROM Pharmacies WHERE nom LIKE %s", ("%" + nom_part + "%",)
         )
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_pharma_nom(nom):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_pharma_nom(conn,nom):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Pharmacies WHERE nom = %s", (nom,))
         rows = cursor.fetchone()
-        conn.close()
+        
         return dict(rows) if rows else None

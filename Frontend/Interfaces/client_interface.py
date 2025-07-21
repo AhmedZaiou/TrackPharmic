@@ -108,7 +108,7 @@ class Client_dash:
     
     def client_selected(self, row, column):
         id_client = self.list_client.item(row, 0).text()
-        self.client = Clients.extraire_client(id_client)
+        self.client = Clients.extraire_client(self.main_interface.conn,id_client)
         reply = QMessageBox.question(
             self.main_interface,
             "Confirmation de modification",
@@ -135,7 +135,7 @@ class Client_dash:
                     self.list_client.setRowHidden(row, True) 
 
     def remplire_table(self):
-        all_client = Clients.extraire_tous_clients()
+        all_client = Clients.extraire_tous_clients(self.main_interface.conn)
         self.list_client.setRowCount(len(all_client))
         for index, element in enumerate(all_client):
             dict_element = dict(element)
@@ -180,7 +180,7 @@ class Client_dash:
             )
             return
         try:
-            Clients.ajouter_client(
+            Clients.ajouter_client(self.main_interface.conn,
                 name,
                 surname,
                 cin,
@@ -302,7 +302,7 @@ class Client_dash:
                 "Le Nom, Prènom, CIN, Téléphone et Max credit sont obligatoires.",
             )
             return 
-        Clients.modifier_info_client(
+        Clients.modifier_info_client(self.main_interface.conn,
             self.client['id_client'],
             name,
             surname,

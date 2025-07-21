@@ -84,7 +84,7 @@ class List_stock_dash:
                     self.table_widget_medicament_expiration.setRowHidden(row, True)
 
     def populate_table(self):
-        data = Stock.extraire_stock_medicament()
+        data = Stock.extraire_stock_medicament(self.main_interface.conn)
         self.table_widget_medicament_expiration.setRowCount(len(data))
         for index, element in enumerate(data):
             self.table_widget_medicament_expiration.setItem(

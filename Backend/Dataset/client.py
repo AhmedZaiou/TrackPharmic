@@ -5,10 +5,7 @@ from datetime import datetime
 
 class Clients:
     @staticmethod
-    def create_table_clients():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def create_table_clients(conn):
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -26,16 +23,13 @@ class Clients:
             );
         """
         )
-        conn.commit()
-        conn.close()
+        conn.commit() 
 
     @staticmethod
-    def ajouter_client(
+    def ajouter_client(conn,
         nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel
     ):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -44,21 +38,17 @@ class Clients:
         """,
             (nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel),
         )
-        conn.commit()
-        conn.close()
+        conn.commit() 
 
     @staticmethod
-    def supprimer_client(id_client):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def supprimer_client(conn,id_client):
+        
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Clients WHERE id_client = %s", (id_client,))
-        conn.commit()
-        conn.close()
+        conn.commit() 
 
     @staticmethod
-    def modifier_client(
+    def modifier_client(conn,
         id_client,
         nom,
         prenom,
@@ -69,9 +59,7 @@ class Clients:
         max_credit,
         credit_actuel,
     ):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -93,9 +81,8 @@ class Clients:
             ),
         )
         conn.commit()
-        conn.close()
     @staticmethod
-    def modifier_info_client(
+    def modifier_info_client(conn,
         id_client,
         nom,
         prenom,
@@ -105,9 +92,7 @@ class Clients:
         adresse,
         max_credit, 
     ):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -127,14 +112,11 @@ class Clients:
                 id_client,
             ),
         )
-        conn.commit()
-        conn.close()
+        conn.commit() 
 
     @staticmethod
-    def ajouter_credit_client(id_client, montant_credit):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def ajouter_credit_client(conn,id_client, montant_credit):
+        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -145,76 +127,64 @@ class Clients:
             (montant_credit, id_client),
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def extraire_client(id_client):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_client(conn,id_client):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients WHERE id_client = %s", (id_client,))
         row = cursor.fetchone()
-        conn.close()
+        
         return dict(row) if row else None
 
     @staticmethod
-    def extraire_client_info(nom, prenom, cin):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_client_info(conn,nom, prenom, cin):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Clients WHERE nom = %s AND prenom = %s AND cin = %s",
             (nom, prenom, cin),
         )
         row = cursor.fetchone()
-        conn.close()
+        
         return dict(row) if row else None
 
     @staticmethod
-    def extraire_client_nom_like(nom_part):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_client_nom_like(conn,nom_part):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT nom, prenom, cin FROM Clients WHERE nom LIKE %s",
             ("%" + nom_part + "%",),
         )
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_tous_clients():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_tous_clients(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients order by nom;")
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_tous_clients_with_credit():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_tous_clients_with_credit(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients WHERE credit_actuel > 0 ORDER BY nom; ")
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows]
 
     @staticmethod
-    def cloture_journee(date_jour=None):
+    def cloture_journee(conn,date_jour=None):
         if date_jour is None:
             date_jour = datetime.now().strftime("%Y-%m-%d")
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -226,7 +196,7 @@ class Clients:
         """
         )
         result_clients = cursor.fetchone()
-        conn.close()
+        
         return {
             "nombre_de_clients": result_clients["total_clients"] or 0,
             "credit_max_autorise": result_clients["total_max_credit"] or 0,

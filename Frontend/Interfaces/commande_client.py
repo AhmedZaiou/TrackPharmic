@@ -23,6 +23,7 @@ from Backend.Dataset.ventes import Ventes
 from Backend.Dataset.commande_client import CommandeClient
 from decimal import Decimal
 from Backend.Dataset.client import Clients
+from Backend.Dataset.credit import Credit
 
 import matplotlib.pyplot as plt
 from PIL import ImageFont
@@ -202,7 +203,7 @@ class Commande_client:
     
     def show_facture(self, row, column):
         numero_facture = self.table.item(row, 0).text() 
-        commande = CommandeClient.get_commande(numero_facture) 
+        commande = CommandeClient.get_commande(self.main_interface.conn,numero_facture) 
 
         message = f"""
             <!DOCTYPE html>
@@ -283,7 +284,7 @@ class Commande_client:
 
     def remplir_tableau(self):
         # Exemple de données fictives
-        commandes = CommandeClient.get_all_commandes_client()
+        commandes = CommandeClient.get_all_commandes_client(self.main_interface.conn)
 
         self.table.setRowCount(len(commandes))
         for row, comm in enumerate(commandes):
@@ -295,7 +296,7 @@ class Commande_client:
     
     def search_medicament(self, text):
         if len(text) >= 3:
-            results = Medicament.extraire_medicament_nom_like(text) 
+            results = Medicament.extraire_medicament_nom_like(self.main_interface.conn,text) 
             list_res = []
             for res in results:
                 list_res.append(f"{res['Nom']}, {res['Présentation']}, Prix : {res['PPV']} Dh. {res['Code_EAN_13']}")  
@@ -314,7 +315,7 @@ class Commande_client:
             self.updateCompleter_fournisseur(text)
 
     def updateCompleter_fournisseur(self, text):
-        results = Clients.extraire_client_nom_like(text)
+        results = Clients.extraire_client_nom_like(self.main_interface.conn,text)
         results = ["_".join(res.values()) for res in results]
         model = QStringListModel(results)
         self.completer_client.setModel(model)
@@ -339,7 +340,7 @@ class Commande_client:
             self.client_info = None
         else:
             nom, prenom, cin = client_id.split("_")
-            self.client_info = Clients.extraire_client_info(nom, prenom, cin)
+            self.client_info = Clients.extraire_client_info(self.main_interface.conn,nom, prenom, cin)
             self.client_status_label.setText(
                 f"{self.client_info['nom']} {self.client_info['prenom']} "
             )
@@ -421,7 +422,7 @@ class Commande_client:
             ]
             self.update_table()
         else:
-            medicament = Medicament.extraire_medicament_code_barre(code_barre_scanner)
+            medicament = Medicament.extraire_medicament_code_barre(self.main_interface.conn,code_barre_scanner)
             
             medicament["Quantite"] = 1
             medicament["Prix_total"] = medicament["PPV"]
@@ -628,7 +629,7 @@ class Commande_client:
                     to_pay_now = self.amount_input.text()
                 else:
                     to_pay_now = total_facture_calculer
-                CommandeClient.ajouter_commande_client(
+                CommandeClient.ajouter_commande_client(self.main_interface.conn,
                     items[6],
                     items[0], 
                     items[1], 
@@ -702,7 +703,7 @@ class Commande_client:
         id_salarie,
         ID_Stock_item,
     ):
-        Ventes.ajouter_vente(
+        Ventes.ajouter_vente(self.main_interface.conn,
             id_medicament,
             idcommande_item,
             prix_achat_item,
@@ -715,8 +716,8 @@ class Commande_client:
             id_salarie,
             ID_Stock_item,
         )
-        Stock.effectuer_vente_stock(ID_Stock_item, quanti)
-        Medicament.effectuer_vente_medicament(id_medicament, quanti)
+        Stock.effectuer_vente_stock(self.main_interface.conn,ID_Stock_item, quanti)
+        Medicament.effectuer_vente_medicament(self.main_interface.conn,id_medicament, quanti)
         return quanti * prix_vente_item
         # todo : supprimer du stock
 
@@ -730,7 +731,7 @@ class Commande_client:
         status,
         id_salarie,
     ):
-        Credit.ajouter_credit(
+        Credit.ajouter_credit(self.main_interface.conn,
             id_client,
             numero_facture,
             to_pay_now,
@@ -739,4 +740,4 @@ class Commande_client:
             status,
             id_salarie,
         )
-        Clients.ajouter_credit_client(id_client, total_facture - int(to_pay_now))
+        Clients.ajouter_credit_client(self.main_interface.conn,id_client, total_facture - int(to_pay_now))

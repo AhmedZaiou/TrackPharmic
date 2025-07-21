@@ -161,7 +161,7 @@ class Commande_dash:
         self.main_interface.content_layout.addWidget(self.principale_dash_add)
 
     def selectionner_fournisseur(self, text):
-        data = Fournisseur.extraire_fournisseur_nom(text)
+        data = Fournisseur.extraire_fournisseur_nom(self.main_interface.conn,text)
 
         self.fournisseur_status_label.setText(
             f"Fournisseur : {data['nom_fournisseur']}"
@@ -177,7 +177,7 @@ class Commande_dash:
             self.updateCompleter_fournisseur(text)
 
     def updateCompleter_fournisseur(self, text):
-        results = Fournisseur.extraire_fournisseur_nom_like(text)
+        results = Fournisseur.extraire_fournisseur_nom_like(self.main_interface.conn,text)
         results = [item["nom_fournisseur"] for item in results]
         model = QStringListModel(results)
         self.completer_fournisseur.setModel(model)
@@ -187,7 +187,7 @@ class Commande_dash:
             self.updateCompleter(text)
 
     def updateCompleter(self, text):
-        results = Medicament.extraire_medicament_nom_like_name(text)
+        results = Medicament.extraire_medicament_nom_like_name(self.main_interface.conn,text)
         model = QStringListModel(results)
         self.completer.setModel(model)
 
@@ -221,7 +221,7 @@ class Commande_dash:
         self.quantite_input.setValue(1)
 
     def ajouter_medi_to_commande_code(self, code_barre_scanner):
-        medicament = Medicament.extraire_medicament_code_barre(code_barre_scanner)
+        medicament = Medicament.extraire_medicament_code_barre(self.main_interface.conn,code_barre_scanner)
         if medicament is None:
             QMessageBox.information(
                 self.main_interface, "Medicament non reconue", "Medicament non reconue"
@@ -262,7 +262,7 @@ class Commande_dash:
             return
         id_salarie = self.main_interface.user_session["id_salarie"]
         if self.inclure_checkbox.isChecked:
-            Commandes.ajouter_commande(
+            Commandes.ajouter_commande(self.main_interface.conn,
                 str(self.commande),
                 self.info_fourniseur["id_fournisseur"],
                 datetime.now(),
@@ -275,7 +275,7 @@ class Commande_dash:
                 False,
             )
         else:
-            Commandes.ajouter_commande(
+            Commandes.ajouter_commande(self.main_interface.conn,
                 str(self.commande),
                 self.info_fourniseur["id_fournisseur"],
                 datetime.now(),
@@ -384,13 +384,13 @@ class Commande_dash:
         return ""
 
     def charger_carte_table(self):
-        data = Commandes.extraire_tous_commandes_table()
+        data = Commandes.extraire_tous_commandes_table(self.main_interface.conn)
         self.cart_table.setRowCount(len(data))
         for row, product in enumerate(data):
             self.cart_table.setItem(
                 row, 0, QTableWidgetItem(str(product["id_commande"]))
             )
-            fournissuer = Fournisseur.extraire_fournisseur(product["id_fournisseur"])
+            fournissuer = Fournisseur.extraire_fournisseur(self.main_interface.conn,product["id_fournisseur"])
             self.cart_table.setItem(
                 row, 1, QTableWidgetItem(fournissuer["nom_fournisseur"])
             )

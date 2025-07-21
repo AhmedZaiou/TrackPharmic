@@ -242,12 +242,12 @@ class Medicament_dash:
 
     def afficher_medicament_depuis_table(self, row, column):
         id = self.medicament_table.item(row, 0).text()  
-        medicament = Medicament.extraire_medicament(id)
+        medicament = Medicament.extraire_medicament(self.main_interface.conn,id)
         if medicament:
             self.show_medicament_profile(medicament)
     def afficher_new_medicament_depuis_table(self, row, column):
         id = self.new_medicament_table.item(row, 0).text()  
-        medicament = Medicament.extraire_medicament(id)
+        medicament = Medicament.extraire_medicament(self.main_interface.conn,id)
         if medicament:
             self.show_medicament_profile(medicament)
 
@@ -342,7 +342,7 @@ class Medicament_dash:
                 else:
                     self.medicament_table.setRowHidden(row, True)
     def remplire_table_medicamen(self):
-        medicaments = Medicament.extraire_tous_medicament()
+        medicaments = Medicament.extraire_tous_medicament(self.main_interface.conn)
         self.medicament_table.setRowCount(len(medicaments))
         for index, element in enumerate(medicaments): 
             self.medicament_table.setItem(
@@ -366,7 +366,7 @@ class Medicament_dash:
             
     
     def remplire_table_new_medicamen(self):
-        medicaments = Medicament.extraire_tous_new_medicament()
+        medicaments = Medicament.extraire_tous_new_medicament(self.main_interface.conn)
         self.new_medicament_table.setRowCount(len(medicaments))
         for index, element in enumerate(medicaments):
             self.new_medicament_table.setItem(
@@ -394,7 +394,7 @@ class Medicament_dash:
             if key == "\r":  # Lorsque le lecteur envoie un saut de ligne
                 if len(self.code_barre_scanner) == 13:
                     self.code_ean_input.setText(self.code_barre_scanner)
-                    self.medicament_search = Medicament.extraire_medicament_code_barre(
+                    self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
                         self.code_barre_scanner
                     )
                     self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
@@ -473,7 +473,7 @@ class Medicament_dash:
             # Appel à la méthode du modèle (à adapter si nécessaire)
             if self.medicament_modif is not None:
             
-                Medicament.modifier_medicament(self.medicament_modif["id_medicament"], code_ean,
+                Medicament.modifier_medicament(self.main_interface.conn,self.medicament_modif["id_medicament"], code_ean,
                     nom,
                     image_url,
                     presentation,
@@ -495,7 +495,7 @@ class Medicament_dash:
                     self.main_interface, "Succès", "Médicament modifié avec succès."
                 )
             else:
-                Medicament.ajouter_medicament(
+                Medicament.ajouter_medicament(self.main_interface.conn,
                     code_ean,
                     nom,
                     image_url,
@@ -583,7 +583,7 @@ class Medicament_dash:
                 "Stock_Actuel": 0,
             }
 
-            Medicament.modifier_medicament(
+            Medicament.modifier_medicament(self.main_interface.conn,
                 self.medicament_modif["id_medicament"], **medicament_data
             )
             # Message de succès

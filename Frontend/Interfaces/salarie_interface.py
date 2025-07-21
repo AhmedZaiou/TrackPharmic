@@ -112,10 +112,10 @@ class Salarie_dash:
         self.main_interface.content_layout.addWidget(self.client_dash)
 
     def remplire_table(self):
-        all_salaries = Salaries.extraire_tous_salaries()
+        all_salaries = Salaries.extraire_tous_salaries(self.main_interface.conn)
         self.list_client.setRowCount(len(all_salaries))
         for index, element in enumerate(all_salaries):
-            print(element)
+            
             self.list_client.setItem(index, 0, QTableWidgetItem(str(element["nom"])))
             self.list_client.setItem(index, 1, QTableWidgetItem(str(element["prenom"])))
             self.list_client.setItem(index, 2, QTableWidgetItem(str(element["cin"])))
@@ -150,7 +150,7 @@ class Salarie_dash:
             return
 
         try:
-            Salaries.ajouter_salarie(
+            Salaries.ajouter_salarie(self.main_interface.conn,
                 name,
                 surname,
                 cin,

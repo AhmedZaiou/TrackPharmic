@@ -104,7 +104,7 @@ class Stock_dash:
         self.main_interface.content_layout.addWidget(self.Justif_dash)
     
     def charger_Justificatifs_table(self):
-        self.Liste_justificatifes = JustificatifsManager.lister_justificatifs()
+        self.Liste_justificatifes = JustificatifsManager.lister_justificatifs(self.main_interface.conn)
         self.Justificatifs_table.setRowCount(len(self.Liste_justificatifes))
         for row, product in enumerate(self.Liste_justificatifes):
             self.Justificatifs_table.setItem(
@@ -165,7 +165,7 @@ class Stock_dash:
                                 "filename": filename, 
                                 "mail_id": mail_id, 
                             })
-                            JustificatifsManager.ajouter_justificatif(infos_fichiers[-1]) 
+                            JustificatifsManager.ajouter_justificatif(self.main_interface.conn,infos_fichiers[-1]) 
         imap.logout()
     
 
@@ -505,7 +505,7 @@ class Stock_dash:
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
     def remplir_tableau_stock(self):
-        medicaments = Medicament.extraire_medicament_quantite_minimale_sup_0()
+        medicaments = Medicament.extraire_medicament_quantite_minimale_sup_0(self.main_interface.conn)
         medicaments = [dict(item) for item in medicaments]
         self.medicament_stock_list.setRowCount(len(medicaments))
         for row, medicament in enumerate(medicaments):
@@ -535,7 +535,7 @@ class Stock_dash:
             )
 
     def finaliser_commande(self):
-        Commandes.complet_commande(self.commande_current["id_commande"])
+        Commandes.complet_commande(self.main_interface.conn,self.commande_current["id_commande"])
         self.show_reception_interface()
         
 
@@ -568,7 +568,7 @@ class Stock_dash:
         self.remplire_medicament_deja_traiter()
         now = datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S")
-        Stock.ajouter_stock(
+        Stock.ajouter_stock(self.main_interface.conn,
             self.medicament_search["ID_Medicament"],
             self.commande_current["id_commande"],
             self.main_interface.user_session["id_salarie"],
@@ -617,7 +617,7 @@ class Stock_dash:
             QMessageBox.Cancel,
         )
         if reply == QMessageBox.Yes:
-            Stock.ajouter_stock(
+            Stock.ajouter_stock(self.main_interface.conn,
                 self.medicament_search["ID_Medicament"],
                 "0",
                 self.main_interface.user_session["id_salarie"],
@@ -648,13 +648,13 @@ class Stock_dash:
             pass
 
     def charger_carte_table(self):
-        self.commande_en_cours = Commandes.extraire_tous_commandes_table()
+        self.commande_en_cours = Commandes.extraire_tous_commandes_table(self.main_interface.conn)
         self.cart_table.setRowCount(len(self.commande_en_cours))
         for row, product in enumerate(self.commande_en_cours):
             self.cart_table.setItem(
                 row, 0, QTableWidgetItem(str(product["id_commande"]))
             )
-            fournissuer = Fournisseur.extraire_fournisseur(product["id_fournisseur"])
+            fournissuer = Fournisseur.extraire_fournisseur(self.main_interface.conn,product["id_fournisseur"])
 
             self.cart_table.setItem(
                 row, 1, QTableWidgetItem(str(fournissuer["nom_fournisseur"]))
@@ -673,7 +673,7 @@ class Stock_dash:
         self.show_add_stock_interface()
 
         self.commande_current = dict(self.commande_en_cours[row])
-        self.fournisseur_selectionner = Fournisseur.extraire_fournisseur(
+        self.fournisseur_selectionner = Fournisseur.extraire_fournisseur(self.main_interface.conn,
             self.commande_current["id_fournisseur"]
         )
 
@@ -695,7 +695,7 @@ class Stock_dash:
             self.medicament_commande_list.setItem(id, 1, QTableWidgetItem(str(item[1])))
             self.medicament_commande_list.setItem(id, 2, QTableWidgetItem(str(item[2])))
         
-        self.commande_deja_traiter_list = Stock.get_medicament_commande(self.commande_current['id_commande'])
+        self.commande_deja_traiter_list = Stock.get_medicament_commande(self.main_interface.conn,self.commande_current['id_commande'])
 
         self.remplire_medicament_deja_traiter()
 
@@ -737,7 +737,7 @@ class Stock_dash:
             print("Erreurs")
 
     def remplir_medicament_ajout(self, code_barre_scanner):
-        self.medicament_search = Medicament.extraire_medicament_code_barre(
+        self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
             code_barre_scanner
         )
         if self.medicament_search is None:
@@ -780,7 +780,7 @@ class Stock_dash:
             print('Erreur')
 
     def remplir_medicament_cases(self, code_barre_scanner):
-        self.medicament_search = Medicament.extraire_medicament_code_barre(
+        self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
             code_barre_scanner
         )
         if self.medicament_search is None:

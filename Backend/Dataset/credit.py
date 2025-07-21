@@ -5,10 +5,7 @@ from datetime import datetime
 
 class Credit:
     @staticmethod
-    def create_table_credit():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def create_table_credit(conn):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -25,10 +22,9 @@ class Credit:
         """
         )
         conn.commit()
-        conn.close()
 
     @staticmethod
-    def ajouter_credit(
+    def ajouter_credit(conn,
         id_client,
         numero_facture,
         montant_paye,
@@ -37,9 +33,7 @@ class Credit:
         statut,
         id_salarie,
     ):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -57,33 +51,29 @@ class Credit:
             ),
         )
         conn.commit()
-        conn.close()
+        
 
 
     @staticmethod
-    def extraire_credits_par_numero_facture(numero_facture):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_credits_par_numero_facture(conn,numero_facture):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit WHERE numero_facture = %s", (numero_facture,))
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows] if rows else []
 
 
     @staticmethod
-    def supprimer_credit(id_credit):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def supprimer_credit(conn,id_credit):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Credit WHERE id_credit = %s", (id_credit,))
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def modifier_credit(
+    def modifier_credit(conn,
         id_credit,
         id_client,
         numero_facture,
@@ -93,9 +83,7 @@ class Credit:
         statut,
         id_salarie,
     ):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -115,71 +103,59 @@ class Credit:
             ),
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def extraire_credit(id_credit):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_credit(conn,id_credit):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit WHERE id_credit = %s", (id_credit,))
         row = cursor.fetchone()
-        conn.close()
+        
         return dict(row) if row else None
 
     @staticmethod
-    def extraire_tous_credits():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_tous_credits(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit")
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_credit_with_id_client(id_client):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_credit_with_id_client(conn,id_client):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit WHERE id_client = %s", (id_client,))
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows]
 
     @staticmethod
-    def get_total_credits():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def get_total_credits(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT SUM(reste_a_payer) as totalCredits FROM Credit")
         result = cursor.fetchone()
-        conn.close()
+        
         return result["totalCredits"] if result["totalCredits"] else 0
 
     @staticmethod
-    def get_total_credits_salarie(salarie):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def get_total_credits_salarie(conn,salarie):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT SUM(reste_a_payer) as totalCredits FROM Credit WHERE id_salarie = %s",
             (salarie,),
         )
         result = cursor.fetchone()
-        conn.close()
+        
         return result["totalCredits"] if result["totalCredits"] else 0
 
     @staticmethod
-    def cloture_journee():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def cloture_journee(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_aujourdhui = datetime.now().strftime("%Y-%m-%d")
@@ -198,15 +174,13 @@ class Credit:
             total_restant["total_restant"] if total_restant["total_restant"] else 0
         )
 
-        conn.close()
+        
         return {"Total restant à payer aujourd'hui": total_restant}
     
 
     @staticmethod
-    def evolution_par_jour_moiis_courant():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def evolution_par_jour_moiis_courant(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -223,15 +197,13 @@ class Credit:
         )
 
         evolution_credit = cursor.fetchall()
-        conn.close()
+        
 
         return {row["date_paiement"].strftime("%Y-%m-%d"): row["total_restant"] for row in evolution_credit}
 
     @staticmethod
-    def evolution_par_mois():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def evolution_par_mois(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"
@@ -255,7 +227,7 @@ class Credit:
         )
 
         evolution_credit = cursor.fetchall()
-        conn.close()
+        
 
         return {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
     

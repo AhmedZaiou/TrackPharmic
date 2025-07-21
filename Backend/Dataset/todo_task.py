@@ -5,10 +5,8 @@ from datetime import datetime
 
 class Todo_Task:
     @staticmethod
-    def create_table_todo_task():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def create_table_todo_task(conn):
+        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -21,13 +19,11 @@ class Todo_Task:
         """
         )
         conn.commit()
-        conn.close()
+        
     
     @staticmethod
-    def add_todo_task(task, date_execution):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def add_todo_task(conn,task, date_execution):
+        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -37,14 +33,12 @@ class Todo_Task:
             (task, date_execution),
         )
         conn.commit()
-        conn.close()
+        
     
     # update date execution where task = task
     @staticmethod
-    def update_todo_task(task, date_execution=None):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def update_todo_task(conn,task, date_execution=None):
+        
         cursor = conn.cursor() 
         cursor.execute(
             """
@@ -55,14 +49,12 @@ class Todo_Task:
             (date_execution, task),
         )
         conn.commit()
-        conn.close()
+        
     @staticmethod
-    def scraper_today():
+    def scraper_today(conn):
         date_execution = datetime.today().date()
         task = 'get_new_medicament'
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor() 
         cursor.execute(
             """
@@ -73,12 +65,10 @@ class Todo_Task:
             (date_execution, task),
         )
         conn.commit()
-        conn.close()
+        
     @staticmethod
-    def test_scrapper():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def test_scrapper(conn):
+        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -86,7 +76,7 @@ class Todo_Task:
         """
         )
         result = cursor.fetchone()
-        conn.close()
+        
 
         
         if result:

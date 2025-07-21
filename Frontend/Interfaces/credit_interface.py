@@ -16,8 +16,7 @@ from qtpy.QtWidgets import (
     QTextEdit,
     QMessageBox,
 )
-from qtpy.QtCore import Qt
-from Backend.Dataset.credit import Credit
+from qtpy.QtCore import Qt 
 from Backend.Dataset.client import Clients
 from Backend.Dataset.payment import Payment
 from Backend.Dataset.credit import Credit
@@ -89,7 +88,7 @@ class Credit_dash:
 
     def remplir_tableau(self):
         # Exemple de données fictives
-        credits = Clients.extraire_tous_clients_with_credit()
+        credits = Clients.extraire_tous_clients_with_credit(self.main_interface.conn)
         credits = [dict(i) for i in credits]
         self.table.setRowCount(len(credits))
         for row, credit in enumerate(credits):
@@ -121,7 +120,7 @@ class Credit_dash:
 
         table_form_layout = QGridLayout()
 
-        self.client = Clients.extraire_client(self.id_client)
+        self.client = Clients.extraire_client(self.main_interface.conn,self.id_client)
         self.client = dict(self.client)
 
         table_form_layout.addWidget(QLabel("Nom :"), 0, 0)
@@ -176,12 +175,12 @@ class Credit_dash:
         numero_facture = self.list_factures.item(row, 1).text()
         if self.list_factures.item(row, 0).text() != "Credit":
             return
-        vente = Ventes.extraire_ventes_par_numero_facture(numero_facture)
-        payment = Payment.extraire_paiements_par_numero_facture(numero_facture)  
-        credit = Credit.extraire_credits_par_numero_facture(numero_facture)
-        retour = Retour.extraire_retours_par_numero_facture(numero_facture)
+        vente = Ventes.extraire_ventes_par_numero_facture(self.main_interface.conn,numero_facture)
+        payment = Payment.extraire_paiements_par_numero_facture(self.main_interface.conn,numero_facture)  
+        credit = Credit.extraire_credits_par_numero_facture(self.main_interface.conn,numero_facture)
+        retour = Retour.extraire_retours_par_numero_facture(self.main_interface.conn,numero_facture)
 
-        client = Clients.extraire_client(vente[0]['id_client'])
+        client = Clients.extraire_client(self.main_interface.conn,vente[0]['id_client'])
 
        # Construction du message
         message = f"""
@@ -218,7 +217,7 @@ class Credit_dash:
         total_facture_calculer = 0
 
         for item in vente:
-            medicament = Medicament.extraire_medicament(item['id_medicament'])
+            medicament = Medicament.extraire_medicament(self.main_interface.conn,item['id_medicament'])
             message += f"<tr><td>{medicament['Nom']}</td><td>{item['quantite_vendue']}</td><td>{item['prix_vente']} Dh</td><td>{item['quantite_vendue']*item['prix_vente']} Dh</td></tr>"
             total_facture_calculer += item['quantite_vendue'] * item['prix_vente']
         message += """
@@ -297,15 +296,15 @@ class Credit_dash:
         now_str = now.strftime("%Y-%m-%d %H:%M:%S")
         montant_paye = self.payment_input.value()
         id_salarie = self.main_interface.user_session["id_salarie"]
-        Payment.ajouter_payment(
+        Payment.ajouter_payment(self.main_interface.conn,
             self.id_client, int(now.timestamp()), montant_paye, now_str, id_salarie
         )
-        Clients.ajouter_credit_client(self.id_client, -montant_paye)
+        Clients.ajouter_credit_client(self.main_interface.conn,self.id_client, -montant_paye)
         self.show_payment_interface()
 
     def remplire_table(self):
-        all_credit = Credit.extraire_credit_with_id_client(self.id_client)
-        all_paiment = Payment.extraire_payment_with_id_client(self.id_client)
+        all_credit = Credit.extraire_credit_with_id_client(self.main_interface.conn,self.id_client)
+        all_paiment = Payment.extraire_payment_with_id_client(self.main_interface.conn,self.id_client)
         if len(all_credit) == 0:
             all_credit = pd.DataFrame(
                 columns=["numero_facture", "reste_a_payer", "date_dernier_paiement"]

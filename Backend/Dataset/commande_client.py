@@ -13,10 +13,8 @@ class CommandeClient:
         dataset = dataset
     
     @staticmethod
-    def create_table_commandes_client():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def create_table_commandes_client(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -39,17 +37,15 @@ class CommandeClient:
             """
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def ajouter_commande_client(
+    def ajouter_commande_client(conn,
         numero_facture, code_ean_13, id_medicament, prix_vente, date_vente,
         quantite_vendue, id_client, id_salarie, nom_medicament,
         to_pay_now, total_facture_calculer, now_str, statut_de_commande
     ):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -67,13 +63,10 @@ class CommandeClient:
             )
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def modifier_statut_commande_client(numero_facture, nouveau_statut):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def modifier_statut_commande_client(conn,numero_facture, nouveau_statut):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -84,13 +77,10 @@ class CommandeClient:
             (nouveau_statut, numero_facture)
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def get_commande( numero_facture):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def get_commande(conn, numero_facture):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -100,15 +90,13 @@ class CommandeClient:
             (numero_facture)
         )
         conn.commit()
-        conn.close()
+        
         rows = cursor.fetchall()
         return [dict(row) for row in rows]
 
     @staticmethod
-    def get_all_commandes_client():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def get_all_commandes_client(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -124,17 +112,15 @@ class CommandeClient:
         )
         rows = cursor.fetchall()
         conn.commit()
-        conn.close()
+        
         return [dict(row) for row in rows]
     
     @staticmethod
-    def cloture_journee(date_jour=None):
+    def cloture_journee(conn,date_jour=None):
         if date_jour is None:
             date_jour = datetime.now().strftime("%Y-%m-%d")
 
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         cursor.execute( 
@@ -156,5 +142,5 @@ class CommandeClient:
             "Nombre total de commandes clients effectuées aujourdhui": total_ventes_jour or 0,
             "Montant total des commandes clients effectuées aujourdhui": total_vente_jour or 0
         }
-        conn.close()
+        
         return statistiques_ventes_jour

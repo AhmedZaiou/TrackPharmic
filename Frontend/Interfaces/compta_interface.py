@@ -22,6 +22,7 @@ from Backend.Dataset.ventes import Ventes
 from datetime import datetime, timedelta
 from decimal import Decimal
 import calendar
+from Backend.Dataset.compta_files import ComptaFilesGeneration
 from dateutil.relativedelta import relativedelta
 
 
@@ -71,13 +72,13 @@ class Compta_dash:
 
 
         # Fetch data
-        credit_jours = Credit.evolution_par_jour_moiis_courant() 
-        echanges_jours = Echanges.evolution_par_jour_moiis_courant()
+        credit_jours = Credit.evolution_par_jour_moiis_courant(self.main_interface.conn) 
+        echanges_jours = Echanges.evolution_par_jour_moiis_courant(self.main_interface.conn)
         echanges_jours_envoyer = echanges_jours['Echange_envoyer']
         echanges_jours_recu = echanges_jours['Echange_recu']   
-        payment_jours = Payment.evolution_par_jour_moiis_courant() 
-        retour_jours = Retour.evolution_par_jour_moiis_courant() 
-        ventes_jours = Ventes.evolution_par_jour_moiis_courant() 
+        payment_jours = Payment.evolution_par_jour_moiis_courant(self.main_interface.conn) 
+        retour_jours = Retour.evolution_par_jour_moiis_courant(self.main_interface.conn) 
+        ventes_jours = Ventes.evolution_par_jour_moiis_courant(self.main_interface.conn) 
         
 
         # Transform data
@@ -126,13 +127,13 @@ class Compta_dash:
         menu_layout = self.create_menu_compta()
         self.main_layout.addLayout(menu_layout) 
  
-        credit_mois = Credit.evolution_par_mois()  
-        echanges_mois = Echanges.evolution_par_mois()
+        credit_mois = Credit.evolution_par_mois(self.main_interface.conn)  
+        echanges_mois = Echanges.evolution_par_mois(self.main_interface.conn)
         echanges_mois_envoyer = echanges_mois['Echange_envoyer']
         echanges_mois_recu = echanges_mois['Echange_recu']  
-        payment_mois = Payment.evolution_par_mois() 
-        retour_mois = Retour.evolution_par_mois() 
-        ventes_mois = Ventes.evolution_par_mois()
+        payment_mois = Payment.evolution_par_mois(self.main_interface.conn) 
+        retour_mois = Retour.evolution_par_mois(self.main_interface.conn) 
+        ventes_mois = Ventes.evolution_par_mois(self.main_interface.conn)
         
 
         # Transform data 
@@ -170,11 +171,11 @@ class Compta_dash:
 
 
     def telecharger_document(self):
-        from Backend.Dataset.compta_files import ComptaFilesGeneration
+        
 
         try:
             # 1. Génère le fichier avec ta classe métier
-            chemin_fichier = ComptaFilesGeneration.extraire_vente()  # Suppose que cela retourne le chemin du fichier généré
+            chemin_fichier = ComptaFilesGeneration.extraire_vente(self.main_interface.conn)  # Suppose que cela retourne le chemin du fichier généré
             
             if not chemin_fichier:
                 QMessageBox.warning(self.main_interface, "Erreur", "La génération du fichier a échoué.")

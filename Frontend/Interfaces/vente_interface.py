@@ -257,7 +257,7 @@ class Vente_dash:
             if len(code_commande) == 13:
                 code_commande = code_commande[2:-1]          
 
-        self.list_od_commande = CommandeClient.get_commande(code_commande) 
+        self.list_od_commande = CommandeClient.get_commande(self.main_interface.conn,code_commande) 
         
         self.commande_id_input.setText(code_commande)
         self.montant_facture_commande_value.setText(str(self.list_od_commande[0]['total_facture_calculer']))
@@ -275,7 +275,7 @@ class Vente_dash:
             self.updateCompleter_fournisseur(text)
 
     def updateCompleter_fournisseur(self, text):
-        results = Clients.extraire_client_nom_like(text)
+        results = Clients.extraire_client_nom_like(self.main_interface.conn,text)
         results = ["_".join(res.values()) for res in results]
         model = QStringListModel(results)
         self.completer_client.setModel(model)
@@ -315,7 +315,7 @@ class Vente_dash:
             self.client_info = None
         else:
             nom, prenom, cin = client_id.split("_")
-            self.client_info = Clients.extraire_client_info(nom, prenom, cin)
+            self.client_info = Clients.extraire_client_info(self.main_interface.conn,nom, prenom, cin)
             self.client_status_label.setText(
                 f"{self.client_info['nom']} {self.client_info['prenom']} "
             )
@@ -397,7 +397,7 @@ class Vente_dash:
             ]
             self.update_table()
         else:
-            medicament = Medicament.extraire_medicament_code_barre(code_barre_scanner)
+            medicament = Medicament.extraire_medicament_code_barre(self.main_interface.conn,code_barre_scanner)
             
 
             if medicament is None:
@@ -408,7 +408,7 @@ class Vente_dash:
                 )
                 return
             else:
-                medicament_on_dtock = Stock.extraire_medicament_id_stock(
+                medicament_on_dtock = Stock.extraire_medicament_id_stock(self.main_interface.conn,
                     medicament["id_medicament"]
                 ) 
 
@@ -767,10 +767,10 @@ class Vente_dash:
         ID_Stock_item,
     ):
         if self.list_od_commande is not None:
-            CommandeClient.modifier_statut_commande_client(
+            CommandeClient.modifier_statut_commande_client(self.main_interface.conn,
                 self.list_od_commande[0]['numero_facture'], numero_facture
             )
-        Ventes.ajouter_vente(
+        Ventes.ajouter_vente(self.main_interface.conn,
             id_medicament,
             idcommande_item,
             prix_achat_item,
@@ -783,8 +783,8 @@ class Vente_dash:
             id_salarie,
             ID_Stock_item,
         )
-        Stock.effectuer_vente_stock(ID_Stock_item, quanti)
-        Medicament.effectuer_vente_medicament(id_medicament, quanti)
+        Stock.effectuer_vente_stock(self.main_interface.conn,ID_Stock_item, quanti)
+        Medicament.effectuer_vente_medicament(self.main_interface.conn, id_medicament, quanti)
         return quanti * prix_vente_item
         # todo : supprimer du stock
 
@@ -798,7 +798,7 @@ class Vente_dash:
         status,
         id_salarie,
     ):
-        Credit.ajouter_credit(
+        Credit.ajouter_credit(self.main_interface.conn,
             id_client,
             numero_facture,
             to_pay_now,
@@ -807,4 +807,4 @@ class Vente_dash:
             status,
             id_salarie,
         )
-        Clients.ajouter_credit_client(id_client, total_facture - int(to_pay_now))
+        Clients.ajouter_credit_client(self.main_interface.conn,id_client, total_facture - int(to_pay_now))

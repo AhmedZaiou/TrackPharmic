@@ -13,10 +13,8 @@ class Ventes:
         dataset = dataset
 
     @staticmethod
-    def create_table_ventes():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def create_table_ventes(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -37,10 +35,10 @@ class Ventes:
         """
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def ajouter_vente(
+    def ajouter_vente(conn,
         id_medicament,
         id_commande_entre,
         prix_achat,
@@ -54,9 +52,7 @@ class Ventes:
         id_stock_item,
     ):
         Ventes.create_table_ventes()
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -78,20 +74,18 @@ class Ventes:
             ),
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def supprimer_vente(id_vente):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def supprimer_vente(conn,id_vente):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Ventes WHERE id_vente = %s", (id_vente,))
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def modifier_vente(
+    def modifier_vente(conn,
         id_vente,
         id_medicament,
         id_commande_entre,
@@ -105,9 +99,7 @@ class Ventes:
         id_salarie,
         id_stock_item,
     ):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -131,77 +123,65 @@ class Ventes:
             ),
         )
         conn.commit()
-        conn.close()
+        
 
     @staticmethod
-    def extraire_vente(id_vente):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_vente(conn,id_vente):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Ventes WHERE id_vente = %s", (id_vente,))
         row = cursor.fetchone()
-        conn.close()
+        
         return dict(row) if row else None
 
     @staticmethod
-    def extraire_tous_ventes():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_tous_ventes(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Ventes")
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows]
 
     @staticmethod
-    def get_transactions_jour(salarie):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def get_transactions_jour(conn,salarie):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT id_vente FROM Ventes WHERE date_vente = %s AND id_salarie = %s""",
             (datetime.now().date(), salarie),
         )
         result = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in result]
 
     @staticmethod
-    def get_total_vendu_salarie(salarie):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def get_total_vendu_salarie(conn,salarie):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT SUM(total_facture) as totalVendu FROM Ventes WHERE id_salarie = %s""",
             (salarie,),
         )
         result = cursor.fetchone()
-        conn.close()
+        
         return result["totalVendu"]
 
     @staticmethod
-    def get_statistique():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def get_statistique(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""SELECT * FROM Ventes""")
         result = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in result]
 
     @staticmethod
-    def cloture_journee(date_jour=None):
+    def cloture_journee(conn,date_jour=None):
         if date_jour is None:
             date_jour = datetime.now().strftime("%Y-%m-%d")
 
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         cursor.execute(
@@ -226,17 +206,17 @@ class Ventes:
             "Total des profits réalisés aujourdhui": total_profit_jour or 0,
         }
 
-        conn.close()
+        
         return statistiques_ventes_jour
 
     @staticmethod
-    def get_evolution():
+    def get_evolution(conn):
         d_now = datetime.now().date()
         res = []
         start_year = date(d_now.year, 1, 1)
         date_actuelle = start_year
         while date_actuelle <= d_now:
-            dy = Ventes.cloture_journee(date_actuelle)
+            dy = Ventes.cloture_journee(conn,date_actuelle)
             dy["date"] = date_actuelle
             res.append(dy)
             date_actuelle += timedelta(days=1)
@@ -261,22 +241,18 @@ class Ventes:
         return fig
     
     @staticmethod
-    def extraire_ventes_par_numero_facture(numero_facture):
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def extraire_ventes_par_numero_facture(conn,numero_facture):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Ventes WHERE numero_facture = %s", (numero_facture,))
         rows = cursor.fetchall()
-        conn.close()
+        
         return [dict(row) for row in rows] if rows else []
  
 
     @staticmethod
-    def evolution_par_jour_moiis_courant():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def evolution_par_jour_moiis_courant(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -293,15 +269,13 @@ class Ventes:
         )
 
         evolution_credit = cursor.fetchall()
-        conn.close()
+        
 
         return {row["date_paiements"].strftime("%Y-%m-%d"): row["total_restant"] for row in evolution_credit}
 
     @staticmethod
-    def evolution_par_mois():
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+    def evolution_par_mois(conn):
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"
@@ -325,7 +299,7 @@ class Ventes:
         )
 
         evolution_credit = cursor.fetchall()
-        conn.close()
+        
 
         return {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
     

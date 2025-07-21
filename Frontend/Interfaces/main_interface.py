@@ -34,10 +34,9 @@ class MainInterface(QMainWindow):
         # self.show_main_interface()
         self.show_login_interface()
         self.setFocusPolicy(Qt.StrongFocus)
-        conn = pymysql.connect(
+        self.conn = pymysql.connect(
             host=host, user=user, password=password, database=database
         )
-        self.dataset_connextion = conn.cursor()
         
 
     def create_database(self):
@@ -61,20 +60,20 @@ class MainInterface(QMainWindow):
 
         # Medicament.supprimer_toute_base_donnees()
 
-        Clients.create_table_clients()
-        Stock.create_table_stock()
-        Commandes.create_table_commandes()
-        Credit.create_table_credit()
-        Echanges.create_table_echanges()
-        Fournisseur.create_table_fournisseur()
-        Medicament.create_table_medicament()
-        Payment.create_table_payment()
-        Pharmacies.create_table_pharmacies()
-        Ventes.create_table_ventes()
-        Salaries.create_table_salaries()
-        Retour.create_table_retours()
-        CommandeClient.create_table_commandes_client()
-        Salaries.ajouter_salarie(
+        Clients.create_table_clients(self.conn)
+        Stock.create_table_stock(self.conn)
+        Commandes.create_table_commandes(self.conn)
+        Credit.create_table_credit(self.conn)
+        Echanges.create_table_echanges(self.conn)
+        Fournisseur.create_table_fournisseur(self.conn)
+        Medicament.create_table_medicament(self.conn)
+        Payment.create_table_payment(self.conn)
+        Pharmacies.create_table_pharmacies(self.conn)
+        Ventes.create_table_ventes(self.conn)
+        Salaries.create_table_salaries(self.conn)
+        Retour.create_table_retours(self.conn)
+        CommandeClient.create_table_commandes_client(self.conn)
+        Salaries.ajouter_salarie(self.conn,
             "user",
             "prenom",
             "cin",
@@ -164,7 +163,7 @@ class MainInterface(QMainWindow):
     def login(self):
         login = self.user_entry.text()
         password = self.password_entry.text()
-        self.user_session = Salaries.extraire_salarie_login(login, password)
+        self.user_session = Salaries.extraire_salarie_login(self.conn,login, password)
         if self.user_session is None:
             QMessageBox.information(
                 self, "Erreur de connexion", "Mot de passe ou utilisateur incorrect"

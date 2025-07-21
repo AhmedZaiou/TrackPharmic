@@ -13,7 +13,7 @@ class ComptaFilesGeneration:
         pass
 
     @staticmethod
-    def extraire_vente():
+    def extraire_vente(conn):
         request = """SELECT
                         V.id_vente,
                         V.date_vente,
@@ -50,13 +50,11 @@ class ComptaFilesGeneration:
                     LEFT JOIN Salaries S ON V.id_salarie = S.id_salarie
                     ORDER BY V.date_vente DESC;
                     """
-        conn = pymysql.connect(
-            host=host, user=user, password=password, database=database
-        )
+        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(request)
         rows = cursor.fetchall()
-        conn.close()
+        
         fichier_excel = "rapport.xlsx"
         if rows:
             df = pd.DataFrame(rows)

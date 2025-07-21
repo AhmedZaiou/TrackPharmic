@@ -33,8 +33,9 @@ from Frontend.utils.utils import *
 
 
 class Caisse:
-    def __init__(self):
+    def __init__(self,conn):
         self.dataset = dataset
+        self.conn=conn
 
     def cloture_journee(self):
         cloture_dict = {}
