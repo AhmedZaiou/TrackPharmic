@@ -349,7 +349,7 @@ class Echange_dash:
         )
         if reply == QMessageBox.Yes:
             Stock.ajouter_stock(
-                self.medicament_search["ID_Medicament"],
+                self.medicament_search["id_medicament"],
                 "0",
                 self.main_interface.user_session["id_salarie"],
                 prix_achat_medicament,
@@ -467,7 +467,7 @@ class Echange_dash:
         )
         if reply == QMessageBox.Yes:
             for index, items in self.producs_table.iterrows():
-                id_medicament = items["ID_Medicament"]
+                id_medicament = items["id_medicament"]
                 id_commande_entre = items["id_commande"]
                 prix_achat = items["prix_achat"]
                 prix_v = items["prix_vente"]
@@ -705,7 +705,7 @@ class Echange_dash:
                 return
             else:
                 medicament_on_dtock = Stock.extraire_medicament_id_stock(
-                    medicament["ID_Medicament"]
+                    medicament["id_medicament"]
                 )
                 medicament = dict(medicament)
 

@@ -60,25 +60,20 @@ font_path = f"{Front_end}/Monopoly.ttf"
 
 #sumatra_path =r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
-sumatra_path = os.getenv("sumatra_path") # r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
+sumatra_path = r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 
 
 
 
 # Informations de connexion Gmail
-smtp_server =  os.getenv("smtp_server")
-smtp_port = os.getenv("smtp_port")
-smtp_user = os.getenv("smtp_user")
-smtp_password = os.getenv("smtp_password")
+smtp_server = "smtp.gmail.com"
+smtp_port = 587
+smtp_user = "rachadpharmacie@gmail.com"  # Remplace par ton email
+smtp_password = "roox neod xzig pemb"  # Utiliser un mot de passe d'application
+
 # Définition de l'expéditeur et du destinataire
 sender_email = smtp_user
-
-
-
-
-
-
 
 
 
@@ -101,16 +96,16 @@ Tel_pharma = "0535285298, 0680061368"""
 # data base original 
 
 
-host = os.getenv("host")
-user = os.getenv("user")
-password = os.getenv("password")
-database = os.getenv("database")
+host = "srv1653.hstgr.io"
+user = "u454999796_root"
+password = "Ah@2019@"
+database = "u454999796_pharma"
 
-Name_pharma = os.getenv("Name_pharma")
-Email_pharma = os.getenv("Email_pharma")
-receiver_email =  os.getenv("receiver_email") #"bichrjamai@icloud.com" #
-Adresse_pharma = os.getenv("Adresse_pharma")
-Tel_pharma = os.getenv("Tel_pharma")
+Name_pharma = "My Pharmacy Name"
+Email_pharma = "zaiou.ahm@gmail.com"
+receiver_email =  "zaiou.ahm@gmail.com" #"bichrjamai@icloud.com" #
+Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
+Tel_pharma = "0535285298, 0680061368"
 
 
 from PyQt5.QtWidgets import QMessageBox

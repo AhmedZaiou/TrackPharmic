@@ -55,7 +55,7 @@ class Vente_dash:
             "telephone": "06666666666",
             "email": "email@email.ext",
             "Adresse": "Anonyme",
-            "max_credit": 0,
+            "max_credit": 100000000000,
             "credit_actuel": 0,
         }
         self.list_od_commande = None
@@ -258,6 +258,7 @@ class Vente_dash:
                 code_commande = code_commande[2:-1]          
 
         self.list_od_commande = CommandeClient.get_commande(code_commande) 
+        
         self.commande_id_input.setText(code_commande)
         self.montant_facture_commande_value.setText(str(self.list_od_commande[0]['total_facture_calculer']))
         self.montant_payer_commande_value.setText(str(self.list_od_commande[0]['to_pay_now']))
@@ -397,7 +398,7 @@ class Vente_dash:
             self.update_table()
         else:
             medicament = Medicament.extraire_medicament_code_barre(code_barre_scanner)
-            print(medicament)
+            
 
             if medicament is None:
                 QMessageBox.information(
@@ -408,7 +409,7 @@ class Vente_dash:
                 return
             else:
                 medicament_on_dtock = Stock.extraire_medicament_id_stock(
-                    medicament["ID_Medicament"]
+                    medicament["id_medicament"]
                 ) 
 
                 if medicament_on_dtock is None:
@@ -573,7 +574,7 @@ class Vente_dash:
         message  += "<h4>Détails de la vente:</h4>"
         list_facture = []
         for index, items in self.producs_table.iterrows():
-                id_medicament = items["ID_Medicament"]
+                id_medicament = items["id_medicament"]
                 nom_medicament = items["Nom"]
                 id_commande_entre = items["id_commande"]
                 prix_achat = items["prix_achat"]
@@ -646,7 +647,8 @@ class Vente_dash:
             to_pay_now = round(float(self.amount_input.text()), 2)
         else:
             to_pay_now = round(float(total_facture_calculer), 2)  
-        if (
+        
+        if ( self.client_info['nom'] is not 'Anonyme' and
             float(total_facture_calculer) - float(to_pay_now) + float(self.client_info["credit_actuel"])
             > float(self.client_info["max_credit"])
         ):

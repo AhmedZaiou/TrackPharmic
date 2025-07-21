@@ -31,6 +31,6 @@ def generate_barcode(barcode_data):
 
         return barcode_base64
 
-barcode_data_list = ["6118001090112", '6118001180813', "6118000032779", "6118001120758", "6118000100058", "6118000081579", "6118000020769"  ]
+barcode_data_list = ["6118000420422", '6118001072330', "6118001072347", "6118000340669", "6118001170388", "6118001170371", "6118000430025"  ]
 for item in barcode_data_list:
     generate_barcode(item)

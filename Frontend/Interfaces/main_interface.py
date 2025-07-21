@@ -20,6 +20,8 @@ from Frontend.utils.utils import *
 from Backend.Dataset.salarie import Salaries
 from Backend.Comptabilite.cloturecaisse import *
 import os
+import pymysql
+from Frontend.utils.utils import *
 
 
 class MainInterface(QMainWindow):
@@ -32,6 +34,10 @@ class MainInterface(QMainWindow):
         # self.show_main_interface()
         self.show_login_interface()
         self.setFocusPolicy(Qt.StrongFocus)
+        conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
+        self.dataset_connextion = conn.cursor()
         
 
     def create_database(self):
@@ -106,7 +112,7 @@ class MainInterface(QMainWindow):
             app_logo
         )  # Remplacez "path_to_logo_image" par le chemin de votre image
         pixmap = pixmap.scaled(
-            450, 450, Qt.KeepAspectRatio, Qt.SmoothTransformation
+            550, 550, Qt.KeepAspectRatio, Qt.SmoothTransformation
         )  # Réduire la taille du logo
         self.logo_label.setPixmap(pixmap)
         self.logo_label.setObjectName("logo")

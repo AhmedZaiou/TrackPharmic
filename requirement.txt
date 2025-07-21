@@ -16,3 +16,4 @@ pytest-shutil
 openpyxl
 beautifulsoup4
 selenium
+dotenv

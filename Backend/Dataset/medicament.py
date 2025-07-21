@@ -27,8 +27,8 @@ class Medicament:
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
-        CREATE TABLE new_Medicaments (
-            ID_Medicament INT PRIMARY KEY AUTO_INCREMENT,
+        CREATE TABLE Medicament (
+            id_medicament INT PRIMARY KEY AUTO_INCREMENT,
             Code_EAN_13 VARCHAR(20),
             Nom VARCHAR(255),
             Image_URL TEXT,
@@ -86,8 +86,7 @@ class Medicament:
         Indications =   values.get('Indication(s)') 
         Min_Stock   = 0
         Stock_Actuel =  0
-        url_medicament = values.get('url')
-        print('all good')
+        url_medicament = values.get('url') 
         Medicament.ajouter_medicament(Code_EAN_13,
             Nom,
             Image_URL,
@@ -115,7 +114,7 @@ class Medicament:
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.executemany(
             """
-        INSERT INTO new_Medicaments (
+        INSERT INTO Medicament (
                             Code_EAN_13,
                             Nom,
                             Image_URL,
@@ -171,7 +170,7 @@ class Medicament:
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
-        INSERT INTO new_Medicaments (
+        INSERT INTO Medicament (
                             Code_EAN_13,
                             Nom,
                             Image_URL,
@@ -222,7 +221,7 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            "DELETE FROM new_Medicaments WHERE ID_Medicament = %s;", (id_medicament,)
+            "DELETE FROM Medicament WHERE id_medicament = %s;", (id_medicament,)
         )
         conn.commit()
         conn.close()
@@ -251,7 +250,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)  
-        query = f"UPDATE new_Medicaments SET Code_EAN_13 = %s, \
+        query = f"UPDATE Medicament SET Code_EAN_13 = %s, \
                     Nom = %s, \
                     Image_URL = %s, \
                     Présentation = %s, \
@@ -267,7 +266,7 @@ class Medicament:
                     Indications = %s, \
                     Min_Stock = %s, \
                     Stock_Actuel = %s, \
-                    url_medicament = %s WHERE ID_Medicament = %s;"
+                    url_medicament = %s WHERE id_medicament = %s;"
         cursor.execute(query, (
                 Code_EAN_13,
                 Nom,
@@ -298,7 +297,7 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            "SELECT * FROM new_Medicaments WHERE ID_Medicament = %s;", (id_medicament,)
+            "SELECT * FROM Medicament WHERE id_medicament = %s;", (id_medicament,)
         )
         row = cursor.fetchone()
         conn.close()
@@ -310,8 +309,8 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
-        UPDATE new_Medicaments SET Stock_Actuel = Stock_Actuel - %s
-        WHERE ID_Medicament = %s;
+        UPDATE Medicament SET Stock_Actuel = Stock_Actuel - %s
+        WHERE id_medicament = %s;
         """
         cursor.execute(query, (quantite_vendu, id_medicament))
         conn.commit()
@@ -324,7 +323,7 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
-        SELECT 1 FROM new_Medicaments WHERE url_medicament = %s LIMIT 1;
+        SELECT 1 FROM Medicament WHERE url_medicament = %s LIMIT 1;
         """
         cursor.execute(query, (url,))
         result = cursor.fetchone()  # récupère une ligne si elle existe
@@ -337,8 +336,8 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
-        UPDATE new_Medicaments SET Stock_Actuel = Stock_Actuel + %s
-        WHERE ID_Medicament = %s;
+        UPDATE Medicament SET Stock_Actuel = Stock_Actuel + %s
+        WHERE id_medicament = %s;
         """
         cursor.execute(query, (quantite_vendu, id_medicament))
         conn.commit()
@@ -351,7 +350,7 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            "SELECT * FROM new_Medicaments WHERE Code_EAN_13 = %s;", (code_barre,)
+            "SELECT * FROM Medicament WHERE Code_EAN_13 = %s;", (code_barre,)
         )
         row = cursor.fetchone()
         conn.close()
@@ -371,7 +370,7 @@ class Medicament:
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
-            "SELECT * FROM new_Medicaments WHERE Code_EAN_13 LIKE %s;", (f"%{pattern}%",)
+            "SELECT * FROM Medicament WHERE Code_EAN_13 LIKE %s;", (f"%{pattern}%",)
         )
         rows = cursor.fetchall()
         conn.close()
@@ -383,7 +382,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM new_Medicaments WHERE Nom LIKE %s;", (f"%{pattern}%",))
+        cursor.execute("SELECT * FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -392,7 +391,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT Nom FROM new_Medicaments WHERE Nom LIKE %s;", (f"%{pattern}%",))
+        cursor.execute("SELECT Nom FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",))
         rows = cursor.fetchall()
         conn.close()
         return [dict(row)['Nom'] for row in rows]
@@ -403,7 +402,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM new_Medicaments WHERE Code_EAN_13 IS NOT NULL ORDER BY Nom;")
+        cursor.execute("SELECT * FROM Medicament WHERE Code_EAN_13 IS NOT NULL ORDER BY Nom;")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -413,7 +412,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM new_Medicaments WHERE Code_EAN_13 IS NULL ORDER BY Nom;")
+        cursor.execute("SELECT * FROM Medicament WHERE Code_EAN_13 IS NULL ORDER BY Nom;")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -424,7 +423,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM new_Medicaments WHERE Min_Stock > 0;")
+        cursor.execute("SELECT * FROM Medicament WHERE Min_Stock > 0;")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -435,7 +434,7 @@ class Medicament:
             host=host, user=user, password=password, database=database
         )
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM new_Medicaments WHERE Min_Stock > 0 and Stock_Actuel<Min_Stock; ")
+        cursor.execute("SELECT * FROM Medicament WHERE Min_Stock > 0 and Stock_Actuel<Min_Stock; ")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
@@ -450,8 +449,8 @@ class Medicament:
         # Total des médicaments
         cursor.execute(
             """
-            SELECT COUNT(ID_Medicament) as total_medicaments
-            FROM new_Medicaments
+            SELECT COUNT(id_medicament) as total_medicaments
+            FROM Medicament
         """
         )
         total_medicaments = cursor.fetchone()
@@ -460,8 +459,8 @@ class Medicament:
         # Total des médicaments avec stock inférieur au minimum
         cursor.execute(
             """
-            SELECT COUNT(ID_Medicament) as medicaments_en_rupture
-            FROM new_Medicaments
+            SELECT COUNT(id_medicament) as medicaments_en_rupture
+            FROM Medicament
             WHERE Stock_Actuel < Min_Stock
         """
         )
@@ -471,8 +470,8 @@ class Medicament:
         # Total des médicaments avec stock positif
         cursor.execute(
             """
-            SELECT COUNT(ID_Medicament) as medicaments_avec_stock
-            FROM new_Medicaments
+            SELECT COUNT(id_medicament) as medicaments_avec_stock
+            FROM Medicament
             WHERE Stock_Actuel > 0
         """
         )
@@ -483,7 +482,7 @@ class Medicament:
         cursor.execute(
             """
             SELECT SUM(Stock_Actuel) as total_stock
-            FROM new_Medicaments
+            FROM Medicament
         """
         )
         total_stock = cursor.fetchone()

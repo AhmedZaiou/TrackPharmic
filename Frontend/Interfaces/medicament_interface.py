@@ -346,7 +346,7 @@ class Medicament_dash:
         self.medicament_table.setRowCount(len(medicaments))
         for index, element in enumerate(medicaments): 
             self.medicament_table.setItem(
-                index, 0, QTableWidgetItem(str(element["ID_Medicament"]))
+                index, 0, QTableWidgetItem(str(element["id_medicament"]))
             ) 
             self.medicament_table.setItem(
                 index, 1, QTableWidgetItem(str(element["Code_EAN_13"]))
@@ -370,7 +370,7 @@ class Medicament_dash:
         self.new_medicament_table.setRowCount(len(medicaments))
         for index, element in enumerate(medicaments):
             self.new_medicament_table.setItem(
-                index, 0, QTableWidgetItem(str(element["ID_Medicament"]))
+                index, 0, QTableWidgetItem(str(element["id_medicament"]))
             ) 
             
             self.new_medicament_table.setItem(
@@ -473,7 +473,7 @@ class Medicament_dash:
             # Appel à la méthode du modèle (à adapter si nécessaire)
             if self.medicament_modif is not None:
             
-                Medicament.modifier_medicament(self.medicament_modif["ID_Medicament"], code_ean,
+                Medicament.modifier_medicament(self.medicament_modif["id_medicament"], code_ean,
                     nom,
                     image_url,
                     presentation,
@@ -584,7 +584,7 @@ class Medicament_dash:
             }
 
             Medicament.modifier_medicament(
-                self.medicament_modif["ID_Medicament"], **medicament_data
+                self.medicament_modif["id_medicament"], **medicament_data
             )
             # Message de succès
             QMessageBox.information(

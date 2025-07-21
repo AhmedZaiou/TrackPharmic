@@ -24,3 +24,13 @@ pyinstaller --onefile --windowed --name "Pharma"   --add-data "Frontend/images:F
 pyinstaller --onefile --windowed --name "Pharma" --add-data "Frontend/images:Frontend/images" --add-data "Frontend/kabel.ttf:assets/fonts" --add-data "env1/lib/python3.11/site-packages/treepoem/postscriptbarcode/barcode.ps:treepoem/postscriptbarcode" --add-data "Frontend/Monopoly.ttf:assets/fonts"  --add-data "Frontend/style:Frontend/style" --icon="Frontend/images/pharmacie_bloc.png" --hidden-import="reportlab.graphics.barcode.common" --hidden-import="reportlab.graphics.barcode.code128" --hidden-import="reportlab.graphics.barcode.code93" --hidden-import="reportlab.graphics.barcode.code39" --hidden-import="reportlab.graphics.barcode.usps" --hidden-import="reportlab.graphics.barcode.usps4s" --hidden-import="reportlab.graphics.barcode.ecc200datamatrix" main.py
 
 
+
+
+
+Découvrez la solution numérique tout-en-un pour gérer efficacement votre pharmacie.
+Notre plateforme centralisée permet à plusieurs employés de travailler simultanément et de gérer l’ensemble de vos opérations en toute simplicité : ventes et commandes clients avec factures automatiques, gestion des retours et crédits, suivi des échanges avec vos pharmacies partenaires, ainsi que la gestion complète de vos stocks de médicaments (quantités, dates d’expiration).
+
+Bénéficiez d’une base de données médicaments mise à jour gratuitement chaque jour, d’alertes intelligentes pour éviter les ruptures et expirations, d’une clôture de caisse automatisée avec envoi par mail, et de rapports d’activité détaillés (jour, mois, année) pour piloter vos performances.
+
+Avec notre solution, optimisez votre temps, gagnez en efficacité et gardez le contrôle de votre comptoir numérique.
+Contactez-nous dès aujourd’hui : +212 6 35-807615 – contact@modeaest.com – www.modeaest.com.

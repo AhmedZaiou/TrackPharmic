@@ -203,7 +203,7 @@ class Retour_dash:
         )
         if reply == QMessageBox.Yes:
             Retour.ajouter_retour(
-                self.medicament_search["ID_Medicament"],
+                self.medicament_search["id_medicament"],
                 prix_achat_retour,
                 now,
                 quantite_commender_retour,
@@ -212,7 +212,7 @@ class Retour_dash:
             )
 
             Stock.ajouter_stock(
-                self.medicament_search["ID_Medicament"],
+                self.medicament_search["id_medicament"],
                 0,
                 self.main_interface.user_session["id_salarie"],
                 prix_achat_retour,

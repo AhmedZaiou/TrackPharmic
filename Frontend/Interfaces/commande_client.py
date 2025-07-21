@@ -564,7 +564,7 @@ class Commande_client:
         list_facture = []
         for index, items in self.producs_table.iterrows(): 
                 
-                id_medicament = items["ID_Medicament"]
+                id_medicament = items["id_medicament"]
                 nom_medicament = items["Nom"]
                 prix_vente = items["PPV"]  # même chose
                 date_vente = now_str
