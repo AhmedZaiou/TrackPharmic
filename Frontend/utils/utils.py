@@ -45,7 +45,7 @@ acceuil_logo = f"{Front_end}/images/logoacceuil.png"
 commande_logo = f"{Front_end}/images/commandelogo.png"
 commande_client_logo = f"{Front_end}/images/commande_client.png"
 credit_logo = f"{Front_end}/images/creditlogoa.png"
-vente_logo = f"{Front_end}/images/ventelogo.svg"
+vente_logo = f"{Front_end}/images/ventelogo.png"
 client_logo = f"{Front_end}/images/clientlogo.png"
 echange_logo = f"{Front_end}/images/echangelogo.png"
 stock_logo = f"{Front_end}/images/stocklogo.png"
@@ -58,6 +58,10 @@ font_path = f"{Front_end}/Monopoly.ttf"
 #sumatra_path =r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 sumatra_path = r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
+
+
+
+
 
 # Informations de connexion Gmail
 smtp_server = "smtp.gmail.com"

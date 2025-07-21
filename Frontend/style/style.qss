@@ -49,7 +49,7 @@ background-color: white;
 }
 #TitrePage{
     font-size: 20px;
-    color: black; /* Couleur du texte */
+    color: #016032; /* Couleur du texte */
     text-align: center; /* Centrer le titre */
     margin-bottom: 20px; /* Espacement sous le titre */    
     font-weight: bold;  
@@ -95,14 +95,14 @@ background-color: white;
     margin-right: 50px;
 }
 #loginframe{
-    border: 3px solid rgba(10, 13, 11, 0.1);
+    border: 3px solid rgba(15, 57, 24, 0.4);
     border-radius: 15px; /* Softer rounded corners */
     box-shadow: 0px 4px 10px rgba(237, 249, 242, 0.1);
     margin-bottom: 50px;
 }
 
 #loginframe label{
-    font-size: 16px; /* Adjust the font size */
+    font-size: 20px; /* Adjust the font size */
     color: #155724; /* Set the text color */
     margin-bottom: 10px; /* Adjust the margin bottom */
 }

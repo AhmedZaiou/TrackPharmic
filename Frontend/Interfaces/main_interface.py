@@ -106,7 +106,7 @@ class MainInterface(QMainWindow):
             app_logo
         )  # Remplacez "path_to_logo_image" par le chemin de votre image
         pixmap = pixmap.scaled(
-            150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation
+            450, 450, Qt.KeepAspectRatio, Qt.SmoothTransformation
         )  # Réduire la taille du logo
         self.logo_label.setPixmap(pixmap)
         self.logo_label.setObjectName("logo")

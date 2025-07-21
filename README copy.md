@@ -1,0 +1,26 @@
+# TrackPharmic
+
+
+pyinstaller main.py
+
+https://dmp.sante.gov.ma/recherche-medicaments
+
+
+https://www.ghostscript.com/releases/gsdnld.html
+
+ pharmacieapplication@gmail.com
+ Pharmaciehajra
+
+
+
+# Steps to create app in mac 
+
+pyinstaller --onefile --windowed --name "Pharma" --add-data  "Frontend/images:Frontend/images" --add-data  "Frontend/style:Frontend/style"  --icon="Frontend/images/pharmacie_bloc.png" main.py
+
+
+
+pyinstaller --onefile --windowed --name "Pharma"   --add-data "Frontend/images:Frontend/images"   --add-data "Frontend/style:Frontend/style"   --icon="Frontend/images/pharmacie_bloc.png" main.py
+
+pyinstaller --onefile --windowed --name "Pharma" --add-data "Frontend/images:Frontend/images" --add-data "Frontend/kabel.ttf:assets/fonts" --add-data "env1/lib/python3.11/site-packages/treepoem/postscriptbarcode/barcode.ps:treepoem/postscriptbarcode" --add-data "Frontend/Monopoly.ttf:assets/fonts"  --add-data "Frontend/style:Frontend/style" --icon="Frontend/images/pharmacie_bloc.png" --hidden-import="reportlab.graphics.barcode.common" --hidden-import="reportlab.graphics.barcode.code128" --hidden-import="reportlab.graphics.barcode.code93" --hidden-import="reportlab.graphics.barcode.code39" --hidden-import="reportlab.graphics.barcode.usps" --hidden-import="reportlab.graphics.barcode.usps4s" --hidden-import="reportlab.graphics.barcode.ecc200datamatrix" main.py
+
+
