@@ -276,16 +276,16 @@ class Commandes:
         }
 
     @staticmethod
-    def cloture_journee():
+    def cloture_journee(conn):
         commande_cloture = {}
         commande_cloture[
             "statistique general"
-        ] = Commandes.statistic_commande_generale()
+        ] = Commandes.statistic_commande_generale(conn)
         commande_cloture["statistique par salarie"] = []
-        salaries, noms, prenoms = Salaries.get_salaries()
+        salaries, noms, prenoms = Salaries.get_salaries(conn)
         for salarie, nom, prenom in zip(salaries, noms, prenoms):
             performance = {"salarie": str(nom) + " " + str(prenom)}
-            performance["statistique"] = Commandes.statistic_commande_salarie(salarie)
+            performance["statistique"] = Commandes.statistic_commande_salarie(conn,salarie)
             commande_cloture["statistique par salarie"].append(performance)
 
         return commande_cloture

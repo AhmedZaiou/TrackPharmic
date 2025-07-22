@@ -51,7 +51,7 @@ class Ventes:
         id_salarie,
         id_stock_item,
     ):
-        Ventes.create_table_ventes()
+        Ventes.create_table_ventes(conn)
         
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(

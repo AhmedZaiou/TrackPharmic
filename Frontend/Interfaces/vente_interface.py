@@ -770,7 +770,8 @@ class Vente_dash:
             CommandeClient.modifier_statut_commande_client(self.main_interface.conn,
                 self.list_od_commande[0]['numero_facture'], numero_facture
             )
-        Ventes.ajouter_vente(self.main_interface.conn,
+        Ventes.ajouter_vente(
+            self.main_interface.conn,
             id_medicament,
             idcommande_item,
             prix_achat_item,

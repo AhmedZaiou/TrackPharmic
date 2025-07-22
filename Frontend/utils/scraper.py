@@ -48,7 +48,7 @@ def actualiser_medicament(conn):
                 Min_Stock,
                 Stock_Actuel,
                 url_medicament) 
-        Todo_Task.scraper_today() 
+        Todo_Task.scraper_today(conn) 
 
 
 from PyQt5.QtCore import QThread

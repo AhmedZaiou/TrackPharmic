@@ -569,7 +569,7 @@ class Stock_dash:
         now = datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S")
         Stock.ajouter_stock(self.main_interface.conn,
-            self.medicament_search["ID_Medicament"],
+            self.medicament_search["id_medicament"],
             self.commande_current["id_commande"],
             self.main_interface.user_session["id_salarie"],
             prix_achat_medicament,
@@ -618,7 +618,7 @@ class Stock_dash:
         )
         if reply == QMessageBox.Yes:
             Stock.ajouter_stock(self.main_interface.conn,
-                self.medicament_search["ID_Medicament"],
+                self.medicament_search["id_medicament"],
                 "0",
                 self.main_interface.user_session["id_salarie"],
                 prix_achat_medicament,

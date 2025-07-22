@@ -536,7 +536,7 @@ class MainInterface(QMainWindow):
         )
 
         if reply == QMessageBox.Yes:
-            caisse = Caisse()
+            caisse = Caisse(self.conn)
             caisse.fermeture_de_caisse()
 
     def medicament_click(self):

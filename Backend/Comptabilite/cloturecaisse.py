@@ -39,16 +39,16 @@ class Caisse:
 
     def cloture_journee(self):
         cloture_dict = {}
-        cloture_dict["Client statistique"] = Clients.cloture_journee()
-        cloture_dict["Commande statistique"] = Commandes.cloture_journee()
-        cloture_dict["Credit statistique"] = Credit.cloture_journee()
-        cloture_dict["Echange statistique"] = Echanges.cloture_journee()
-        cloture_dict["Medicament statistique"] = Medicament.cloture_journee()
-        cloture_dict["Paiment statistique"] = Payment.cloture_journee()
-        cloture_dict["Retour statistique"] = Retour.cloture_journee()
-        cloture_dict["Stock statistique"] = Stock.cloture_journee()
-        cloture_dict["Vente statistique"] = Ventes.cloture_journee()
-        cloture_dict["Commande client statistique"] = CommandeClient.cloture_journee()
+        cloture_dict["Client statistique"] = Clients.cloture_journee(self.conn)
+        cloture_dict["Commande statistique"] = Commandes.cloture_journee(self.conn)
+        cloture_dict["Credit statistique"] = Credit.cloture_journee(self.conn)
+        cloture_dict["Echange statistique"] = Echanges.cloture_journee(self.conn)
+        cloture_dict["Medicament statistique"] = Medicament.cloture_journee(self.conn)
+        cloture_dict["Paiment statistique"] = Payment.cloture_journee(self.conn)
+        cloture_dict["Retour statistique"] = Retour.cloture_journee(self.conn)
+        cloture_dict["Stock statistique"] = Stock.cloture_journee(self.conn)
+        cloture_dict["Vente statistique"] = Ventes.cloture_journee(self.conn)
+        cloture_dict["Commande client statistique"] = CommandeClient.cloture_journee(self.conn)
         cloture_dict = json.loads(json.dumps(cloture_dict, default=str))
         data = cloture_dict
         # Restructuration du dictionnaire

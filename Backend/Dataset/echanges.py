@@ -40,7 +40,7 @@ class Echanges:
         )
         conn.commit()
         
-        Pharmacies.modifier_pharmacie_echange(
+        Pharmacies.modifier_pharmacie_echange(conn,
         id_pharmacie, total_facture, sens
     )
 
