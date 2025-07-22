@@ -15,7 +15,8 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Qt, QSize
 from qtpy.QtGui import QPixmap, QIcon
-
+import threading
+import time
 from Frontend.utils.utils import *
 from Backend.Dataset.salarie import Salaries
 from Backend.Comptabilite.cloturecaisse import *
@@ -38,6 +39,14 @@ class MainInterface(QMainWindow):
             host=host, user=user, password=password, database=database
         )
         
+        t = threading.Thread(target=self.update_value, daemon=True)
+        t.start()
+         
+
+    def update_value(self): 
+        while True:
+            self.conn.ping(reconnect=True)
+            time.sleep(18)   
 
     def create_database(self):
         import json

@@ -2,7 +2,8 @@ from Backend.Dataset.stock import Stock
 from Backend.Dataset.medicament import Medicament
 import datetime
 import random
-
+import pymysql
+from Frontend.utils.utils import *
 
 def random_datetime_within_2_years():
     start = datetime.datetime.now()
@@ -30,16 +31,17 @@ def generer_stock():
         "quantite_minimale": quantite_minimale,
         "quantite_maximale": quantite_maximale
     }
+conn = pymysql.connect(
+            host=host, user=user, password=password, database=database
+        )
 
-medicaments = Medicament.extraire_tous_medicament()
+medicaments = Medicament.extraire_tous_medicament(conn)
 
-for element, i in zip(medicaments, range(250)): 
-    if i<160:
-        continue
+for element, i in zip(medicaments, range(10000)): 
     stock_values = generer_stock()
      
-    Stock.ajouter_stock(
-        element['ID_Medicament'],
+    Stock.ajouter_stock(conn,
+        element['id_medicament'],
             0,
             1,
             float(element["PPV"]) -  float(element["PPV"]) * 0.3,

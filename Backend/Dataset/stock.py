@@ -79,7 +79,7 @@ class Stock:
         )
         conn.commit()
         
-        Medicament.effectuer_stock_medicament(id_medicament, quantite_actuelle)
+        Medicament.effectuer_stock_medicament(conn,id_medicament, quantite_actuelle)
 
     @staticmethod
     def supprimer_stock(conn,id_stock):
