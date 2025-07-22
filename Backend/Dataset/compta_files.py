@@ -21,11 +21,10 @@ class ComptaFilesGeneration:
                         V.quantite_vendue,
                         V.prix_vente,
                         V.total_facture,
+                        V.prix_achat,
 
                         M.Nom AS nom_medicament,
                         M.Code_EAN_13,
-                        M.Prix_Public_De_Vente,
-                        M.Stock_Actuel,
 
                         C.date_commande,
                         C.date_reception,
@@ -42,7 +41,7 @@ class ComptaFilesGeneration:
                         S.nom AS nom_salarie
 
                     FROM Ventes V
-                    LEFT JOIN Medicament M ON V.id_medicament = M.ID_Medicament
+                    LEFT JOIN Medicament M ON V.id_medicament = M.id_medicament
                     LEFT JOIN Commandes C ON V.id_commande_entre = C.id_commande
                     LEFT JOIN Payment P ON V.numero_facture = P.numero_facture
                     LEFT JOIN Retours R ON V.numero_facture = R.numero_facture AND V.id_medicament = R.id_medicament

@@ -37,7 +37,7 @@ class JustificatifsManager:
             'mail_id': b'7'
         }
         """
-        JustificatifsManager.create_table_justificatifs()
+        #JustificatifsManager.create_table_justificatifs(conn)
         
         cursor = conn.cursor()
 

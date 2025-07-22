@@ -126,8 +126,10 @@ class Stock_dash:
     def telecharger_pieces_jointes(self, email_user = smtp_user, email_pass= smtp_password):
         imap = imaplib.IMAP4_SSL("imap.gmail.com")
         imap.login(email_user, email_pass)
+        print(email_user, email_pass)
         imap.select("INBOX")
         status, messages = imap.search(None, "UNSEEN")
+        print(status, messages)
         if status != "OK":
             print("Erreur lors de la récupération des messages.")
             return

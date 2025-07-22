@@ -24,19 +24,24 @@ from decimal import Decimal
 import calendar
 from Backend.Dataset.compta_files import ComptaFilesGeneration
 from dateutil.relativedelta import relativedelta
-
+import random
 
 class Compta_dash:
     def __init__(self, main_interface):
         self.main_interface = main_interface
-        self.show_interface_qoutidiennes()
+        self.show_interface_actuel()
 
     def create_menu_compta(self):
         menu_layout = QHBoxLayout()
-        self.compta_quotidiennes = QPushButton("Quotidiennes")
+        self.compta_actuel = QPushButton("Analyse instantanée des indicateurs clés")
+        self.compta_actuel.clicked.connect(self.compta_actuel_fc)
+        menu_layout.addWidget(self.compta_actuel)
+
+
+        self.compta_quotidiennes = QPushButton("Évolution quotidienne")
         self.compta_quotidiennes.clicked.connect(self.compta_quotidiennes_fc)
         menu_layout.addWidget(self.compta_quotidiennes)
-        self.compta_mensuelles = QPushButton("Mensuelles")
+        self.compta_mensuelles = QPushButton("Évolution mensuelles")
         self.compta_mensuelles.clicked.connect(self.compta_mensuelles_fc)
         menu_layout.addWidget(self.compta_mensuelles) 
         self.telecharger_document_btn = QPushButton("Telécharger le rapport")
@@ -44,13 +49,241 @@ class Compta_dash:
         menu_layout.addWidget(self.telecharger_document_btn) 
         return menu_layout
     
+    def compta_actuel_fc(self):
+        self.show_interface_actuel()
+    
     def compta_quotidiennes_fc(self):
         self.show_interface_qoutidiennes()
 
     def compta_mensuelles_fc(self):
         self.show_interface_mensuelles()
+    
+
+    def generer_all_data_jour(self,nb_jours=30):
+        # Génère les dates des nb_jours derniers jours
+        import datetime
+        jours = [(datetime.date.today() - datetime.timedelta(days=i)).strftime("%d-%m") for i in range(nb_jours)][::-1]
+
+        # Génère des valeurs aléatoires pour chaque type de donnée
+        credits = [random.randint(500, 5000) for _ in range(nb_jours)]
+        echanges_envoyer = [random.randint(0, 2000) for _ in range(nb_jours)]
+        echanges_recu = [random.randint(0, 2000) for _ in range(nb_jours)]
+        paiements = [random.randint(300, 4000) for _ in range(nb_jours)]
+        retours = [random.randint(0, 500) for _ in range(nb_jours)]
+        ventes = [random.randint(500, 6000) for _ in range(nb_jours)]
+
+        # Construction du dictionnaire dans le format demandé
+        all_data_jour = {
+            "jours": jours,
+            "credits": credits,
+            "echanges_envoyer": echanges_envoyer,
+            "echanges_recu": echanges_recu,
+            "paiements": paiements,
+            "retours": retours,
+            "ventes": ventes,
+        }
+        return all_data_jour
+    def generer_all_data_mois(self,nb_jours=12):
+        # Génère les dates des nb_jours derniers jours
+        import datetime
+        jours = [str(i+1) for i in range(nb_jours)] 
+
+        # Génère des valeurs aléatoires pour chaque type de donnée
+        credits = [random.randint(500, 5000) for _ in range(nb_jours)]
+        echanges_envoyer = [random.randint(0, 2000) for _ in range(nb_jours)]
+        echanges_recu = [random.randint(0, 2000) for _ in range(nb_jours)]
+        paiements = [random.randint(300, 4000) for _ in range(nb_jours)]
+        retours = [random.randint(0, 500) for _ in range(nb_jours)]
+        ventes = [random.randint(500, 6000) for _ in range(nb_jours)]
+
+        # Construction du dictionnaire dans le format demandé
+        all_data_jour = {
+            "mois": jours,
+            "credits": credits,
+            "echanges_envoyer": echanges_envoyer,
+            "echanges_recu": echanges_recu,
+            "paiements": paiements,
+            "retours": retours,
+            "ventes": ventes,
+        }
+        return all_data_jour
 
    
+    def show_interface_actuel(self):
+        self.main_interface.clear_content_frame()
+
+        self.vente_dash = QWidget()
+        self.vente_dash.setObjectName("vente_dash")
+        self.main_layout = QVBoxLayout(self.vente_dash)
+
+        titre_page = QLabel("Analyse et suivi des performances")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter)
+        self.main_layout.addWidget(titre_page)
+        menu_layout = self.create_menu_compta()
+        self.main_layout.addLayout(menu_layout)
+
+
+        # Fetch data
+        credit_jours = Credit.evolution_par_jour_moiis_courant(self.main_interface.conn) 
+        echanges_jours = Echanges.evolution_par_jour_moiis_courant(self.main_interface.conn)
+        echanges_jours_envoyer = echanges_jours['Echange_envoyer']
+        echanges_jours_recu = echanges_jours['Echange_recu']   
+        payment_jours = Payment.evolution_par_jour_moiis_courant(self.main_interface.conn) 
+        retour_jours = Retour.evolution_par_jour_moiis_courant(self.main_interface.conn) 
+        ventes_jours = Ventes.evolution_par_jour_moiis_courant(self.main_interface.conn) 
+        # Transform data
+        credit_jours = self.transformer_donnees(credit_jours) 
+        echanges_jours_envoyer = self.transformer_donnees(echanges_jours_envoyer)
+        echanges_jours_recu = self.transformer_donnees(echanges_jours_recu)  
+        payment_jours = self.transformer_donnees(payment_jours) 
+        retour_jours = self.transformer_donnees(retour_jours) 
+        ventes_jours = self.transformer_donnees(ventes_jours) 
+
+
+        self.all_data_jour = {
+            "jours": list(credit_jours.values())[0] ,
+            "credits": list(credit_jours.values())[1],
+            "echanges_envoyer": list(echanges_jours_envoyer.values())[1],
+            "echanges_recu": list(echanges_jours_recu.values())[1],
+            "paiements": list(payment_jours.values())[1],
+            "retours": list(retour_jours.values())[1],
+            "ventes": list(ventes_jours.values())[1],
+        } 
+        self.all_data_jour = self.generer_all_data_jour(30)  # Générer des données aléatoires pour les 30 derniers jours
+
+        credit_mois = Credit.evolution_par_mois(self.main_interface.conn)  
+        echanges_mois = Echanges.evolution_par_mois(self.main_interface.conn)
+        echanges_mois_envoyer = echanges_mois['Echange_envoyer']
+        echanges_mois_recu = echanges_mois['Echange_recu']  
+        payment_mois = Payment.evolution_par_mois(self.main_interface.conn) 
+        retour_mois = Retour.evolution_par_mois(self.main_interface.conn) 
+        ventes_mois = Ventes.evolution_par_mois(self.main_interface.conn)
+        
+
+        # Transform data 
+        credit_mois = self.transformer_donnees_par_mois(credit_mois) 
+        echanges_mois_envoyer = self.transformer_donnees_par_mois(echanges_mois_envoyer)
+        echanges_mois_recu = self.transformer_donnees_par_mois(echanges_mois_recu)
+        payment_mois = self.transformer_donnees_par_mois(payment_mois)
+        retour_mois = self.transformer_donnees_par_mois(retour_mois)
+        ventes_mois = self.transformer_donnees_par_mois(ventes_mois)
+        
+
+        self.all_data_moi = {
+            "mois": list(credit_mois.values())[0],
+            "credits": list(credit_mois.values())[1],
+            "echanges_envoyer": list(echanges_mois_envoyer.values())[1],
+            "echanges_recu": list(echanges_mois_recu.values())[1],
+            "paiements": list(payment_mois.values())[1],
+            "retours": list(retour_mois.values())[1],
+            "ventes": list(ventes_mois.values())[1],
+        }
+        self.all_data_moi = self.generer_all_data_mois(12)  # Générer des données aléatoires pour les 12 derniers mois
+
+
+
+
+
+
+
+
+
+
+
+        
+        aujourdhui = datetime.today().date()
+
+        # Obtenir le jour du mois (1-31)
+        jour_du_mois = aujourdhui.day -1
+        mois_du_annee = aujourdhui.month - 1
+
+        values_to_plot_jour = [
+            self.all_data_jour['credits'][jour_du_mois],
+            self.all_data_jour['echanges_envoyer'][jour_du_mois],
+            self.all_data_jour['echanges_recu'][jour_du_mois],
+            self.all_data_jour['paiements'][jour_du_mois],
+            self.all_data_jour['retours'][jour_du_mois],
+            self.all_data_jour['ventes'][jour_du_mois]
+        ] 
+        values_to_plot_mois = [
+            self.all_data_moi['credits'][mois_du_annee],
+            self.all_data_moi['echanges_envoyer'][mois_du_annee],
+            self.all_data_moi['echanges_recu'][mois_du_annee],
+            self.all_data_moi['paiements'][mois_du_annee],
+            self.all_data_moi['retours'][mois_du_annee],
+            self.all_data_moi['ventes'][mois_du_annee]
+        ] 
+
+        values_to_plot_jour_sum = sum(values_to_plot_jour)
+        values_to_plot_mois_sum = sum(values_to_plot_mois)
+
+
+
+
+
+
+        self.canvas1 = self.generate_plot_actuel(values_to_plot_jour, "Bilan journalier")
+        self.canvas2 = self.generate_plot_actuel(values_to_plot_mois, "Bilan mensuel")
+ 
+        self.canvas3 = self.generate_plot_actuel_deux([values_to_plot_jour[0],values_to_plot_jour_sum - values_to_plot_jour[0]], "Crédits du jour")
+        self.canvas4 = self.generate_plot_actuel_deux([values_to_plot_jour[1],values_to_plot_jour_sum - values_to_plot_jour[1]], "Échanges envoyés du jour")
+        self.canvas5 = self.generate_plot_actuel_deux([values_to_plot_jour[2],values_to_plot_jour_sum - values_to_plot_jour[2]], "Échanges reçu du jour")
+        self.canvas6 = self.generate_plot_actuel_deux([values_to_plot_jour[3],values_to_plot_jour_sum - values_to_plot_jour[3]], "Paiements du jour")
+        self.canvas7 = self.generate_plot_actuel_deux([values_to_plot_jour[4],values_to_plot_jour_sum - values_to_plot_jour[4]], "Retours du jour")
+        self.canvas8 = self.generate_plot_actuel_deux([values_to_plot_jour[5],values_to_plot_jour_sum - values_to_plot_jour[5]], "Ventes du jour")
+
+        self.canvas9 = self.generate_plot_actuel_deux([values_to_plot_mois[0],values_to_plot_mois_sum - values_to_plot_mois[0]], "Crédits du mois")
+        self.canvas10 = self.generate_plot_actuel_deux([values_to_plot_mois[1],values_to_plot_mois_sum - values_to_plot_mois[1]], "Échanges envoyés du mois")
+        self.canvas11 = self.generate_plot_actuel_deux([values_to_plot_mois[2],values_to_plot_mois_sum - values_to_plot_mois[2]], "Échanges reçu du mois")
+        self.canvas12 = self.generate_plot_actuel_deux([values_to_plot_mois[3],values_to_plot_mois_sum - values_to_plot_mois[3]], "Paiements du mois")
+        self.canvas13 = self.generate_plot_actuel_deux([values_to_plot_mois[4],values_to_plot_mois_sum - values_to_plot_mois[4]], "Retours du mois")
+        self.canvas14 = self.generate_plot_actuel_deux([values_to_plot_mois[5],values_to_plot_mois_sum - values_to_plot_mois[5]], "Ventes du mois")
+        
+
+
+
+        # Layout principal vertical
+        main_figure_layout = QVBoxLayout()
+
+        # Ligne du haut avec 2 figures
+        top_layout = QHBoxLayout()
+        top_layout.addWidget(self.canvas1)
+        top_layout.addWidget(self.canvas2)
+
+        # Ligne du bas avec 4 figures
+        bottom_layout = QHBoxLayout()
+        bottom_layout.addWidget(self.canvas3)
+        bottom_layout.addWidget(self.canvas4)
+        bottom_layout.addWidget(self.canvas5)
+        bottom_layout.addWidget(self.canvas6)
+        bottom_layout.addWidget(self.canvas7)
+        bottom_layout.addWidget(self.canvas8)
+
+        bottom_layout_2 = QHBoxLayout() 
+        bottom_layout_2.addWidget(self.canvas9)
+        bottom_layout_2.addWidget(self.canvas10)
+        bottom_layout_2.addWidget(self.canvas11)
+        bottom_layout_2.addWidget(self.canvas12)
+        bottom_layout_2.addWidget(self.canvas13)
+        bottom_layout_2.addWidget(self.canvas14)
+
+
+        # Ajouter les deux lignes dans le layout principal vertical
+        main_figure_layout.addLayout(top_layout)
+        main_figure_layout.addLayout(bottom_layout)
+        main_figure_layout.addLayout(bottom_layout_2)
+
+        # Ajouter ce layout principal à la fenêtre (ou au widget parent)
+        self.main_layout.addLayout(main_figure_layout)
+        
+        
+        # Generate and display figures
+        #self.generate_plots_quotidiennes() 
+
+        # Add the widget to the main layout
+        self.main_interface.content_layout.addWidget(self.vente_dash)
+    
     def show_interface_qoutidiennes(self):
         self.main_interface.clear_content_frame()
 
@@ -100,6 +333,8 @@ class Compta_dash:
             "retours": list(retour_jours.values())[1],
             "ventes": list(ventes_jours.values())[1],
         } 
+
+        self.all_data_jour = self.generer_all_data_jour(30)  # Générer des données aléatoires pour les 30 derniers jours
         
         
         # Generate and display figures
@@ -154,6 +389,7 @@ class Compta_dash:
             "retours": list(retour_mois.values())[1],
             "ventes": list(ventes_mois.values())[1],
         }
+        self.all_data_moi = self.generer_all_data_mois(12)  # Générer des données aléatoires pour les 12 derniers mois
 
  
         
@@ -251,6 +487,8 @@ class Compta_dash:
         ax1.tick_params(axis='x', rotation=45)
         ax1.legend(loc='upper left', fontsize=9)
         ax1.grid(True)
+        ax1.set_facecolor('white')
+        
 
         # --- Figure mensuelle ---
          
@@ -265,7 +503,53 @@ class Compta_dash:
 
         #self.vente_dash.setLayout(layout)
 
+    def generate_plot_actuel(self,values, titre):
+        plt.style.use('bmh')
+        font_properties = {'fontsize': 10}
+        fig2, ax2 = plt.subplots(figsize=(4, 4))
 
+
+        # Palette de couleurs personnalisée (pastel mais lisible)
+        colors = ['#6A5ACD', '#20B2AA', '#FFD700', '#ADFF2F', '#FF69B4' , '#ADFF2F']
+        labels = ['Crédits', 'Échanges envoyés', 'Échanges reçus', 'Paiements', 'Retours', 'Ventes']
+        if sum(values) == 0: 
+            values[-1]=1
+            ax2.pie(values, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, 
+                wedgeprops={'edgecolor': 'white', 'linewidth': 2})
+        else:
+            ax2.pie(values, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, 
+                wedgeprops={'edgecolor': 'white', 'linewidth': 2})
+        ax2.set_title(titre, fontsize=14, fontweight='bold')
+        ax2.axis('equal')  # Cercle parfait
+        return FigureCanvas(fig2)
+    
+    def generate_plot_actuel_deux(self,values, titre):
+        plt.style.use('bmh')
+        fig2, ax2 = plt.subplots(figsize=(2, 2))
+
+        # Palette de couleurs pour les bordures
+        colors = [ '#ADFF2F', '#E0E0E0'] 
+
+        # Si toutes les valeurs sont nulles, on met 1 pour afficher un cercle vide
+        if sum(values) == 0:
+            values[1] = 1
+
+        # Création du donut avec intérieur blanc (couleur uniquement en bordure)
+        wedges, texts = ax2.pie(
+            values,
+            colors=colors,
+            startangle=140,
+            wedgeprops={'edgecolor': 'white', 'linewidth': 2, 'width': 0.3}  # width contrôle l'épaisseur
+        )
+ 
+        total = values[0]
+        ax2.text(0, 0, f"{total:.2f} DHs", ha='center', va='center', fontsize=10, fontweight='bold')
+
+        # Titre
+        ax2.set_title(titre, fontsize=7, fontweight='bold')
+        ax2.axis('equal')  # Cercle parfait
+
+        return FigureCanvas(fig2)
 
     def generate_plots_mensuelles(self):
 
@@ -287,6 +571,7 @@ class Compta_dash:
         ax2.tick_params(axis='x', rotation=45)
         ax2.legend(loc='upper left', fontsize=9)
         ax2.grid(True)
+        ax2.set_facecolor('white')
 
         self.canvas2 = FigureCanvas(fig2)
 
