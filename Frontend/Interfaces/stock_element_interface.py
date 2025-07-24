@@ -29,7 +29,7 @@ class List_stock_dash:
         self.vente_dash.setObjectName("vente_dash")
         main_layout = QVBoxLayout(self.vente_dash)
 
-        label_titre = QLabel("Liste des médicaments existants dans le stock") 
+        label_titre = QLabel("Liste des médicaments existants dans le stock")
         label_titre.setObjectName("TitrePage")
         label_titre.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(label_titre)
@@ -45,12 +45,14 @@ class List_stock_dash:
         self.table_widget_medicament_expiration.setHorizontalHeaderLabels(
             ["Code médicament", "Nom médicament", "Date expiration", "Quantité"]
         )
-        self.populate_table() 
+        self.populate_table()
 
         # Search bar for filtering
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Chercher par 'Nom médicament'...")
-        self.search_bar.textChanged.connect(self.filter_table)  # Trigger filter when text changes
+        self.search_bar.textChanged.connect(
+            self.filter_table
+        )  # Trigger filter when text changes
 
         main_layout.addWidget(self.search_bar)
         widget_medicament_expiration_layout.addWidget(
@@ -68,15 +70,18 @@ class List_stock_dash:
         main_layout.addWidget(widget_statistique)
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
+
     def filter_table(self):
-        #if not self.all_data:
+        # if not self.all_data:
         #    self.load_all_data()
         # Get the filter text from the search bar
         filter_text = self.search_bar.text().lower()
 
         # Loop through all rows and hide/show them based on the search
         for row in range(self.table_widget_medicament_expiration.rowCount()):
-            item = self.table_widget_medicament_expiration.item(row, 1)  # Assuming column 0 is 'Nom'
+            item = self.table_widget_medicament_expiration.item(
+                row, 1
+            )  # Assuming column 0 is 'Nom'
             if item is not None:
                 if filter_text in item.text().lower():  # Case-insensitive comparison
                     self.table_widget_medicament_expiration.setRowHidden(row, False)

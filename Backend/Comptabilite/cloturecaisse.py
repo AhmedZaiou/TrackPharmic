@@ -31,11 +31,10 @@ from Backend.Dataset.commande_client import CommandeClient
 from Frontend.utils.utils import *
 
 
-
 class Caisse:
-    def __init__(self,conn):
+    def __init__(self, conn):
         self.dataset = dataset
-        self.conn=conn
+        self.conn = conn
 
     def cloture_journee(self):
         cloture_dict = {}
@@ -48,15 +47,15 @@ class Caisse:
         cloture_dict["Retour statistique"] = Retour.cloture_journee(self.conn)
         cloture_dict["Stock statistique"] = Stock.cloture_journee(self.conn)
         cloture_dict["Vente statistique"] = Ventes.cloture_journee(self.conn)
-        cloture_dict["Commande client statistique"] = CommandeClient.cloture_journee(self.conn)
+        cloture_dict["Commande client statistique"] = CommandeClient.cloture_journee(
+            self.conn
+        )
         cloture_dict = json.loads(json.dumps(cloture_dict, default=str))
         data = cloture_dict
         # Restructuration du dictionnaire
         result = {
             "Credit_situation_general": {
-                "nombre_de_clients": data["Client statistique"][
-                    "nombre_de_clients"
-                ],
+                "nombre_de_clients": data["Client statistique"]["nombre_de_clients"],
                 "credit_max_autorise": data["Client statistique"][
                     "credit_max_autorise"
                 ],
@@ -72,7 +71,6 @@ class Caisse:
                     "Montant total des commandes clients effectuées aujourdhui"
                 ],
             },
-
             "Credit_situation_aujourdhui": {
                 "total_restant_a_payer": data["Credit statistique"][
                     "Total restant à payer aujourd'hui"
@@ -106,16 +104,11 @@ class Caisse:
                     "statistique general"
                 ]["commandes_en_attente"],
             },
-            
             "commande_situation": {
-                "commend_passer": data["Commande statistique"][
-                    "statistique general"
-                ][
+                "commend_passer": data["Commande statistique"]["statistique general"][
                     "total_commandes"
                 ],
-                "commandes_recues": data["Commande statistique"][
-                    "statistique general"
-                ][
+                "commandes_recues": data["Commande statistique"]["statistique general"][
                     "commandes_recues"
                 ],
                 "commandes_en_attente": data["Commande statistique"][
@@ -166,7 +159,7 @@ class Caisse:
                     for item in data["Commande statistique"]["statistique par salarie"]
                 ]
             },
-        } 
+        }
         # Générer le HTML
         html_content = self.generate_htmla(result)
         self.send_email(html_content)
@@ -670,4 +663,3 @@ class Caisse:
         """
 
         return html_content
-    

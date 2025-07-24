@@ -12,7 +12,6 @@ class Retour:
 
     @staticmethod
     def create_table_retours(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -28,14 +27,19 @@ class Retour:
         """
         )
         conn.commit()
-        
 
     @staticmethod
-    def ajouter_retour(conn,
-        id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie
+    def ajouter_retour(
+        conn,
+        id_medicament,
+        prix,
+        date_retour,
+        quantite_retour,
+        numero_facture,
+        id_salarie,
     ):
         Retour.create_table_retours(conn)
-        
+
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -52,21 +56,19 @@ class Retour:
             ),
         )
         conn.commit()
-        
 
     @staticmethod
     def extraire_tous_retours(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Retours")
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
-    
+
     def extraire_tous_table_retours(conn):
-       
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("""SELECT 
+        cursor.execute(
+            """SELECT 
                             r.id_retour, 
                             r.id_medicament, 
                             m.Nom AS nom_medicament,
@@ -81,24 +83,24 @@ class Retour:
                             Medicament m ON r.id_medicament = m.ID_Medicament
                         WHERE 
                             1
-                        LIMIT 30;""")
+                        LIMIT 30;"""
+        )
         rows = cursor.fetchall()
-        
-        
+
         return [dict(row) for row in rows]
-    
+
     @staticmethod
-    def extraire_retours_par_numero_facture(conn,numero_facture):
-        
+    def extraire_retours_par_numero_facture(conn, numero_facture):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Retours WHERE numero_facture = %s", (numero_facture,))
+        cursor.execute(
+            "SELECT * FROM Retours WHERE numero_facture = %s", (numero_facture,)
+        )
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows] if rows else []
-    
+
     @staticmethod
     def cloture_journee(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Get today's date in YYYY-MM-DD format
@@ -153,7 +155,6 @@ class Retour:
         retours_medicaments = cursor.fetchall()
 
         # Close the connection
-        
 
         # Prepare results as a dictionary
         statistiques = {
@@ -163,18 +164,15 @@ class Retour:
             "Nombre total de retours effectués aujourdhui": total_retours_count
             if total_retours_count
             else 0,
-            "Total des retours effectués aujourdhui par salarié": retours_salaries ,
-            "Total des retours effectués aujourdhui par médicament en Dhs": retours_medicaments or 0,
+            "Total des retours effectués aujourdhui par salarié": retours_salaries,
+            "Total des retours effectués aujourdhui par médicament en Dhs": retours_medicaments
+            or 0,
         }
 
         return statistiques
-    
- 
-
 
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -191,13 +189,14 @@ class Retour:
         )
 
         evolution_credit = cursor.fetchall()
-        
 
-        return {row["date_paiements"].strftime("%Y-%m-%d"): row["total_restant"] for row in evolution_credit}
+        return {
+            row["date_paiements"].strftime("%Y-%m-%d"): row["total_restant"]
+            for row in evolution_credit
+        }
 
     @staticmethod
     def evolution_par_mois(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"
@@ -221,12 +220,5 @@ class Retour:
         )
 
         evolution_credit = cursor.fetchall()
-        
 
         return {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
-    
-
-
-
-
-

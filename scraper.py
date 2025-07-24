@@ -39,7 +39,7 @@ with open(codes_url, "r", encoding="utf-8") as f:
 
 codes_url_data = {codes_url_data[k]: k for k in codes_url_data}
 
-data.pop('Not', None)
+data.pop("Not", None)
 
 new_data = []
 for i in data:
@@ -53,15 +53,46 @@ pand_data = pd.DataFrame(new_data)
 
 pand_data["Min_Stock"] = 0
 pand_data["Stock_Actuel"] = 0
-pand_data = pand_data[["Code_EAN_13", "Nom", "Image URL","Présentation","Dosage", "Distributeur ou fabriquant", "Composition", "Classe thérapeutique","Statut",
-                       "Code ATC","PPV", "Prix hospitalier","Tableau", "Indication(s)","Min_Stock","Stock_Actuel","url"]]
+pand_data = pand_data[
+    [
+        "Code_EAN_13",
+        "Nom",
+        "Image URL",
+        "Présentation",
+        "Dosage",
+        "Distributeur ou fabriquant",
+        "Composition",
+        "Classe thérapeutique",
+        "Statut",
+        "Code ATC",
+        "PPV",
+        "Prix hospitalier",
+        "Tableau",
+        "Indication(s)",
+        "Min_Stock",
+        "Stock_Actuel",
+        "url",
+    ]
+]
 
 
-pand_data.rename(columns={"Image URL": "Image_URL", 'Distributeur ou fabriquant': "Distributeur_ou_fabriquant", "Classe thérapeutique": "Classe_thérapeutique","Code ATC": "Code_ATC","Prix hospitalier": "Prix_hospitalier", "Indication(s)": "Indications", "url" : "url_medicament"}, inplace=True)
-pand_data.to_csv("/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Backend/Datascraping/scraper/medicament_info_with_Codes.csv", index=False, encoding='utf-8-sig')
+pand_data.rename(
+    columns={
+        "Image URL": "Image_URL",
+        "Distributeur ou fabriquant": "Distributeur_ou_fabriquant",
+        "Classe thérapeutique": "Classe_thérapeutique",
+        "Code ATC": "Code_ATC",
+        "Prix hospitalier": "Prix_hospitalier",
+        "Indication(s)": "Indications",
+        "url": "url_medicament",
+    },
+    inplace=True,
+)
+pand_data.to_csv(
+    "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Backend/Datascraping/scraper/medicament_info_with_Codes.csv",
+    index=False,
+    encoding="utf-8-sig",
+)
 
 pand_data.replace({np.nan: None}, inplace=True)
 Medicament.ajouter_medicament_data_frame(pand_data)
-
-
-

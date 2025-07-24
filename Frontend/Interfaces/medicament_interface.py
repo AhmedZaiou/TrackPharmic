@@ -34,7 +34,7 @@ class Medicament_dash:
         menu_layout.addWidget(self.lister_medicament)
         self.ajouter_medicament = QPushButton("Ajouter Medicament")
         self.ajouter_medicament.clicked.connect(self.ajouter_medicament_fc)
-        menu_layout.addWidget(self.ajouter_medicament) 
+        menu_layout.addWidget(self.ajouter_medicament)
         return menu_layout
 
     def lister_medicament_fc(self):
@@ -63,42 +63,54 @@ class Medicament_dash:
         menu_layout = self.create_menu_commande()
         main_layout.addLayout(menu_layout)
 
-
         liste_all_medicament = QLabel("Tous les medicaments")
         liste_new_medicament = QLabel("Nouveaux medicaments")
         liste_all_medicament.setObjectName("Titresection")
         liste_new_medicament.setObjectName("Titresection")
 
         self.medicament_table = QTableWidget(0, 6)  # (0 lignes, 3 colonnes)
-        self.medicament_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.medicament_table.setHorizontalHeaderLabels(["ID","Code-barre", "Nom", "Caractéristique", "Prix Public de Vente", "Min in stock"])
+        self.medicament_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
+        )
+        self.medicament_table.setHorizontalHeaderLabels(
+            [
+                "ID",
+                "Code-barre",
+                "Nom",
+                "Caractéristique",
+                "Prix Public de Vente",
+                "Min in stock",
+            ]
+        )
         self.remplire_table_medicamen()
         self.medicament_table.cellClicked.connect(self.afficher_medicament_depuis_table)
-
-        
 
         # Search bar for filtering
 
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Chercher par 'Nom'...")
-        self.search_bar.textChanged.connect(self.filter_table)  # Trigger filter when text changes
+        self.search_bar.textChanged.connect(
+            self.filter_table
+        )  # Trigger filter when text changes
         main_layout.addWidget(liste_all_medicament)
         main_layout.addWidget(self.search_bar)
         main_layout.addWidget(self.medicament_table)
         main_layout.addWidget(liste_new_medicament)
 
-
         self.new_medicament_table = QTableWidget(0, 4)
-        self.new_medicament_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.new_medicament_table.setHorizontalHeaderLabels([ "ID","Nom", "Caractéristique", "Prix Public de Vente", "Indications"])
-        self.remplire_table_new_medicamen() 
-        self.new_medicament_table.cellClicked.connect(self.afficher_new_medicament_depuis_table)
+        self.new_medicament_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
+        )
+        self.new_medicament_table.setHorizontalHeaderLabels(
+            ["ID", "Nom", "Caractéristique", "Prix Public de Vente", "Indications"]
+        )
+        self.remplire_table_new_medicamen()
+        self.new_medicament_table.cellClicked.connect(
+            self.afficher_new_medicament_depuis_table
+        )
         main_layout.addWidget(self.new_medicament_table)
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
-
-    
-
 
     def show_modifier_interface(self):
         self.main_interface.clear_content_frame()
@@ -235,19 +247,19 @@ class Medicament_dash:
         self.add_button.clicked.connect(self.add_medicament_to_db)
         layout.addWidget(self.add_button, 17, 1)
 
-
         main_layout.addLayout(layout)
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
     def afficher_medicament_depuis_table(self, row, column):
-        id = self.medicament_table.item(row, 0).text()  
-        medicament = Medicament.extraire_medicament(self.main_interface.conn,id)
+        id = self.medicament_table.item(row, 0).text()
+        medicament = Medicament.extraire_medicament(self.main_interface.conn, id)
         if medicament:
             self.show_medicament_profile(medicament)
+
     def afficher_new_medicament_depuis_table(self, row, column):
-        id = self.new_medicament_table.item(row, 0).text()  
-        medicament = Medicament.extraire_medicament(self.main_interface.conn,id)
+        id = self.new_medicament_table.item(row, 0).text()
+        medicament = Medicament.extraire_medicament(self.main_interface.conn, id)
         if medicament:
             self.show_medicament_profile(medicament)
 
@@ -264,7 +276,7 @@ class Medicament_dash:
 
         titre_page = QLabel("Fiche du Médicament")
         titre_page.setObjectName("TitrePage")
-        #titre_page.setAlignment(Qt.AlignCenter)
+        # titre_page.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(titre_page)
 
         menu_layout = self.create_menu_commande()
@@ -275,10 +287,10 @@ class Medicament_dash:
         def add_row(label_text, value_text, row):
             label = QLabel(f"{label_text} :")
             label.setStyleSheet("font-weight: bold")
-            if label_text == "Stock Minimum" or label_text == "Stock Actuel": 
+            if label_text == "Stock Minimum" or label_text == "Stock Actuel":
                 value = QLabel(str(value_text))
             else:
-                value = QLabel(str(value_text) if value_text else "—") 
+                value = QLabel(str(value_text) if value_text else "—")
             value.setWordWrap(True)
             layout.addWidget(label, row, 0)
             layout.addWidget(value, row, 1)
@@ -288,7 +300,11 @@ class Medicament_dash:
         add_row("Nom", medicament.get("Nom", ""), 1)
         add_row("Présentation", medicament.get("Présentation", ""), 2)
         add_row("Dosage", medicament.get("Dosage", ""), 3)
-        add_row("Distributeur/Fabriquant", medicament.get("Distributeur_ou_fabriquant", ""), 4)
+        add_row(
+            "Distributeur/Fabriquant",
+            medicament.get("Distributeur_ou_fabriquant", ""),
+            4,
+        )
         add_row("Composition", medicament.get("Composition", ""), 5)
         add_row("Classe thérapeutique", medicament.get("Classe_thérapeutique", ""), 6)
         add_row("Statut", medicament.get("Statut", ""), 7)
@@ -298,13 +314,14 @@ class Medicament_dash:
         add_row("Tableau", medicament.get("Tableau", ""), 11)
         add_row("Indication(s)", medicament.get("Indications", ""), 12)
         add_row("Stock Minimum", medicament.get("Min_Stock", ""), 13)
-        add_row("Stock Actuel", medicament.get("Stock_Actuel", ""), 14) 
+        add_row("Stock Actuel", medicament.get("Stock_Actuel", ""), 14)
         # Image si présente
         image_url = medicament.get("Image URL", "")
         if image_url:
             from PyQt5.QtGui import QPixmap
             from PyQt5.QtCore import Qt
             from urllib.request import urlopen
+
             try:
                 image_data = urlopen(image_url).read()
                 pixmap = QPixmap()
@@ -326,9 +343,8 @@ class Medicament_dash:
         main_layout.addWidget(self.modify_button)
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
-    
     def filter_table(self):
-        #if not self.all_data:
+        # if not self.all_data:
         #    self.load_all_data()
         # Get the filter text from the search bar
         filter_text = self.search_bar.text().lower()
@@ -341,13 +357,14 @@ class Medicament_dash:
                     self.medicament_table.setRowHidden(row, False)
                 else:
                     self.medicament_table.setRowHidden(row, True)
+
     def remplire_table_medicamen(self):
         medicaments = Medicament.extraire_tous_medicament(self.main_interface.conn)
         self.medicament_table.setRowCount(len(medicaments))
-        for index, element in enumerate(medicaments): 
+        for index, element in enumerate(medicaments):
             self.medicament_table.setItem(
                 index, 0, QTableWidgetItem(str(element["id_medicament"]))
-            ) 
+            )
             self.medicament_table.setItem(
                 index, 1, QTableWidgetItem(str(element["Code_EAN_13"]))
             )
@@ -362,17 +379,16 @@ class Medicament_dash:
             )
             self.medicament_table.setItem(
                 index, 5, QTableWidgetItem(str(element["Min_Stock"]))
-            ) 
-            
-    
+            )
+
     def remplire_table_new_medicamen(self):
         medicaments = Medicament.extraire_tous_new_medicament(self.main_interface.conn)
         self.new_medicament_table.setRowCount(len(medicaments))
         for index, element in enumerate(medicaments):
             self.new_medicament_table.setItem(
                 index, 0, QTableWidgetItem(str(element["id_medicament"]))
-            ) 
-            
+            )
+
             self.new_medicament_table.setItem(
                 index, 1, QTableWidgetItem(str(element["Nom"]))
             )
@@ -385,7 +401,7 @@ class Medicament_dash:
             self.new_medicament_table.setItem(
                 index, 4, QTableWidgetItem(str(element["Indications"]))
             )
-            
+
     def keyPressEvent(self, event):
         try:
             """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
@@ -394,8 +410,8 @@ class Medicament_dash:
             if key == "\r":  # Lorsque le lecteur envoie un saut de ligne
                 if len(self.code_barre_scanner) == 13:
                     self.code_ean_input.setText(self.code_barre_scanner)
-                    self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
-                        self.code_barre_scanner
+                    self.medicament_search = Medicament.extraire_medicament_code_barre(
+                        self.main_interface.conn, self.code_barre_scanner
                     )
                     self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
                     if self.medicament_search is not None:
@@ -410,30 +426,28 @@ class Medicament_dash:
             else:
                 self.code_barre_scanner += key  # Ajouter le caractère au code en cours
         except:
-            print('erreur')
+            print("erreur")
 
     def modifier_medicament_inter(self, medicament):
         self.medicament_modif = medicament
         self.show_modifier_interface()
-        self.code_ean_input.setText(medicament["Code_EAN_13"]) 
-        self.nom_input.setText(medicament["Nom"]) 
-        self.image_url_input.setText(medicament.get("Image URL", ""))  
-        self.presentation_input.setText(medicament["Présentation"]) 
-        self.dosage_input.setText(medicament["Dosage"]) 
-        self.fabricant_input.setText(medicament["Distributeur_ou_fabriquant"]) 
-        self.composition_input.setText(medicament["Composition"]) 
-        self.classe_input.setText(medicament["Classe_thérapeutique"]) 
+        self.code_ean_input.setText(medicament["Code_EAN_13"])
+        self.nom_input.setText(medicament["Nom"])
+        self.image_url_input.setText(medicament.get("Image URL", ""))
+        self.presentation_input.setText(medicament["Présentation"])
+        self.dosage_input.setText(medicament["Dosage"])
+        self.fabricant_input.setText(medicament["Distributeur_ou_fabriquant"])
+        self.composition_input.setText(medicament["Composition"])
+        self.classe_input.setText(medicament["Classe_thérapeutique"])
         self.statut_input.setText(medicament["Statut"])
-        self.code_atc_input.setText(medicament["Code_ATC"])  
+        self.code_atc_input.setText(medicament["Code_ATC"])
         self.ppv_input.setPlaceholderText(str(medicament["PPV"]))
         self.prix_hosp_input.setPlaceholderText(str(medicament["Prix_hospitalier"]))
-        self.indication_input.setText(medicament["Indications"]) 
-        self.min_stock_input.setText(str(medicament["Min_Stock"]) )
+        self.indication_input.setText(medicament["Indications"])
+        self.min_stock_input.setText(str(medicament["Min_Stock"]))
         self.stock_actuel_input.setText(str(medicament.get("Stock_Actuel", 0)))
-        self.url_medicament_input.setText(medicament.get("URL du Médicament", "")) 
-         
+        self.url_medicament_input.setText(medicament.get("URL du Médicament", ""))
 
-    
     def add_medicament_to_db(self):
         # Récupérer les valeurs des champs
         code_ean = self.code_ean_input.text()
@@ -472,30 +486,9 @@ class Medicament_dash:
 
             # Appel à la méthode du modèle (à adapter si nécessaire)
             if self.medicament_modif is not None:
-            
-                Medicament.modifier_medicament(self.main_interface.conn,self.medicament_modif["id_medicament"], code_ean,
-                    nom,
-                    image_url,
-                    presentation,
-                    dosage,
-                    fabricant,
-                    composition,
-                    classe,
-                    statut,
-                    code_atc,
-                    ppv,
-                    prix_hosp,
-                    tableau,
-                    indications,
-                    min_stock,
-                    stock_actuel,
-                    url_medicament)
-                # Message de succès
-                QMessageBox.information(
-                    self.main_interface, "Succès", "Médicament modifié avec succès."
-                )
-            else:
-                Medicament.ajouter_medicament(self.main_interface.conn,
+                Medicament.modifier_medicament(
+                    self.main_interface.conn,
+                    self.medicament_modif["id_medicament"],
                     code_ean,
                     nom,
                     image_url,
@@ -514,7 +507,31 @@ class Medicament_dash:
                     stock_actuel,
                     url_medicament,
                 )
-
+                # Message de succès
+                QMessageBox.information(
+                    self.main_interface, "Succès", "Médicament modifié avec succès."
+                )
+            else:
+                Medicament.ajouter_medicament(
+                    self.main_interface.conn,
+                    code_ean,
+                    nom,
+                    image_url,
+                    presentation,
+                    dosage,
+                    fabricant,
+                    composition,
+                    classe,
+                    statut,
+                    code_atc,
+                    ppv,
+                    prix_hosp,
+                    tableau,
+                    indications,
+                    min_stock,
+                    stock_actuel,
+                    url_medicament,
+                )
 
                 # Message de succès
                 QMessageBox.information(
@@ -542,7 +559,6 @@ class Medicament_dash:
         self.classe_input.clear()
         self.min_input.clear()
 
-    
     def update_medicament_to_db(self):
         # Récupérer les valeurs des champs
         nom = self.nom_input.text()
@@ -583,8 +599,10 @@ class Medicament_dash:
                 "Stock_Actuel": 0,
             }
 
-            Medicament.modifier_medicament(self.main_interface.conn,
-                self.medicament_modif["id_medicament"], **medicament_data
+            Medicament.modifier_medicament(
+                self.main_interface.conn,
+                self.medicament_modif["id_medicament"],
+                **medicament_data,
             )
             # Message de succès
             QMessageBox.information(

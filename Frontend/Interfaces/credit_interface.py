@@ -16,7 +16,7 @@ from qtpy.QtWidgets import (
     QTextEdit,
     QMessageBox,
 )
-from qtpy.QtCore import Qt 
+from qtpy.QtCore import Qt
 from Backend.Dataset.client import Clients
 from Backend.Dataset.payment import Payment
 from Backend.Dataset.credit import Credit
@@ -59,20 +59,21 @@ class Credit_dash:
         self.remplir_tableau()
         self.table.cellClicked.connect(self.credit_selected)
 
-
         # Search bar for filtering
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Chercher par 'Nom'...")
-        self.search_bar.textChanged.connect(self.filter_table)  # Trigger filter when text changes
+        self.search_bar.textChanged.connect(
+            self.filter_table
+        )  # Trigger filter when text changes
 
         main_layout.addWidget(self.search_bar)
 
         main_layout.addWidget(self.table)
 
         self.main_interface.content_layout.addWidget(self.credit_dash)
-    
+
     def filter_table(self):
-        #if not self.all_data:
+        # if not self.all_data:
         #    self.load_all_data()
         # Get the filter text from the search bar
         filter_text = self.search_bar.text().lower()
@@ -84,7 +85,7 @@ class Credit_dash:
                 if filter_text in item.text().lower():  # Case-insensitive comparison
                     self.table.setRowHidden(row, False)
                 else:
-                    self.table.setRowHidden(row, True) 
+                    self.table.setRowHidden(row, True)
 
     def remplir_tableau(self):
         # Exemple de données fictives
@@ -120,7 +121,7 @@ class Credit_dash:
 
         table_form_layout = QGridLayout()
 
-        self.client = Clients.extraire_client(self.main_interface.conn,self.id_client)
+        self.client = Clients.extraire_client(self.main_interface.conn, self.id_client)
         self.client = dict(self.client)
 
         table_form_layout.addWidget(QLabel("Nom :"), 0, 0)
@@ -168,21 +169,29 @@ class Credit_dash:
         self.list_factures.cellClicked.connect(self.show_facture)
 
         # add click
-    
-
 
     def show_facture(self, row, column):
         numero_facture = self.list_factures.item(row, 1).text()
         if self.list_factures.item(row, 0).text() != "Credit":
             return
-        vente = Ventes.extraire_ventes_par_numero_facture(self.main_interface.conn,numero_facture)
-        payment = Payment.extraire_paiements_par_numero_facture(self.main_interface.conn,numero_facture)  
-        credit = Credit.extraire_credits_par_numero_facture(self.main_interface.conn,numero_facture)
-        retour = Retour.extraire_retours_par_numero_facture(self.main_interface.conn,numero_facture)
+        vente = Ventes.extraire_ventes_par_numero_facture(
+            self.main_interface.conn, numero_facture
+        )
+        payment = Payment.extraire_paiements_par_numero_facture(
+            self.main_interface.conn, numero_facture
+        )
+        credit = Credit.extraire_credits_par_numero_facture(
+            self.main_interface.conn, numero_facture
+        )
+        retour = Retour.extraire_retours_par_numero_facture(
+            self.main_interface.conn, numero_facture
+        )
 
-        client = Clients.extraire_client(self.main_interface.conn,vente[0]['id_client'])
+        client = Clients.extraire_client(
+            self.main_interface.conn, vente[0]["id_client"]
+        )
 
-       # Construction du message
+        # Construction du message
         message = f"""
         <!DOCTYPE html>
         <html>
@@ -195,7 +204,7 @@ class Credit_dash:
             <hr>
         """
 
-        if client['nom'] != "Anonyme":
+        if client["nom"] != "Anonyme":
             message += f"""
             <h4>Client:</h4>
             <p><strong>Nom :</strong> {client['nom']} {client['prenom']}</p>
@@ -217,14 +226,16 @@ class Credit_dash:
         total_facture_calculer = 0
 
         for item in vente:
-            medicament = Medicament.extraire_medicament(self.main_interface.conn,item['id_medicament'])
+            medicament = Medicament.extraire_medicament(
+                self.main_interface.conn, item["id_medicament"]
+            )
             message += f"<tr><td>{medicament['Nom']}</td><td>{item['quantite_vendue']}</td><td>{item['prix_vente']} Dh</td><td>{item['quantite_vendue']*item['prix_vente']} Dh</td></tr>"
-            total_facture_calculer += item['quantite_vendue'] * item['prix_vente']
+            total_facture_calculer += item["quantite_vendue"] * item["prix_vente"]
         message += """
             </table>
             <hr> 
         """
- 
+
         message1 = """ 
             <h4>Paiements:</h4>
             <pre>
@@ -253,7 +264,7 @@ class Credit_dash:
         rest_a_payer = 0
         for c in credit:
             message1 += f"<tr><td>{c['montant_paye']} Dh</td><td>{c['reste_a_payer']} Dh</td><td>{c['date_dernier_paiement']} Dh</td><td>{c['statut']} </td></tr>"
-            rest_a_payer += c['reste_a_payer']
+            rest_a_payer += c["reste_a_payer"]
         message1 += """
                     </table>
                     <hr> 
@@ -283,28 +294,33 @@ class Credit_dash:
         """
 
         # Affichage
-        QMessageBox.information(
-            self.main_interface,
-            "Crédit insuffisant",
-            message
-        )  
-
-
+        QMessageBox.information(self.main_interface, "Crédit insuffisant", message)
 
     def add_paiment(self):
         now = datetime.now()
         now_str = now.strftime("%Y-%m-%d %H:%M:%S")
         montant_paye = self.payment_input.value()
         id_salarie = self.main_interface.user_session["id_salarie"]
-        Payment.ajouter_payment(self.main_interface.conn,
-            self.id_client, int(now.timestamp()), montant_paye, now_str, id_salarie
+        Payment.ajouter_payment(
+            self.main_interface.conn,
+            self.id_client,
+            int(now.timestamp()),
+            montant_paye,
+            now_str,
+            id_salarie,
         )
-        Clients.ajouter_credit_client(self.main_interface.conn,self.id_client, -montant_paye)
+        Clients.ajouter_credit_client(
+            self.main_interface.conn, self.id_client, -montant_paye
+        )
         self.show_payment_interface()
 
     def remplire_table(self):
-        all_credit = Credit.extraire_credit_with_id_client(self.main_interface.conn,self.id_client)
-        all_paiment = Payment.extraire_payment_with_id_client(self.main_interface.conn,self.id_client)
+        all_credit = Credit.extraire_credit_with_id_client(
+            self.main_interface.conn, self.id_client
+        )
+        all_paiment = Payment.extraire_payment_with_id_client(
+            self.main_interface.conn, self.id_client
+        )
         if len(all_credit) == 0:
             all_credit = pd.DataFrame(
                 columns=["numero_facture", "reste_a_payer", "date_dernier_paiement"]
@@ -330,9 +346,9 @@ class Credit_dash:
             columns={"montant_paye": "Totale", "date_paiement": "Date"}, inplace=True
         )
         all_credit["Type"] = "Credit"
-        all_paiment["Type"] = "Paiment" 
+        all_paiment["Type"] = "Paiment"
 
-        result = pd.concat([all_credit, all_paiment], ignore_index=True) 
+        result = pd.concat([all_credit, all_paiment], ignore_index=True)
         result["Date"] = pd.to_datetime(
             result["Date"], format="%d/%m/%Y %H:%M:%S", errors="coerce"
         )
@@ -346,9 +362,5 @@ class Credit_dash:
             self.list_factures.setItem(
                 row, 1, QTableWidgetItem(str(element["numero_facture"]))
             )
-            self.list_factures.setItem(
-                row, 2, QTableWidgetItem(str(element["Totale"]))
-            )
-            self.list_factures.setItem(
-                row, 3, QTableWidgetItem(str(element["Date"]))
-            )
+            self.list_factures.setItem(row, 2, QTableWidgetItem(str(element["Totale"])))
+            self.list_factures.setItem(row, 3, QTableWidgetItem(str(element["Date"])))

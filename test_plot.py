@@ -2,11 +2,12 @@ import random
 import datetime
 
 
-
-
 def generer_all_data_jour(nb_jours=30):
     # Génère les dates des nb_jours derniers jours
-    jours = [(datetime.date.today() - datetime.timedelta(days=i)).strftime("%d-%m") for i in range(nb_jours)][::-1]
+    jours = [
+        (datetime.date.today() - datetime.timedelta(days=i)).strftime("%d-%m")
+        for i in range(nb_jours)
+    ][::-1]
 
     # Génère des valeurs aléatoires pour chaque type de donnée
     credits = [random.randint(500, 5000) for _ in range(nb_jours)]

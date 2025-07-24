@@ -48,19 +48,18 @@ class Echange_dash:
         menu_layout.addWidget(self.add_commande_menu)
         self.add_commande_menu_recu = QPushButton("Reçu un echange")
         self.add_commande_menu_recu.clicked.connect(self.gestion_echange_recus)
-        menu_layout.addWidget(self.add_commande_menu_recu)  
+        menu_layout.addWidget(self.add_commande_menu_recu)
         self.list_commande_menu = QPushButton("Pharmacie amis")
         self.list_commande_menu.clicked.connect(self.gestion_pharma)
         menu_layout.addWidget(self.list_commande_menu)
 
         return menu_layout
-    
 
     def gestion_echange(self):
         self.show_principal_interface()
+
     def gestion_echange_recus(self):
         self.show_principal_interface_recus()
-
 
     def gestion_pharma(self):
         self.show_gestion_pharma_interface()
@@ -128,7 +127,6 @@ class Echange_dash:
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
-
     def show_principal_interface_list(self):
         self.main_interface.clear_content_frame()
         self.main_interface.keyPressEvent = self.keyPressEvent
@@ -143,20 +141,15 @@ class Echange_dash:
         main_layout.addLayout(menu_layout)
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
-
-
-
-
         table_form_layout = QGridLayout()
 
         # Créer les champs de saisie pour le formulaire sans 'self'
-        self.name_input_profil = QLabel(self.pharma['Nom']) 
-        self.telephone_input_profil = QLabel(self.pharma['Téléphone'])  
-        self.email_input_profil = QLabel(self.pharma['Email']) 
-        self.address_input_profil = QLabel(self.pharma['Adresse'])
-        self.out_input_profil = QLabel(self.pharma['Out_value']) 
-        self.in_input_profil = QLabel(self.pharma['In_value'])
-    
+        self.name_input_profil = QLabel(self.pharma["Nom"])
+        self.telephone_input_profil = QLabel(self.pharma["Téléphone"])
+        self.email_input_profil = QLabel(self.pharma["Email"])
+        self.address_input_profil = QLabel(self.pharma["Adresse"])
+        self.out_input_profil = QLabel(self.pharma["Out_value"])
+        self.in_input_profil = QLabel(self.pharma["In_value"])
 
         table_form_layout.addWidget(QLabel("Nom :"), 0, 0)
         table_form_layout.addWidget(self.name_input_profil, 0, 1)
@@ -165,43 +158,48 @@ class Echange_dash:
         table_form_layout.addWidget(QLabel("Email :"), 1, 0)
         table_form_layout.addWidget(self.email_input_profil, 1, 1)
         table_form_layout.addWidget(QLabel("Adresse :"), 1, 2)
-        table_form_layout.addWidget(self.address_input_profil, 1, 3) 
+        table_form_layout.addWidget(self.address_input_profil, 1, 3)
         table_form_layout.addWidget(QLabel("Total envoyer :"), 2, 0)
         table_form_layout.addWidget(self.out_input_profil, 2, 1)
         table_form_layout.addWidget(QLabel("Total reçu :"), 2, 2)
-        table_form_layout.addWidget(self.in_input_profil, 2, 3) 
-        
+        table_form_layout.addWidget(self.in_input_profil, 2, 3)
 
         main_layout.addLayout(table_form_layout)
 
         self.list_client = QTableWidget(0, 5)
         self.list_client.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.list_client.setHorizontalHeaderLabels(
-            ["Facture", "Date", "Total", "sens",  "Agent"]
+            ["Facture", "Date", "Total", "sens", "Agent"]
         )
         self.remplire_table_echange()
         main_layout.addWidget(self.list_client)
         pass
 
     def remplire_table_echange(self):
-        all_client = Echanges.extraire_tous_echanges_pharma(self.main_interface.conn,self.pharma['ID'])
+        all_client = Echanges.extraire_tous_echanges_pharma(
+            self.main_interface.conn, self.pharma["ID"]
+        )
         self.list_client.setRowCount(len(all_client))
         for index, element in enumerate(all_client):
-            self.list_client.setItem(index, 0, QTableWidgetItem(str(element["id_facture"])))
-            self.list_client.setItem(index, 1, QTableWidgetItem(str(element["date_echange"])))
+            self.list_client.setItem(
+                index, 0, QTableWidgetItem(str(element["id_facture"]))
+            )
+            self.list_client.setItem(
+                index, 1, QTableWidgetItem(str(element["date_echange"]))
+            )
             self.list_client.setItem(
                 index, 2, QTableWidgetItem(str(element["total_facture"]))
             )
             sens = "Envoyer" if int(element["sens"]) == 1 else "Reçu"
             self.list_client.setItem(index, 3, QTableWidgetItem(sens))
-            salarie = Salaries.extraire_salarie(self.main_interface.conn,element["id_salarie"])
+            salarie = Salaries.extraire_salarie(
+                self.main_interface.conn, element["id_salarie"]
+            )
             self.list_client.setItem(
-                index, 4, QTableWidgetItem(str(salarie['nom'] + " "+ salarie['prenom']))
-            ) 
-
-
-
-
+                index,
+                4,
+                QTableWidgetItem(str(salarie["nom"] + " " + salarie["prenom"])),
+            )
 
     def show_principal_interface_recus(self):
         self.main_interface.clear_content_frame()
@@ -234,13 +232,8 @@ class Echange_dash:
         self.medicament_code.setValidator(int_validator)
         self.medicament_code.setPlaceholderText("Scanner medicament")
 
-
-
         table_form_layout.addWidget(QLabel("Nom de pharma :"), 0, 0)
         table_form_layout.addWidget(self.name_pharma, 0, 1)
-        
-
-        
 
         code_barre = QLabel("Code EAN 13 :")
         self.code_barre_value_ajout = QLineEdit()
@@ -268,26 +261,15 @@ class Echange_dash:
         self.quantite_minimal_medicament_ajout.setPlaceholderText("Quantité minimal")
         self.quantite_minimal_medicament_ajout.setValidator(int_validator)
 
-
-
         table_form_layout.addWidget(code_barre, 1, 0)
-        table_form_layout.addWidget(
-            self.code_barre_value_ajout, 1, 1
-        )
-        
-        
+        table_form_layout.addWidget(self.code_barre_value_ajout, 1, 1)
+
         table_form_layout.addWidget(QLabel("Quantité minimale :"), 2, 0)
-        table_form_layout.addWidget(
-            self.quantite_minimal_medicament_ajout, 2, 1
-        )
+        table_form_layout.addWidget(self.quantite_minimal_medicament_ajout, 2, 1)
         table_form_layout.addWidget(quantite_commender, 3, 0)
-        table_form_layout.addWidget(
-            self.quantite_commender_value_ajout, 3, 1
-        )
+        table_form_layout.addWidget(self.quantite_commender_value_ajout, 3, 1)
         table_form_layout.addWidget(QLabel("Date d'expiration :"), 4, 0)
-        table_form_layout.addWidget(
-            self.date_expiration_medicament_ajout, 4, 1
-        )
+        table_form_layout.addWidget(self.date_expiration_medicament_ajout, 4, 1)
 
         # Ajout des labels et des champs dans le layout
         table_form_layout.addWidget(QLabel("Prix d'achat :"), 5, 0)
@@ -300,29 +282,28 @@ class Echange_dash:
         self.confirm_button_ajout.clicked.connect(self.confirmation_ajout_seul)
 
         table_form_layout.addWidget(self.confirm_button_ajout, 7, 1)
- 
- 
- 
 
         main_layout.addLayout(table_form_layout)
-
- 
 
         self.list_client = QTableWidget(0, 7)
         self.list_client.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.list_client.setHorizontalHeaderLabels(
-            ["ID","Nom", "Téléphone", "Email", "Adresse",  "Total envoyer", "Total reçu"]
+            [
+                "ID",
+                "Nom",
+                "Téléphone",
+                "Email",
+                "Adresse",
+                "Total envoyer",
+                "Total reçu",
+            ]
         )
         self.remplire_table()
         main_layout.addWidget(self.list_client)
-        
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
-    
-
     def confirmation_ajout_seul(self):
-
         if self.medicament_search is None:
             QMessageBox.warning(
                 self.main_interface, "Erreur", "Veuillez selectionner un medicament"
@@ -334,7 +315,7 @@ class Echange_dash:
         quantite_minimal_medicament = self.quantite_minimal_medicament_ajout.text()
         date_expiration_medicament = (
             self.date_expiration_medicament_ajout.date().toString("yyyy-MM-dd")
-        ) 
+        )
         prix_achat_medicament = self.prix_achat_medicament_ajout.text()
         prix_vente_medicament = self.prix_vente_medicament_ajout.text()
         now = datetime.now()
@@ -347,7 +328,8 @@ class Echange_dash:
             QMessageBox.Cancel,
         )
         if reply == QMessageBox.Yes:
-            Stock.ajouter_stock(self.main_interface.conn,
+            Stock.ajouter_stock(
+                self.main_interface.conn,
                 self.medicament_search["id_medicament"],
                 "0",
                 self.main_interface.user_session["id_salarie"],
@@ -363,17 +345,20 @@ class Echange_dash:
                 now,
                 now,
             )
-            pharma = Pharmacies.extraire_pharma_nom(self.main_interface.conn,self.name_pharma.text().split("_")[0])
+            pharma = Pharmacies.extraire_pharma_nom(
+                self.main_interface.conn, self.name_pharma.text().split("_")[0]
+            )
             id_salarie = self.main_interface.user_session["id_salarie"]
-            Echanges.ajouter_echange(self.main_interface.conn,
-                            pharma["id_pharmacie"],
-                            0,
-                            now,
-                            float(prix_achat_medicament) * float(quantite_commender_value),
-                            0,
-                            id_salarie,
-                        )
-            
+            Echanges.ajouter_echange(
+                self.main_interface.conn,
+                pharma["id_pharmacie"],
+                0,
+                now,
+                float(prix_achat_medicament) * float(quantite_commender_value),
+                0,
+                id_salarie,
+            )
+
             # Effacer les éléments
             self.name_pharma.clear()
             self.code_barre_value_ajout.clear()
@@ -408,7 +393,9 @@ class Echange_dash:
                 "Aucune pharmacie n'a été sélectionnée",
             )
             return
-        pharma = Pharmacies.extraire_pharma_nom(self.main_interface.conn,self.name_pharma.text().split("_")[0])
+        pharma = Pharmacies.extraire_pharma_nom(
+            self.main_interface.conn, self.name_pharma.text().split("_")[0]
+        )
         if pharma is None:
             QMessageBox.information(
                 self.main_interface, "Pharmacie non trouvée", "Pharmacie non trouvée"
@@ -416,7 +403,7 @@ class Echange_dash:
             return
         pharma = dict(pharma)
         evoyer = 1
-        #recu = self.recevoir_checkbox.isChecked()
+        # recu = self.recevoir_checkbox.isChecked()
 
         message = "Pharmacie Hajra\n"
         message += "Adresse : 123, Rue Exemple, Ville, Pays\n"
@@ -428,7 +415,7 @@ class Echange_dash:
         )
         message += "----------------------------------------\n"
         message += "Détails de l'échange:\n"
-        message += "Pharmacie : " + self.name_pharma.text() + "\n" 
+        message += "Pharmacie : " + self.name_pharma.text() + "\n"
         message += "----------------------------------------\n"
         message += "Produit\t\tQuantité\tPrix unitaire\tPrix total\n"
         message += "----------------------------------------\n"
@@ -488,12 +475,16 @@ class Echange_dash:
                     id_commande_entre, prix_achat, prix_v, ID_Stock, quantite_list
                 ):
                     quanti_rest_to_hand = quantite_vendue - quantite_traiter
-                    
+
                     if quanti_rest_to_hand <= quanti:
-                        
-                        Stock.effectuer_vente_stock(self.main_interface.conn,ID_Stock_item, quanti_rest_to_hand)
-                        Medicament.effectuer_vente_medicament(self.main_interface.conn,id_medicament, quanti_rest_to_hand)
-                        Echanges.ajouter_echange(self.main_interface.conn,
+                        Stock.effectuer_vente_stock(
+                            self.main_interface.conn, ID_Stock_item, quanti_rest_to_hand
+                        )
+                        Medicament.effectuer_vente_medicament(
+                            self.main_interface.conn, id_medicament, quanti_rest_to_hand
+                        )
+                        Echanges.ajouter_echange(
+                            self.main_interface.conn,
                             pharma["id_pharmacie"],
                             numero_facture,
                             date_vente,
@@ -505,11 +496,15 @@ class Echange_dash:
                         quantite_traiter += quanti_rest_to_hand
                     else:
                         quantite_traiter += quanti
-                        
-                    
-                        Stock.effectuer_vente_stock(self.main_interface.conn,ID_Stock_item, quanti)
-                        Medicament.effectuer_vente_medicament(self.main_interface.conn,id_medicament, quanti)
-                        Echanges.ajouter_echange(self.main_interface.conn,
+
+                        Stock.effectuer_vente_stock(
+                            self.main_interface.conn, ID_Stock_item, quanti
+                        )
+                        Medicament.effectuer_vente_medicament(
+                            self.main_interface.conn, id_medicament, quanti
+                        )
+                        Echanges.ajouter_echange(
+                            self.main_interface.conn,
                             pharma["id_pharmacie"],
                             numero_facture,
                             date_vente,
@@ -540,7 +535,7 @@ class Echange_dash:
             self.updateCompleter_pharma(text)
 
     def updateCompleter_pharma(self, text):
-        results = Pharmacies.extraire_pharma_nom_like(self.main_interface.conn,text)
+        results = Pharmacies.extraire_pharma_nom_like(self.main_interface.conn, text)
         results = [res["nom"] for res in results]
         model = QStringListModel(results)
         self.completer_pharma.setModel(model)
@@ -597,33 +592,43 @@ class Echange_dash:
         self.list_client = QTableWidget(0, 7)
         self.list_client.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.list_client.setHorizontalHeaderLabels(
-            ["ID","Nom", "Téléphone", "Email", "Adresse", "Total envoyer", "Total reçu"]
+            [
+                "ID",
+                "Nom",
+                "Téléphone",
+                "Email",
+                "Adresse",
+                "Total envoyer",
+                "Total reçu",
+            ]
         )
         self.remplire_table()
         self.list_client.cellClicked.connect(self.on_cell_clicked_pharma)
         main_layout.addWidget(self.list_client)
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
+
     def on_cell_clicked_pharma(self, row, column):
         # Si la colonne 12 (Action) est cliquée
 
-        self.pharma={
-            "ID" : self.list_client.item(row, 0).text(),
-            "Nom" : self.list_client.item(row, 1).text(),
-            "Téléphone" : self.list_client.item(row, 2).text(),
-            "Email" : self.list_client.item(row, 3).text(),
-            "Adresse" : self.list_client.item(row, 4).text(),
-            "Out_value" : self.list_client.item(row, 5).text(),
-            "In_value" : self.list_client.item(row, 6).text(),
+        self.pharma = {
+            "ID": self.list_client.item(row, 0).text(),
+            "Nom": self.list_client.item(row, 1).text(),
+            "Téléphone": self.list_client.item(row, 2).text(),
+            "Email": self.list_client.item(row, 3).text(),
+            "Adresse": self.list_client.item(row, 4).text(),
+            "Out_value": self.list_client.item(row, 5).text(),
+            "In_value": self.list_client.item(row, 6).text(),
         }
         self.show_principal_interface_list()
-        
 
     def remplire_table(self):
         all_client = Pharmacies.extraire_tous_pharma(self.main_interface.conn)
         self.list_client.setRowCount(len(all_client))
         for index, element in enumerate(all_client):
-            self.list_client.setItem(index, 0, QTableWidgetItem(str(element["id_pharmacie"])))
+            self.list_client.setItem(
+                index, 0, QTableWidgetItem(str(element["id_pharmacie"]))
+            )
             self.list_client.setItem(index, 1, QTableWidgetItem(str(element["nom"])))
             self.list_client.setItem(
                 index, 2, QTableWidgetItem(str(element["telephone"]))
@@ -646,7 +651,9 @@ class Echange_dash:
         email = self.email_input.text()
         address = self.address_input.text()
         # Ici vous pouvez ajouter le client dans une base de données ou autre logique
-        Pharmacies.ajouter_pharmacie(self.main_interface.conn,name, address, telephone, email, 0, 0)
+        Pharmacies.ajouter_pharmacie(
+            self.main_interface.conn, name, address, telephone, email, 0, 0
+        )
         self.remplire_table()
         # Effacer les champs après soumission
         self.name_input.clear()
@@ -694,7 +701,9 @@ class Echange_dash:
             ] += 1
             self.update_table()
         else:
-            medicament = Medicament.extraire_medicament_code_barre(self.main_interface.conn,code_barre_scanner)
+            medicament = Medicament.extraire_medicament_code_barre(
+                self.main_interface.conn, code_barre_scanner
+            )
             if medicament is None:
                 QMessageBox.information(
                     self.main_interface,
@@ -703,8 +712,8 @@ class Echange_dash:
                 )
                 return
             else:
-                medicament_on_dtock = Stock.extraire_medicament_id_stock(self.main_interface.conn,
-                    medicament["id_medicament"]
+                medicament_on_dtock = Stock.extraire_medicament_id_stock(
+                    self.main_interface.conn, medicament["id_medicament"]
                 )
                 medicament = dict(medicament)
 
@@ -723,9 +732,7 @@ class Echange_dash:
                         )
 
                     medicament["Quantite"] = 1
-                    medicament["PPV"] = medicament_on_dtock[
-                        "prix_achat"
-                    ][0]
+                    medicament["PPV"] = medicament_on_dtock["prix_achat"][0]
                     medicament["prix_vente"] = medicament_on_dtock["prix_vente"]
                     medicament["date_expiration"] = medicament_on_dtock[
                         "date_expiration"
@@ -772,8 +779,6 @@ class Echange_dash:
         self.producs_table.loc[row, "Quantite"] = new_quantity
         self.update_table()
 
-
-
     def keyPressEvent_recu(self, event):
         try:
             key = event.text()
@@ -795,8 +800,8 @@ class Echange_dash:
             print("erreur")
 
     def remplir_medicament_cases(self, code_barre_scanner):
-        self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
-            code_barre_scanner
+        self.medicament_search = Medicament.extraire_medicament_code_barre(
+            self.main_interface.conn, code_barre_scanner
         )
         if self.medicament_search is None:
             QMessageBox.warning(
@@ -807,4 +812,3 @@ class Echange_dash:
         else:
             self.medicament_search = dict(self.medicament_search)
             print(self.medicament_search)
-            

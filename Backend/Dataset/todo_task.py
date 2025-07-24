@@ -6,7 +6,6 @@ from datetime import datetime
 class Todo_Task:
     @staticmethod
     def create_table_todo_task(conn):
-        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -19,11 +18,9 @@ class Todo_Task:
         """
         )
         conn.commit()
-        
-    
+
     @staticmethod
-    def add_todo_task(conn,task, date_execution):
-        
+    def add_todo_task(conn, task, date_execution):
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -33,13 +30,11 @@ class Todo_Task:
             (task, date_execution),
         )
         conn.commit()
-        
-    
+
     # update date execution where task = task
     @staticmethod
-    def update_todo_task(conn,task, date_execution=None):
-        
-        cursor = conn.cursor() 
+    def update_todo_task(conn, task, date_execution=None):
+        cursor = conn.cursor()
         cursor.execute(
             """
             UPDATE todo_task
@@ -49,13 +44,13 @@ class Todo_Task:
             (date_execution, task),
         )
         conn.commit()
-        
+
     @staticmethod
     def scraper_today(conn):
         date_execution = datetime.today().date()
-        task = 'get_new_medicament'
-        
-        cursor = conn.cursor() 
+        task = "get_new_medicament"
+
+        cursor = conn.cursor()
         cursor.execute(
             """
             UPDATE todo_task
@@ -65,10 +60,9 @@ class Todo_Task:
             (date_execution, task),
         )
         conn.commit()
-        
+
     @staticmethod
     def test_scrapper(conn):
-        
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -76,13 +70,8 @@ class Todo_Task:
         """
         )
         result = cursor.fetchone()
-        
 
-        
         if result:
-            date_scrap = result[0] == datetime.today().date() 
+            date_scrap = result[0] == datetime.today().date()
             return not date_scrap
         return None
-
- 
-        

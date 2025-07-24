@@ -25,7 +25,6 @@ from Backend.Dataset.fournisseur import Fournisseur
 from Backend.Dataset.medicament import Medicament
 
 
-
 from Frontend.utils.utils import *
 
 
@@ -161,7 +160,7 @@ class Commande_dash:
         self.main_interface.content_layout.addWidget(self.principale_dash_add)
 
     def selectionner_fournisseur(self, text):
-        data = Fournisseur.extraire_fournisseur_nom(self.main_interface.conn,text)
+        data = Fournisseur.extraire_fournisseur_nom(self.main_interface.conn, text)
 
         self.fournisseur_status_label.setText(
             f"Fournisseur : {data['nom_fournisseur']}"
@@ -177,7 +176,9 @@ class Commande_dash:
             self.updateCompleter_fournisseur(text)
 
     def updateCompleter_fournisseur(self, text):
-        results = Fournisseur.extraire_fournisseur_nom_like(self.main_interface.conn,text)
+        results = Fournisseur.extraire_fournisseur_nom_like(
+            self.main_interface.conn, text
+        )
         results = [item["nom_fournisseur"] for item in results]
         model = QStringListModel(results)
         self.completer_fournisseur.setModel(model)
@@ -187,7 +188,9 @@ class Commande_dash:
             self.updateCompleter(text)
 
     def updateCompleter(self, text):
-        results = Medicament.extraire_medicament_nom_like_name(self.main_interface.conn,text)
+        results = Medicament.extraire_medicament_nom_like_name(
+            self.main_interface.conn, text
+        )
         model = QStringListModel(results)
         self.completer.setModel(model)
 
@@ -205,7 +208,7 @@ class Commande_dash:
         else:
             self.commande.append([code_barre, nom_medicament, quantite])
             test_existance = False
-            for item in self.commande: 
+            for item in self.commande:
                 if item[0] == code_barre:
                     item[2] += 1
                     test_existance = True
@@ -221,7 +224,9 @@ class Commande_dash:
         self.quantite_input.setValue(1)
 
     def ajouter_medi_to_commande_code(self, code_barre_scanner):
-        medicament = Medicament.extraire_medicament_code_barre(self.main_interface.conn,code_barre_scanner)
+        medicament = Medicament.extraire_medicament_code_barre(
+            self.main_interface.conn, code_barre_scanner
+        )
         if medicament is None:
             QMessageBox.information(
                 self.main_interface, "Medicament non reconue", "Medicament non reconue"
@@ -229,10 +234,10 @@ class Commande_dash:
             return
         else:
             medicament = dict(medicament)
-            #self.commande.append([code_barre_scanner, medicament["Nom"], 1])
+            # self.commande.append([code_barre_scanner, medicament["Nom"], 1])
 
             test_existance = False
-            for item in self.commande: 
+            for item in self.commande:
                 if item[0] == code_barre_scanner:
                     item[2] += 1
                     test_existance = True
@@ -262,7 +267,8 @@ class Commande_dash:
             return
         id_salarie = self.main_interface.user_session["id_salarie"]
         if self.inclure_checkbox.isChecked:
-            Commandes.ajouter_commande(self.main_interface.conn,
+            Commandes.ajouter_commande(
+                self.main_interface.conn,
                 str(self.commande),
                 self.info_fourniseur["id_fournisseur"],
                 datetime.now(),
@@ -275,7 +281,8 @@ class Commande_dash:
                 False,
             )
         else:
-            Commandes.ajouter_commande(self.main_interface.conn,
+            Commandes.ajouter_commande(
+                self.main_interface.conn,
                 str(self.commande),
                 self.info_fourniseur["id_fournisseur"],
                 datetime.now(),
@@ -390,7 +397,9 @@ class Commande_dash:
             self.cart_table.setItem(
                 row, 0, QTableWidgetItem(str(product["id_commande"]))
             )
-            fournissuer = Fournisseur.extraire_fournisseur(self.main_interface.conn,product["id_fournisseur"])
+            fournissuer = Fournisseur.extraire_fournisseur(
+                self.main_interface.conn, product["id_fournisseur"]
+            )
             self.cart_table.setItem(
                 row, 1, QTableWidgetItem(fournissuer["nom_fournisseur"])
             )
@@ -421,4 +430,3 @@ class Commande_dash:
                 self.code_barre_scanner += key  # Ajouter le caractère au code en cours
         except:
             print("erreur")
-    

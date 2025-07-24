@@ -97,8 +97,8 @@ class Commande_client:
         self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
         self.barcode_input.returnPressed.connect(self.process_barcode_manuel)
 
-        self.name_medicament_input = QLineEdit() 
-        self.name_medicament_input.setPlaceholderText("Entrez le nom du medicament") 
+        self.name_medicament_input = QLineEdit()
+        self.name_medicament_input.setPlaceholderText("Entrez le nom du medicament")
         self.name_medicament_input.textChanged.connect(self.search_medicament)
         self.name_medicament_input.textChanged.connect(self.update_completer)
 
@@ -144,7 +144,6 @@ class Commande_client:
         totals_layout.addWidget(self.total_label)
         main_layout.addLayout(totals_layout)
 
-
         # Paiement
         payment_layout = QHBoxLayout()
         self.checkbox = QCheckBox("Ne payer qu'une partie ?", self.main_interface)
@@ -156,7 +155,7 @@ class Commande_client:
         self.amount_input.setValidator(float_validator)
         self.amount_input.setPlaceholderText("Montant à payer maintenant")
         payment_layout.addWidget(self.amount_input)
- 
+
         self.toggle_inputs()
 
         # Bouton pour annuler
@@ -175,24 +174,29 @@ class Commande_client:
 
         main_layout.addLayout(button_layout)
 
-
         # Connecter les signaux
         self.confirm_button.clicked.connect(self.confirm_sale)
-
-
 
         self.table = QTableWidget()
         self.table.setColumnCount(5)
 
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table.setHorizontalHeaderLabels(
-            ["Numéro de facture", "Date de vente", "Total payé", "Total de la facture", "Réste à payer"] 
+            [
+                "Numéro de facture",
+                "Date de vente",
+                "Total payé",
+                "Total de la facture",
+                "Réste à payer",
+            ]
         )
         self.remplir_tableau()
         # Search bar for filtering
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Chercher par 'date'...")
-        self.search_bar.textChanged.connect(self.filter_table)  # Trigger filter when text changes
+        self.search_bar.textChanged.connect(
+            self.filter_table
+        )  # Trigger filter when text changes
 
         main_layout.addWidget(self.search_bar)
         main_layout.addWidget(self.table)
@@ -200,10 +204,10 @@ class Commande_client:
 
         # Assign layout to central widget
         self.main_interface.content_layout.addWidget(self.vente_dash)
-    
+
     def show_facture(self, row, column):
-        numero_facture = self.table.item(row, 0).text() 
-        commande = CommandeClient.get_commande(self.main_interface.conn,numero_facture) 
+        numero_facture = self.table.item(row, 0).text()
+        commande = CommandeClient.get_commande(self.main_interface.conn, numero_facture)
 
         message = f"""
             <!DOCTYPE html>
@@ -216,7 +220,7 @@ class Commande_client:
                 <p><strong>Agent :</strong> {self.main_interface.user_session['id_salarie']}</p>
                 <hr>
                 """
-        
+
         message += f"""
 
                 <h4>Détails de la vente:</h4>
@@ -229,24 +233,22 @@ class Commande_client:
                 </tr>"""
 
         total_facture_calculer = 0
-        for  items in commande: 
-                
-                id_medicament = items["id_medicament"]
-                nom_medicament = items["nom_medicament"] 
-                prix_vente = items["prix_vente"]  # même chose
-                date_vente = items["now_str"]
-                quantite_vendue = items["quantite_vendue"]  
-                to_pay_now = items["to_pay_now"]   
-                message += f"<tr><td>{nom_medicament}</td><td>{prix_vente}</td><td>{quantite_vendue} Dh</td><td>{quantite_vendue*prix_vente} Dh</td></tr>"
-                total_facture_calculer += quantite_vendue*prix_vente
-        
+        for items in commande:
+            id_medicament = items["id_medicament"]
+            nom_medicament = items["nom_medicament"]
+            prix_vente = items["prix_vente"]  # même chose
+            date_vente = items["now_str"]
+            quantite_vendue = items["quantite_vendue"]
+            to_pay_now = items["to_pay_now"]
+            message += f"<tr><td>{nom_medicament}</td><td>{prix_vente}</td><td>{quantite_vendue} Dh</td><td>{quantite_vendue*prix_vente} Dh</td></tr>"
+            total_facture_calculer += quantite_vendue * prix_vente
 
         self.producs_table.reset_index(drop=True)
-        
-        barcode_data = f'{matricul_pharma}{numero_facture}0'
-        
+
+        barcode_data = f"{matricul_pharma}{numero_facture}0"
+
         image_base64 = self.generate_barcode(barcode_data)
-        message +=  f"""
+        message += f"""
                 </table>
 
                 <p><strong>Total facture :</strong> {total_facture_calculer} Dh</p>
@@ -258,17 +260,12 @@ class Commande_client:
                 <p><strong>Date :</strong> {date_vente}</p>
             </body>
             </html>
-            """ 
+            """
         # Affichage
-        QMessageBox.information(
-            self.main_interface,
-            "Crédit insuffisant",
-            message
-        )  
-
+        QMessageBox.information(self.main_interface, "Crédit insuffisant", message)
 
     def filter_table(self):
-        #if not self.all_data:
+        # if not self.all_data:
         #    self.load_all_data()
         # Get the filter text from the search bar
         filter_text = self.search_bar.text().lower()
@@ -280,7 +277,7 @@ class Commande_client:
                 if filter_text in item.text().lower():  # Case-insensitive comparison
                     self.table.setRowHidden(row, False)
                 else:
-                    self.table.setRowHidden(row, True) 
+                    self.table.setRowHidden(row, True)
 
     def remplir_tableau(self):
         # Exemple de données fictives
@@ -289,33 +286,51 @@ class Commande_client:
         self.table.setRowCount(len(commandes))
         for row, comm in enumerate(commandes):
             self.table.setItem(row, 0, QTableWidgetItem(comm["numero_facture"]))
-            self.table.setItem(row, 1, QTableWidgetItem(comm["date_vente"].strftime("%d/%m/%Y %H:%M:%S")))
+            self.table.setItem(
+                row,
+                1,
+                QTableWidgetItem(comm["date_vente"].strftime("%d/%m/%Y %H:%M:%S")),
+            )
             self.table.setItem(row, 2, QTableWidgetItem(str(comm["to_pay_now"])))
-            self.table.setItem(row, 3, QTableWidgetItem(str(comm["total_facture_calculer"])))
-            self.table.setItem(row, 4, QTableWidgetItem(str(float(comm["total_facture_calculer"]) - float(comm["to_pay_now"])))) 
-    
+            self.table.setItem(
+                row, 3, QTableWidgetItem(str(comm["total_facture_calculer"]))
+            )
+            self.table.setItem(
+                row,
+                4,
+                QTableWidgetItem(
+                    str(
+                        float(comm["total_facture_calculer"])
+                        - float(comm["to_pay_now"])
+                    )
+                ),
+            )
+
     def search_medicament(self, text):
         if len(text) >= 3:
-            results = Medicament.extraire_medicament_nom_like(self.main_interface.conn,text) 
+            results = Medicament.extraire_medicament_nom_like(
+                self.main_interface.conn, text
+            )
             list_res = []
             for res in results:
-                list_res.append(f"{res['Nom']}, {res['Présentation']}, Prix : {res['PPV']} Dh. {res['Code_EAN_13']}")  
+                list_res.append(
+                    f"{res['Nom']}, {res['Présentation']}, Prix : {res['PPV']} Dh. {res['Code_EAN_13']}"
+                )
             model = QStringListModel(list_res)
             self.completer_client.setModel(model)
+
     def update_completer(self, text):
-        if "Prix :" in text and 'Dh.' in text:
-            code_bare = text.split(' ')[-1]
+        if "Prix :" in text and "Dh." in text:
+            code_bare = text.split(" ")[-1]
             self.add_medicament_to_vente(code_bare)
             self.name_medicament_input.clear()
-
-
 
     def OntextChangeClient(self, text):
         if len(text) >= 3:
             self.updateCompleter_fournisseur(text)
 
     def updateCompleter_fournisseur(self, text):
-        results = Clients.extraire_client_nom_like(self.main_interface.conn,text)
+        results = Clients.extraire_client_nom_like(self.main_interface.conn, text)
         results = ["_".join(res.values()) for res in results]
         model = QStringListModel(results)
         self.completer_client.setModel(model)
@@ -324,10 +339,10 @@ class Commande_client:
         print(text)
 
     def toggle_inputs(self):
-        if self.checkbox.isChecked(): 
-            self.amount_input.setEnabled(True) 
+        if self.checkbox.isChecked():
+            self.amount_input.setEnabled(True)
         else:
-            self.amount_input.setDisabled(True) 
+            self.amount_input.setDisabled(True)
 
     def search_client(self):
         client_id = self.client_id_input.text()
@@ -340,7 +355,9 @@ class Commande_client:
             self.client_info = None
         else:
             nom, prenom, cin = client_id.split("_")
-            self.client_info = Clients.extraire_client_info(self.main_interface.conn,nom, prenom, cin)
+            self.client_info = Clients.extraire_client_info(
+                self.main_interface.conn, nom, prenom, cin
+            )
             self.client_status_label.setText(
                 f"{self.client_info['nom']} {self.client_info['prenom']} "
             )
@@ -369,21 +386,15 @@ class Commande_client:
             self.cart_table.setItem(
                 row, 2, QTableWidgetItem(str(product["Présentation"]))
             )
-            self.cart_table.setItem(
-                row, 3, QTableWidgetItem(str(1))
-            )
-            self.cart_table.setItem(
-                row, 4, QTableWidgetItem(str(product["PPV"]))
-            )
+            self.cart_table.setItem(row, 3, QTableWidgetItem(str(1)))
+            self.cart_table.setItem(row, 4, QTableWidgetItem(str(product["PPV"])))
             line_edit = QSpinBox()
             line_edit.setValue(product["Quantite"])
             line_edit.editingFinished.connect(
                 lambda row=row: self.update_quantity(row, line_edit.text())
             )
             self.cart_table.setCellWidget(row, 5, line_edit)
-            self.cart_table.setItem(
-                row, 6, QTableWidgetItem(str('En cours'))
-            )
+            self.cart_table.setItem(row, 6, QTableWidgetItem(str("En cours")))
             self.cart_table.setItem(
                 row, 7, QTableWidgetItem(str(product["Prix_total"]))
             )
@@ -406,11 +417,10 @@ class Commande_client:
         self.update_table()
 
     def add_medicament_to_vente(self, code_barre_scanner):
-        
         if (
             not self.producs_table.empty
             and code_barre_scanner in self.producs_table["Code_EAN_13"].values
-        ): 
+        ):
             self.producs_table.loc[
                 self.producs_table["Code_EAN_13"] == code_barre_scanner, "Quantite"
             ] += 1
@@ -422,11 +432,13 @@ class Commande_client:
             ]
             self.update_table()
         else:
-            medicament = Medicament.extraire_medicament_code_barre(self.main_interface.conn,code_barre_scanner)
-            
+            medicament = Medicament.extraire_medicament_code_barre(
+                self.main_interface.conn, code_barre_scanner
+            )
+
             medicament["Quantite"] = 1
             medicament["Prix_total"] = medicament["PPV"]
-            
+
             if medicament is None:
                 QMessageBox.information(
                     self.main_interface,
@@ -442,11 +454,8 @@ class Commande_client:
                 self.producs_table = pd.concat(
                     [self.producs_table, df], ignore_index=True
                 )
-            self.producs_table["Prix_total"] = self.producs_table[
-                "Prix_total"
-            ].round(2) 
+            self.producs_table["Prix_total"] = self.producs_table["Prix_total"].round(2)
             self.update_table()
-                    
 
     def keyPressEvent(self, event):
         try:
@@ -456,7 +465,9 @@ class Commande_client:
                 self.code_b = True
             self.last_key_time = current_time
 
-            if key == "\r" and self.code_b:  # Lorsque le lecteur envoie un saut de ligne
+            if (
+                key == "\r" and self.code_b
+            ):  # Lorsque le lecteur envoie un saut de ligne
                 self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
                 if self.code_barre_scanner != "":
                     self.add_medicament_to_vente(self.code_barre_scanner)
@@ -465,7 +476,7 @@ class Commande_client:
             else:
                 self.code_barre_scanner += key  # Ajouter le caractère au code en cours
         except:
-            print('Erreur')
+            print("Erreur")
 
     def process_barcode_manuel(self):
         pass
@@ -505,40 +516,38 @@ class Commande_client:
                 "La vente a été annulée avec succès.",
             )
             self.main_interface = Commande_client(self.main_interface)
-     
-    
-    def generate_barcode(self, barcode_data): 
+
+    def generate_barcode(self, barcode_data):
         # Generate the barcode
         check_degit = calculate_check_digit(barcode_data[:12])
         barcode_data = barcode_data[:12] + str(check_degit)
-        barcode_image = treepoem.generate_barcode('ean13', barcode_data)
+        barcode_image = treepoem.generate_barcode("ean13", barcode_data)
         # Save the barcode image to a BytesIO object
         buffered = BytesIO()
         barcode_image.save(buffered, format="PNG")
         buffered.seek(0)
 
         # Convert the image to base64
-        barcode_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        barcode_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
         return barcode_base64
-    
 
     def confirm_sale(self):
         now = datetime.now()
         now_str = now.strftime("%Y-%m-%d %H:%M:%S")
         id_client = 0 if self.client_info is None else self.client_info["id_client"]
         numero_facture = int(now.timestamp())
-        
+
         id_salarie = self.main_interface.user_session["id_salarie"]
- 
-        if self.producs_table.empty :
+
+        if self.producs_table.empty:
             QMessageBox.warning(
                 self.main_interface,
                 "Erreur",
                 "Le panier est vide.",
             )
             return
-        
+
         message = f"""
             <!DOCTYPE html>
             <html>
@@ -550,8 +559,8 @@ class Commande_client:
                 <p><strong>Agent :</strong> {self.main_interface.user_session['id_salarie']}</p>
                 <hr>
                 """
-        
-        if self.client_info['nom'] != "Anonyme":
+
+        if self.client_info["nom"] != "Anonyme":
             message += f"""
                     <h4>Client:</h4>
                     <p><strong>Nom :</strong> {self.client_info['nom']} {self.client_info['prenom']}</p>
@@ -563,46 +572,52 @@ class Commande_client:
                 <h4>Détails de la commande:</h4>
                 """
         list_facture = []
-        for index, items in self.producs_table.iterrows(): 
-                
-                id_medicament = items["id_medicament"]
-                nom_medicament = items["Nom"]
-                prix_vente = items["PPV"]  # même chose
-                date_vente = now_str
-                quantite_vendue = items["Quantite"]
-                quantite_list = items.get("list_quantity", [])  # au cas où "list_quantity" n'existe pas, pour éviter une erreur
-                total_facture = items["Prix_total"]
-                ID_Stock = items.get("ID_Stock", None)  # tu n'avais pas "id_stock" dans ton dict exemple
-                quantite_traiter = 0
-                self.total_facture = 0
-                list_facture.append([items['Code_EAN_13'],
-                            id_medicament, 
-                            prix_vente,
-                            date_vente,
-                            quantite_vendue,
-                            id_client,
-                            numero_facture,
-                            id_salarie, 
-                            nom_medicament]
-                        )
+        for index, items in self.producs_table.iterrows():
+            id_medicament = items["id_medicament"]
+            nom_medicament = items["Nom"]
+            prix_vente = items["PPV"]  # même chose
+            date_vente = now_str
+            quantite_vendue = items["Quantite"]
+            quantite_list = items.get(
+                "list_quantity", []
+            )  # au cas où "list_quantity" n'existe pas, pour éviter une erreur
+            total_facture = items["Prix_total"]
+            ID_Stock = items.get(
+                "ID_Stock", None
+            )  # tu n'avais pas "id_stock" dans ton dict exemple
+            quantite_traiter = 0
+            self.total_facture = 0
+            list_facture.append(
+                [
+                    items["Code_EAN_13"],
+                    id_medicament,
+                    prix_vente,
+                    date_vente,
+                    quantite_vendue,
+                    id_client,
+                    numero_facture,
+                    id_salarie,
+                    nom_medicament,
+                ]
+            )
 
         total_facture_calculer = 0
-        for item in list_facture: 
-            message  += f"{item[-1]} <br>"
-            message += f"{item[0]}   &nbsp;&nbsp; {item[4]} x  &nbsp;&nbsp; {item[2]} Dh <br><br>" 
-            total_facture_calculer += item[2]*item[4]
-        
+        for item in list_facture:
+            message += f"{item[-1]} <br>"
+            message += f"{item[0]}   &nbsp;&nbsp; {item[4]} x  &nbsp;&nbsp; {item[2]} Dh <br><br>"
+            total_facture_calculer += item[2] * item[4]
+
         if self.checkbox.isChecked():
             to_pay_now = self.amount_input.text()
         else:
-            to_pay_now = total_facture_calculer 
+            to_pay_now = total_facture_calculer
 
         self.producs_table.reset_index(drop=True)
-        
-        barcode_data = f'{matricul_pharma}{numero_facture}0'
-        
+
+        barcode_data = f"{matricul_pharma}{numero_facture}0"
+
         image_base64 = self.generate_barcode(barcode_data)
-        message +=  f""" <hr>
+        message += f""" <hr>
                 <p><strong>Total facture :</strong> {total_facture_calculer} Dh</p>
                 <p><strong>Montant payé :</strong> {to_pay_now} Dh</p>
                 <p><strong>Reste à payer :</strong> {total_facture_calculer - Decimal(to_pay_now)} Dh</p>
@@ -616,34 +631,34 @@ class Commande_client:
             """
 
         QMessageBox.information(
-                self.main_interface,
-                "Confirmation de vente",
-                "Vente confirmée avec succès!",
-            )
+            self.main_interface,
+            "Confirmation de vente",
+            "Vente confirmée avec succès!",
+        )
 
-        
-        reply =  confirm_sale(self.main_interface,"Confirmation de vente", message )
+        reply = confirm_sale(self.main_interface, "Confirmation de vente", message)
         if reply == QMessageBox.Yes:
-            for  items in list_facture:
+            for items in list_facture:
                 if self.checkbox.isChecked():
                     to_pay_now = self.amount_input.text()
                 else:
                     to_pay_now = total_facture_calculer
-                CommandeClient.ajouter_commande_client(self.main_interface.conn,
+                CommandeClient.ajouter_commande_client(
+                    self.main_interface.conn,
                     items[6],
-                    items[0], 
-                    items[1], 
-                    items[2], 
-                    items[3], 
+                    items[0],
+                    items[1],
+                    items[2],
+                    items[3],
                     items[4],
-                    items[5], 
-                    items[7], 
-                    items[8], 
-                    to_pay_now, 
-                    total_facture_calculer, 
-                    now_str, 
+                    items[5],
+                    items[7],
+                    items[8],
+                    to_pay_now,
+                    total_facture_calculer,
+                    now_str,
                     "in progresse",
-                    )
+                )
 
             self.print_ticket(message)
 
@@ -652,7 +667,7 @@ class Commande_client:
                 "Confirmation de vente",
                 "Vente confirmée avec succès!",
             )
- 
+
             self.barcode_input.clear()
             self.cart_table.clearContents()
             self.cart_table.setRowCount(0)
@@ -660,35 +675,41 @@ class Commande_client:
             self.tax_label.setText("Taxes : 0 Dh")
             self.total_label.setText("<b>Total : 0 Dh</b>")
             self.checkbox.setChecked(False)
-            self.amount_input.clear() 
+            self.amount_input.clear()
             self.producs_table = pd.DataFrame()
-    
+
     def print_ticket(self, message_html):
         print("Conversion du ticket HTML en PDF...")
         pdf_path = "output.pdf"
 
         with open("output.pdf", "w+b") as f:
             pisa.CreatePDF(message_html, dest=f)
-        
-        if os.name == 'nt':  # 'nt' indique Windows 
+
+        if os.name == "nt":  # 'nt' indique Windows
             try:
-                cmd = [sumatra_path, "-print-to-default", "-print-settings", "noscale", pdf_path]
+                cmd = [
+                    sumatra_path,
+                    "-print-to-default",
+                    "-print-settings",
+                    "noscale",
+                    pdf_path,
+                ]
                 subprocess.run(cmd, shell=False, check=True)
             except Exception as e:
                 QMessageBox.information(
-                self.main_interface,
-                "Confirmation de vente",
-                f"Unexpected error: {e}",
-                ) 
+                    self.main_interface,
+                    "Confirmation de vente",
+                    f"Unexpected error: {e}",
+                )
         else:
             try:
                 os.system(f"lp {pdf_path}")
             except Exception as e:
                 QMessageBox.information(
-                self.main_interface,
-                "Confirmation de vente",
-                f" {os.name} Unexpected error: {e}",
-                ) 
+                    self.main_interface,
+                    "Confirmation de vente",
+                    f" {os.name} Unexpected error: {e}",
+                )
 
     def ajouter_vente_with_all_operation(
         self,
@@ -703,7 +724,8 @@ class Commande_client:
         id_salarie,
         ID_Stock_item,
     ):
-        Ventes.ajouter_vente(self.main_interface.conn,
+        Ventes.ajouter_vente(
+            self.main_interface.conn,
             id_medicament,
             idcommande_item,
             prix_achat_item,
@@ -716,8 +738,10 @@ class Commande_client:
             id_salarie,
             ID_Stock_item,
         )
-        Stock.effectuer_vente_stock(self.main_interface.conn,ID_Stock_item, quanti)
-        Medicament.effectuer_vente_medicament(self.main_interface.conn,id_medicament, quanti)
+        Stock.effectuer_vente_stock(self.main_interface.conn, ID_Stock_item, quanti)
+        Medicament.effectuer_vente_medicament(
+            self.main_interface.conn, id_medicament, quanti
+        )
         return quanti * prix_vente_item
         # todo : supprimer du stock
 
@@ -731,7 +755,8 @@ class Commande_client:
         status,
         id_salarie,
     ):
-        Credit.ajouter_credit(self.main_interface.conn,
+        Credit.ajouter_credit(
+            self.main_interface.conn,
             id_client,
             numero_facture,
             to_pay_now,
@@ -740,4 +765,6 @@ class Commande_client:
             status,
             id_salarie,
         )
-        Clients.ajouter_credit_client(self.main_interface.conn,id_client, total_facture - int(to_pay_now))
+        Clients.ajouter_credit_client(
+            self.main_interface.conn, id_client, total_facture - int(to_pay_now)
+        )

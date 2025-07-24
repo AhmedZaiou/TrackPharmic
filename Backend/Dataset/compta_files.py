@@ -49,11 +49,11 @@ class ComptaFilesGeneration:
                     LEFT JOIN Salaries S ON V.id_salarie = S.id_salarie
                     ORDER BY V.date_vente DESC;
                     """
-        
+
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(request)
         rows = cursor.fetchall()
-        
+
         fichier_excel = "rapport.xlsx"
         if rows:
             df = pd.DataFrame(rows)
@@ -61,5 +61,5 @@ class ComptaFilesGeneration:
             print(f"✅ Données exportées dans {fichier_excel}")
             return fichier_excel
         else:
-            print("❌ Aucune donnée à exporter.") 
+            print("❌ Aucune donnée à exporter.")
             return None

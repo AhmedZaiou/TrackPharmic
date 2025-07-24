@@ -5,9 +5,6 @@ import mysql.connector
 import os
 
 
- 
-
-
 # Connexion à Gmail
 def connect_to_gmail():
     imap = imaplib.IMAP4_SSL("imap.gmail.com")
@@ -20,7 +17,7 @@ def connect_to_gmail():
 def extract_attachments(imap, limit=5):
     attachments = []
     status, messages = imap.search(None, "ALL")
-    print("Status:", status) 
+    print("Status:", status)
     mail_ids = messages[0].split()
 
     for mail_id in mail_ids[-limit:]:
@@ -33,24 +30,20 @@ def extract_attachments(imap, limit=5):
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
                 for part in msg.walk():
-                    if part.get_content_maintype() == 'multipart':
+                    if part.get_content_maintype() == "multipart":
                         continue
-                    if part.get('Content-Disposition') is None:
+                    if part.get("Content-Disposition") is None:
                         continue
                     filename = part.get_filename()
                     if filename:
                         filename, encoding = decode_header(filename)[0]
                         if isinstance(filename, bytes):
-                            filename = filename.decode(encoding if encoding else "utf-8")
+                            filename = filename.decode(
+                                encoding if encoding else "utf-8"
+                            )
                         file_data = part.get_payload(decode=True)
                         attachments.append((filename, file_data))
     return attachments
-
- 
-
-
- 
- 
 
 
 # Fonction principale

@@ -8,7 +8,6 @@ from Backend.Dataset.medicament import Medicament
 class Stock:
     @staticmethod
     def create_table_stock(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         CREATE TABLE IF NOT EXISTS Stock (
@@ -31,10 +30,10 @@ class Stock:
         """
         cursor.execute(query)
         conn.commit()
-        
 
     @staticmethod
-    def ajouter_stock(conn,
+    def ajouter_stock(
+        conn,
         id_medicament,
         id_commande,
         id_salarie,
@@ -50,7 +49,6 @@ class Stock:
         date_reception,
         date_derniere_sortie,
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         INSERT INTO Stock (id_medicament, id_commande, id_salarie, prix_achat, prix_vente, prix_conseille,
@@ -78,20 +76,19 @@ class Stock:
             ),
         )
         conn.commit()
-        
-        Medicament.effectuer_stock_medicament(conn,id_medicament, quantite_actuelle)
+
+        Medicament.effectuer_stock_medicament(conn, id_medicament, quantite_actuelle)
 
     @staticmethod
-    def supprimer_stock(conn,id_stock):
-        
+    def supprimer_stock(conn, id_stock):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "DELETE FROM Stock WHERE id_stock = %s;"
         cursor.execute(query, (id_stock,))
         conn.commit()
-        
 
     @staticmethod
-    def modifier_stock(conn,
+    def modifier_stock(
+        conn,
         id_stock,
         id_medicament,
         id_commande,
@@ -108,7 +105,6 @@ class Stock:
         date_reception,
         date_derniere_sortie,
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         UPDATE Stock SET
@@ -138,11 +134,9 @@ class Stock:
             ),
         )
         conn.commit()
-        
 
     @staticmethod
-    def effectuer_vente_stock(conn,id_stock, quantite_vendu):
-        
+    def effectuer_vente_stock(conn, id_stock, quantite_vendu):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         UPDATE Stock SET quantite_actuelle = quantite_actuelle - %s
@@ -151,16 +145,14 @@ class Stock:
         cursor.execute(query, (quantite_vendu, id_stock))
         cursor.execute("DELETE FROM Stock WHERE quantite_actuelle = 0;")
         conn.commit()
-        
 
     @staticmethod
-    def extraire_medicament_id_stock(conn,id_medicament):
-        
+    def extraire_medicament_id_stock(conn, id_medicament):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "SELECT * FROM Stock WHERE id_medicament = %s ORDER BY date_expiration;"
         cursor.execute(query, (id_medicament,))
         row = cursor.fetchall()
-        
+
         if row is None or len(row) == 0:
             return None
         else:
@@ -178,28 +170,25 @@ class Stock:
             return dic
 
     @staticmethod
-    def extraire_stock(conn,id_stock):
-        
+    def extraire_stock(conn, id_stock):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "SELECT * FROM Stock WHERE id_stock = %s;"
         cursor.execute(query, (id_stock,))
         row = cursor.fetchone()
-        
+
         return dict(row) if row else None
 
     @staticmethod
     def extraire_tous_stock(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "SELECT * FROM Stock;"
         cursor.execute(query)
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
-    
+
     @staticmethod
     def extraire_tous_medicament_with_expiration_date_minim(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """SELECT m.*,s.* 
             FROM Stock s 
@@ -210,14 +199,11 @@ class Stock:
             WHERE Date(s.date_expiration) <= DATE_ADD(CURDATE(), INTERVAL 60 DAY) """
         cursor.execute(query)
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
-    
-    
 
     @staticmethod
     def extraire_stock_medicament(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """SELECT 
                         m.Nom,
@@ -233,58 +219,51 @@ class Stock:
                     ORDER BY m.Nom;"""
         cursor.execute(query)
         rows = cursor.fetchall()
-        
-        return [dict(row) for row in rows]
-    
 
- 
+        return [dict(row) for row in rows]
+
     @staticmethod
     def extraire_medicament_quantite_minimale_sup_0(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = "SELECT * FROM Stock WHERE quantite_minimale > 0;"
         cursor.execute(query)
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
 
     @staticmethod
     def get_situation_stock(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT id_medicament, quantite_actuelle FROM Stock")
         result = cursor.fetchall()
-        
+
         return {row["id_medicament"]: row["quantite_actuelle"] for row in result}
-    
 
     @staticmethod
-    def get_medicament_commande(conn,id_commande):
-        
+    def get_medicament_commande(conn, id_commande):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT m.Code_EAN_13, m.Nom,s.quantite_actuelle FROM Stock s JOIN  Medicament m  ON s.id_medicament = m.id_medicament where id_commande = %s",(id_commande,))
+        cursor.execute(
+            "SELECT m.Code_EAN_13, m.Nom,s.quantite_actuelle FROM Stock s JOIN  Medicament m  ON s.id_medicament = m.id_medicament where id_commande = %s",
+            (id_commande,),
+        )
         result = cursor.fetchall()
-        
+
         return [dict(row) for row in result]
-    
-
-
 
     @staticmethod
     def calculer_total_achat_vente(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT SUM(prix_achat) AS total_achat, SUM(prix_vente) AS total_vente FROM Stock"
         )
         result = cursor.fetchone()
-        
+
         return result["total_achat"], result["total_vente"]
 
     @staticmethod
     def cloture_journee(conn):
         today = datetime.now().strftime("%Y-%m-%d")
-        
+
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Total des achats et ventes pour la journée
@@ -335,12 +314,13 @@ class Stock:
         )
         result = cursor.fetchone()
         medicaments_proches_expiration = result["count"]
-        
 
         return {
             "Total des achats pour la journée": total_achat or 0,
             "Total des ventes pour la journée": total_vente or 0,
             "Quantités totales en stock aujourdhui": total_quantite or 0,
-            "Quantités minimales non respectées aujourdhui": quantites_minimales_non_respectees or 0,
-            "Nombre Médicaments proches de la date dexpiration aujourdhui": medicaments_proches_expiration or 0,
+            "Quantités minimales non respectées aujourdhui": quantites_minimales_non_respectees
+            or 0,
+            "Nombre Médicaments proches de la date dexpiration aujourdhui": medicaments_proches_expiration
+            or 0,
         }

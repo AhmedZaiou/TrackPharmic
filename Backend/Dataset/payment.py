@@ -11,7 +11,6 @@ class Payment:
 
     @staticmethod
     def create_table_payment(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -26,13 +25,11 @@ class Payment:
         """
         )
         conn.commit()
-        
 
     @staticmethod
-    def ajouter_payment(conn,
-        id_client, numero_facture, montant_paye, date_paiement, id_salarie
+    def ajouter_payment(
+        conn, id_client, numero_facture, montant_paye, date_paiement, id_salarie
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -42,51 +39,48 @@ class Payment:
             (id_client, numero_facture, montant_paye, date_paiement, id_salarie),
         )
         conn.commit()
-        
 
     @staticmethod
-    def extraire_payment_with_id_client(conn,id_client):
-        
+    def extraire_payment_with_id_client(conn, id_client):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Payment WHERE id_client = %s", (id_client,))
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
-    
+
     @staticmethod
-    def extraire_paiements_par_numero_facture(conn,numero_facture):
-        
+    def extraire_paiements_par_numero_facture(conn, numero_facture):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Payment WHERE numero_facture = %s", (numero_facture,))
+        cursor.execute(
+            "SELECT * FROM Payment WHERE numero_facture = %s", (numero_facture,)
+        )
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows] if rows else []
-    
+
     @staticmethod
     def get_total_paiement(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""SELECT SUM(montant_paye) as totalPaiement FROM Payment""")
         result = cursor.fetchone()
-        
+
         return result[0] if result else 0
 
     @staticmethod
-    def get_total_paiement_salarie(conn,salarie):
-        
+    def get_total_paiement_salarie(conn, salarie):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT SUM(montant_paye) as totalPaiement FROM Payment WHERE id_salarie = %s""",
             (salarie,),
         )
         result = cursor.fetchone()
-        
+
         return result[0] if result else 0
 
     @staticmethod
     def cloture_journee(conn):
         # Connexion à la base de données
-        
+
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Obtenir la date actuelle au format YYYY-MM-DD
@@ -142,7 +136,6 @@ class Payment:
         paiements_clients = cursor.fetchall()
 
         # Clôture de la connexion
-        
 
         # Préparer les résultats sous forme de dictionnaire
         statistiques = {
@@ -152,17 +145,14 @@ class Payment:
             "Nombre total de paiements effectués aujourd'hui": total_paiements_count
             if total_paiements_count
             else 0,
-            "Total des paiements effectués aujourd'hui par salarié": paiements_salaries ,
-            "Total des paiements effectués aujourd'hui par client": paiements_clients ,
+            "Total des paiements effectués aujourd'hui par salarié": paiements_salaries,
+            "Total des paiements effectués aujourd'hui par client": paiements_clients,
         }
 
         return statistiques
-    
 
- 
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -179,13 +169,14 @@ class Payment:
         )
 
         evolution_credit = cursor.fetchall()
-        
 
-        return {row["date_paiements"].strftime("%Y-%m-%d"): row["total_restant"] for row in evolution_credit}
+        return {
+            row["date_paiements"].strftime("%Y-%m-%d"): row["total_restant"]
+            for row in evolution_credit
+        }
 
     @staticmethod
     def evolution_par_mois(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"
@@ -209,18 +200,5 @@ class Payment:
         )
 
         evolution_credit = cursor.fetchall()
-        
 
         return {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
-    
-
-
-
-
-    
-
-
-
-
-    
-

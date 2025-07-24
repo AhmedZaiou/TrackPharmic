@@ -30,10 +30,10 @@ class Salaries:
         """
         )
         conn.commit()
-        
 
     @staticmethod
-    def ajouter_salarie(conn,
+    def ajouter_salarie(
+        conn,
         nom,
         prenom,
         cin,
@@ -47,7 +47,6 @@ class Salaries:
         grade,
         password_hash,
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -70,18 +69,16 @@ class Salaries:
             ),
         )
         conn.commit()
-        
 
     @staticmethod
-    def supprimer_salarie(conn,id_salarie):
-         
+    def supprimer_salarie(conn, id_salarie):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Salaries WHERE id_salarie = %s", (id_salarie,))
         conn.commit()
-        
 
     @staticmethod
-    def modifier_salarie(conn,
+    def modifier_salarie(
+        conn,
         id_salarie,
         nom,
         prenom,
@@ -96,7 +93,6 @@ class Salaries:
         grade,
         password_hash,
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -122,45 +118,40 @@ class Salaries:
             ),
         )
         conn.commit()
-        
 
     @staticmethod
-    def extraire_salarie(conn,id_salarie):
-        
+    def extraire_salarie(conn, id_salarie):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Salaries WHERE id_salarie = %s", (id_salarie,))
         row = cursor.fetchone()
-        
+
         return dict(row) if row else None
 
     @staticmethod
-    def extraire_salarie_login(conn,nom, password_hash):
-        
+    def extraire_salarie_login(conn, nom, password_hash):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Salaries WHERE nom = %s AND password_hash = %s",
             (nom, password_hash),
         )
         row = cursor.fetchone()
-        
+
         return dict(row) if row else None
 
     @staticmethod
     def extraire_tous_salaries(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Salaries")
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
 
     @staticmethod
     def get_salaries(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""SELECT id_salarie, nom, prenom FROM Salaries""")
         result = cursor.fetchall()
-        
+
         return (
             [row["id_salarie"] for row in result],
             [row["nom"] for row in result],

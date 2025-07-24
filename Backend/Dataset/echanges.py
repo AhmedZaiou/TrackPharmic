@@ -7,7 +7,6 @@ from Backend.Dataset.pharmacie import Pharmacies
 class Echanges:
     @staticmethod
     def create_table_echanges(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -23,13 +22,11 @@ class Echanges:
         """
         )
         conn.commit()
-        
 
     @staticmethod
-    def ajouter_echange(conn,
-        id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie
+    def ajouter_echange(
+        conn, id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -39,36 +36,27 @@ class Echanges:
             (id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie),
         )
         conn.commit()
-        
-        Pharmacies.modifier_pharmacie_echange(conn,
-        id_pharmacie, total_facture, sens
-    )
 
-
+        Pharmacies.modifier_pharmacie_echange(conn, id_pharmacie, total_facture, sens)
 
     @staticmethod
-    def extraire_tous_echanges_pharma(conn,id_pharma):
-        
+    def extraire_tous_echanges_pharma(conn, id_pharma):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Echanges  WHERE id_pharmacie = %s;",
-            (id_pharma,))
+        cursor.execute("SELECT * FROM Echanges  WHERE id_pharmacie = %s;", (id_pharma,))
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
-    
 
     @staticmethod
     def get_total_echanges(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT SUM(total_facture) as totalEchanges FROM Echanges")
         result = cursor.fetchone()
-        
+
         return result.get("totalEchanges", 0)
 
     @staticmethod
     def cloture_journee(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         date_aujourdhui = datetime.now().strftime("%Y-%m-%d")
 
@@ -116,11 +104,9 @@ class Echanges:
         )
         echanges_par_salarie = cursor.fetchall()
 
-        
-
         return {
-            "Total des échanges de la journée envoyer": total_journee_envoyer ,
-            "Total des échanges de la journée recus": total_journee_recus ,
+            "Total des échanges de la journée envoyer": total_journee_envoyer,
+            "Total des échanges de la journée recus": total_journee_recus,
             "Nombre d'échanges réalisés aujourd'hui": nombre_echanges,
             "Total des échanges par salarié": [
                 {
@@ -130,10 +116,9 @@ class Echanges:
                 for e in echanges_par_salarie
             ],
         }
-    
+
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -149,9 +134,12 @@ class Echanges:
             (date_debut_annee,),
         )
 
-        evolution_credit = cursor.fetchall() 
+        evolution_credit = cursor.fetchall()
 
-        sens1 = {row["date_echange"].strftime("%Y-%m-%d"): row["total_facture"] for row in evolution_credit}
+        sens1 = {
+            row["date_echange"].strftime("%Y-%m-%d"): row["total_facture"]
+            for row in evolution_credit
+        }
         cursor.execute(
             """
             SELECT DATE(date_echange) as date_echange, SUM(total_facture) as total_facture
@@ -164,14 +152,15 @@ class Echanges:
         )
 
         evolution_credit = cursor.fetchall()
-        
 
-        sens0 = {row["date_echange"].strftime("%Y-%m-%d"): row["total_facture"] for row in evolution_credit}
-        return { "Echange_envoyer": sens1, "Echange_recu": sens0}
+        sens0 = {
+            row["date_echange"].strftime("%Y-%m-%d"): row["total_facture"]
+            for row in evolution_credit
+        }
+        return {"Echange_envoyer": sens1, "Echange_recu": sens0}
 
     @staticmethod
     def evolution_par_mois(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"
@@ -194,9 +183,9 @@ class Echanges:
             (date_debut_annee,),
         )
 
-        evolution_credit = cursor.fetchall() 
+        evolution_credit = cursor.fetchall()
 
-        sens1 =  {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
+        sens1 = {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
         query = """
                 SELECT 
                     DATE_FORMAT(date_echange, '%%Y-%%m') AS mois_paiement, 
@@ -217,19 +206,6 @@ class Echanges:
         )
 
         evolution_credit = cursor.fetchall()
-        
 
-        sens0 =  {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
-        return { "Echange_envoyer": sens1, "Echange_recu": sens0}
-    
-
-
-
-
-    
-
-
-
-
-    
-
+        sens0 = {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
+        return {"Echange_envoyer": sens1, "Echange_recu": sens0}

@@ -8,14 +8,12 @@ import json
 class Medicament:
     @staticmethod
     def supprimer_toute_base_donnees(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SHOW TABLES;")
         tables = cursor.fetchall()
         for table in tables:
             cursor.execute(f"DROP TABLE IF EXISTS {table['Tables_in_' + database]};")
         conn.commit()
-        
 
     @staticmethod
     def create_table_medicament(conn):
@@ -40,13 +38,9 @@ class Medicament:
         """
         )
         conn.commit()
-        
-
-        
 
     @staticmethod
     def create_table_new_medicament(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -72,10 +66,9 @@ class Medicament:
         """
         )
         conn.commit()
-        
-    
+
     @staticmethod
-    def ajouter_medicament_code_barre(conn,code_barre):
+    def ajouter_medicament_code_barre(conn, code_barre):
         """
         Ajoute un médicament à la base de données à partir du code-barres.
         Le code-barres est utilisé pour extraire les informations du médicament.
@@ -83,12 +76,12 @@ class Medicament:
         from Backend.Datascraping.extraire_medicament import scrap_page_url
 
         values = scrap_page_url(code_barre)
-        if values[0] is 'Page not found':
+        if values[0] is "Page not found":
             return None
 
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("""INSERT INTO Medicament (
+        cursor.execute(
+            """INSERT INTO Medicament (
             Nom,
             Caracteristique,
             Code_EAN_13,
@@ -101,15 +94,16 @@ class Medicament:
             Classe_Therapeutique,
             Min_Stock,
             Stock_Actuel
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", values)
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            values,
+        )
         conn.commit()
-        
+
         return True
 
-            
-
     @staticmethod
-    def ajouter_medicament(conn,
+    def ajouter_medicament(
+        conn,
         nom,
         caracteristique,
         code_ean_13,
@@ -123,7 +117,6 @@ class Medicament:
         min_stock,
         stock_actuel,
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -146,42 +139,35 @@ class Medicament:
             ),
         )
         conn.commit()
-        
 
     @staticmethod
-    def supprimer_medicament(conn,id_medicament):
-        
+    def supprimer_medicament(conn, id_medicament):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "DELETE FROM Medicament WHERE ID_Medicament = %s;", (id_medicament,)
         )
         conn.commit()
-        
 
     @staticmethod
-    def modifier_medicament(conn,id_medicament, **kwargs):
-        
+    def modifier_medicament(conn, id_medicament, **kwargs):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         columns = [f"{key} = %s" for key in kwargs.keys()]
         values = list(kwargs.values()) + [id_medicament]
         query = f"UPDATE Medicament SET {', '.join(columns)} WHERE ID_Medicament = %s;"
         cursor.execute(query, values)
         conn.commit()
-        
 
     @staticmethod
-    def extraire_medicament(conn,id_medicament):
-        
+    def extraire_medicament(conn, id_medicament):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Medicament WHERE ID_Medicament = %s;", (id_medicament,)
         )
         row = cursor.fetchone()
-        
+
         return dict(row) if row else None
 
-    def effectuer_vente_medicament(conn,id_medicament, quantite_vendu):
-        
+    def effectuer_vente_medicament(conn, id_medicament, quantite_vendu):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         UPDATE Medicament SET Stock_Actuel = Stock_Actuel - %s
@@ -189,10 +175,8 @@ class Medicament:
         """
         cursor.execute(query, (quantite_vendu, id_medicament))
         conn.commit()
-        
 
-    def effectuer_stock_medicament(conn,id_medicament, quantite_vendu):
-        
+    def effectuer_stock_medicament(conn, id_medicament, quantite_vendu):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         UPDATE Medicament SET Stock_Actuel = Stock_Actuel + %s
@@ -200,76 +184,72 @@ class Medicament:
         """
         cursor.execute(query, (quantite_vendu, id_medicament))
         conn.commit()
-        
 
     @staticmethod
-    def extraire_medicament_code_barre(conn,code_barre):
-        
+    def extraire_medicament_code_barre(conn, code_barre):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Medicament WHERE Code_EAN_13 = %s;", (code_barre,)
         )
         row = cursor.fetchone()
-        
+
         return dict(row) if row else None
 
     @staticmethod
-    def extraire_medicament_code_barre_like(conn,pattern):
-        
+    def extraire_medicament_code_barre_like(conn, pattern):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Medicament WHERE Code_EAN_13 LIKE %s;", (f"%{pattern}%",)
         )
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
 
     @staticmethod
-    def extraire_medicament_nom_like(conn,pattern):
-        
+    def extraire_medicament_nom_like(conn, pattern):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",))
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
-    def extraire_medicament_nom_like_name(conn,pattern):
-        
+
+    def extraire_medicament_nom_like_name(conn, pattern):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT Nom FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",))
+        cursor.execute(
+            "SELECT Nom FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",)
+        )
         rows = cursor.fetchall()
-        
-        return [dict(row)['Nom'] for row in rows]
+
+        return [dict(row)["Nom"] for row in rows]
 
     @staticmethod
     def extraire_tous_medicament(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Medicament ORDER BY Nom;")
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
 
     @staticmethod
     def extraire_medicament_quantite_minimale_sup_0(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Medicament WHERE Min_Stock > 0;")
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
-    
+
     @staticmethod
     def extraire_medicament_quantite_minimale_repture(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Medicament WHERE Min_Stock > 0 and Stock_Actuel<Min_Stock; ")
+        cursor.execute(
+            "SELECT * FROM Medicament WHERE Min_Stock > 0 and Stock_Actuel<Min_Stock; "
+        )
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
 
     @staticmethod
     def cloture_journee(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Total des médicaments
@@ -313,8 +293,6 @@ class Medicament:
         )
         total_stock = cursor.fetchone()
         total_stock = total_stock["total_stock"]
-
-        
 
         # Préparer les résultats sous forme de dictionnaire
         statistiques = {

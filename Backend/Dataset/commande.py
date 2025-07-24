@@ -14,7 +14,6 @@ class Commandes:
 
     @staticmethod
     def create_table_commandes(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -34,10 +33,10 @@ class Commandes:
         """
         )
         conn.commit()
-        
 
     @staticmethod
-    def ajouter_commande(conn,
+    def ajouter_commande(
+        conn,
         Liste_Produits,
         id_fournisseur,
         date_commande,
@@ -49,7 +48,6 @@ class Commandes:
         id_salarie,
         status_incl,
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -70,18 +68,16 @@ class Commandes:
             ),
         )
         conn.commit()
-        
 
     @staticmethod
-    def supprimer_commande(conn,id_commande):
-        
+    def supprimer_commande(conn, id_commande):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Commandes WHERE id_commande = %s", (id_commande,))
         conn.commit()
-        
 
     @staticmethod
-    def modifier_commande(conn,
+    def modifier_commande(
+        conn,
         Liste_Produits,
         id_commande,
         id_fournisseur,
@@ -94,7 +90,6 @@ class Commandes:
         id_salarie,
         status_incl,
     ):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -117,11 +112,9 @@ class Commandes:
             ),
         )
         conn.commit()
-        
 
     @staticmethod
-    def complet_commande(conn,id_commande):
-        
+    def complet_commande(conn, id_commande):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -132,45 +125,40 @@ class Commandes:
             (datetime.now(), id_commande),
         )
         conn.commit()
-        
 
     @staticmethod
-    def extraire_commande(conn,id_commande):
-        
+    def extraire_commande(conn, id_commande):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes WHERE id_commande = %s", (id_commande,))
         row = cursor.fetchone()
-        
+
         return dict(row) if row else None
 
     @staticmethod
     def extraire_tous_commandes(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes")
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
 
     @staticmethod
     def extraire_tous_commandes_table(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes WHERE Statut_Reception != 'Complète'")
         rows = cursor.fetchall()
-        
+
         return [dict(row) for row in rows]
 
     @staticmethod
     def get_commandes_jour(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT ID_Commande FROM Commandes WHERE DATE(Date_Commande) = %s""",
             (datetime.now().date(),),
         )
         result = cursor.fetchall()
-        
+
         return [dict(row) for row in result]
 
     @staticmethod
@@ -181,36 +169,33 @@ class Commandes:
             (datetime.now().date(),),
         )
         result = cursor.fetchall()
-        
+
         return [dict(row) for row in result]
 
     @staticmethod
-    def get_commandes_jour_salarie(conn,salarie):
-        
+    def get_commandes_jour_salarie(conn, salarie):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT ID_Commande FROM Commandes WHERE DATE(Date_Commande) = %s AND ID_Salarie = %s""",
             (datetime.now().date(), salarie),
         )
         result = cursor.fetchall()
-        
+
         return [dict(row) for row in result]
 
     @staticmethod
-    def get_commandes_recues_jour_salarie(conn,salarie):
-        
+    def get_commandes_recues_jour_salarie(conn, salarie):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT ID_Commande FROM Commandes WHERE DATE(Date_Reception) = %s AND ID_Salarie = %s""",
             (datetime.now().date(), salarie),
         )
         result = cursor.fetchall()
-        
+
         return [dict(row) for row in result]
 
     @staticmethod
-    def statistic_commande_salarie(conn,salarie):
-        
+    def statistic_commande_salarie(conn, salarie):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_jour = datetime.now().date()
@@ -233,8 +218,6 @@ class Commandes:
 
         commandes_en_attente = total_commandes - commandes_recues
 
-        
-
         return {
             "salarie": salarie,
             "date": date_jour,
@@ -245,7 +228,6 @@ class Commandes:
 
     @staticmethod
     def statistic_commande_generale(conn):
-        
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_jour = datetime.now().date()
@@ -266,8 +248,6 @@ class Commandes:
 
         commandes_en_attente = total_commandes - commandes_recues
 
-        
-
         return {
             "date": date_jour,
             "total_commandes": total_commandes or 0,
@@ -278,14 +258,16 @@ class Commandes:
     @staticmethod
     def cloture_journee(conn):
         commande_cloture = {}
-        commande_cloture[
-            "statistique general"
-        ] = Commandes.statistic_commande_generale(conn)
+        commande_cloture["statistique general"] = Commandes.statistic_commande_generale(
+            conn
+        )
         commande_cloture["statistique par salarie"] = []
         salaries, noms, prenoms = Salaries.get_salaries(conn)
         for salarie, nom, prenom in zip(salaries, noms, prenoms):
             performance = {"salarie": str(nom) + " " + str(prenom)}
-            performance["statistique"] = Commandes.statistic_commande_salarie(conn,salarie)
+            performance["statistique"] = Commandes.statistic_commande_salarie(
+                conn, salarie
+            )
             commande_cloture["statistique par salarie"].append(performance)
 
         return commande_cloture

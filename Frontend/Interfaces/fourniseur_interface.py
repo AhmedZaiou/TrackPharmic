@@ -13,7 +13,6 @@ from qtpy.QtWidgets import (
     QLineEdit,
     QCheckBox,
     QMessageBox,
-    
 )
 from qtpy.QtCore import Qt
 
@@ -35,7 +34,7 @@ class Fournisseur_dash:
         # Widget central
         # Layout principal
         main_layout = QVBoxLayout(self.fournisseur_dash)
-        label_titre = QLabel("Ajouter un fournisseur") 
+        label_titre = QLabel("Ajouter un fournisseur")
         label_titre.setObjectName("TitrePage")
         label_titre.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(label_titre)
@@ -87,14 +86,17 @@ class Fournisseur_dash:
         # Search bar for filtering
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Chercher par 'Nom'...")
-        self.search_bar.textChanged.connect(self.filter_table)  # Trigger filter when text changes
+        self.search_bar.textChanged.connect(
+            self.filter_table
+        )  # Trigger filter when text changes
 
         main_layout.addWidget(self.search_bar)
         main_layout.addWidget(self.table)
 
         self.main_interface.content_layout.addWidget(self.fournisseur_dash)
+
     def filter_table(self):
-        #if not self.all_data:
+        # if not self.all_data:
         #    self.load_all_data()
         # Get the filter text from the search bar
         filter_text = self.search_bar.text().lower()
@@ -131,14 +133,16 @@ class Fournisseur_dash:
         ville = self.ville_input.text()
         pays = self.pays_input.text()
 
-        if not (nom and telephone ):
+        if not (nom and telephone):
             QMessageBox.warning(
                 self.main_interface,
                 "Erreur",
                 "Le nom et telephone sont obligatoires.",
             )
             return
-        Fournisseur.ajouter_fournisseur(self.main_interface.conn,nom, telephone, email, adresse, ville, pays)
+        Fournisseur.ajouter_fournisseur(
+            self.main_interface.conn, nom, telephone, email, adresse, ville, pays
+        )
         self.nom_input.clear()
         self.telephone_input.clear()
         self.email_input.clear()

@@ -19,8 +19,6 @@ from Backend.Dataset.medicament import Medicament
 from Frontend.utils.scraper import Worker, actualiser_medicament
 
 
-
-
 class Acceuil_dash:
     def __init__(self, main_interface):
         self.main_interface = main_interface
@@ -35,7 +33,7 @@ class Acceuil_dash:
 
         # Premier widget: Tableau des médicaments avec date d'expiration < 2 mois
         widget_medicament_expiration = QWidget()
-        label_titre = QLabel("Médicaments expirant dans moins de 2 mois") 
+        label_titre = QLabel("Médicaments expirant dans moins de 2 mois")
         label_titre.setObjectName("TitrePage")
         label_titre.setAlignment(Qt.AlignCenter)
         widget_medicament_expiration_layout = QVBoxLayout(widget_medicament_expiration)
@@ -88,13 +86,15 @@ class Acceuil_dash:
         # actualisation medicaments
         worker = Worker(self.main_interface.conn)
         worker.finished.connect(lambda: print("Actualisation terminée !"))
-        worker.start() 
-        #actualiser_medicament()
+        worker.start()
+        # actualiser_medicament()
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
     def remplire_table_expiration(self):
-        data = Stock.extraire_tous_medicament_with_expiration_date_minim(self.main_interface.conn) 
+        data = Stock.extraire_tous_medicament_with_expiration_date_minim(
+            self.main_interface.conn
+        )
         self.table_widget_medicament_expiration.setRowCount(len(data))
         for index, element in enumerate(data):
             dict_element = dict(element)
@@ -112,7 +112,9 @@ class Acceuil_dash:
             )
 
     def remplire_table_quantit_minim(self):
-        data = Medicament.extraire_medicament_quantite_minimale_repture(self.main_interface.conn)
+        data = Medicament.extraire_medicament_quantite_minimale_repture(
+            self.main_interface.conn
+        )
         self.table_widget_disponibilite.setRowCount(len(data))
         for index, element in enumerate(data):
             dict_element = dict(element)

@@ -119,24 +119,29 @@ class Retour_dash:
 
         main_layout.addLayout(formul_layout)
 
-
         self.medicament_table = QTableWidget(0, 4)  # (0 lignes, 3 colonnes)
-        self.medicament_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.medicament_table.setHorizontalHeaderLabels(["Numéro facture", "Nom","Quantité","Date"])
+        self.medicament_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
+        )
+        self.medicament_table.setHorizontalHeaderLabels(
+            ["Numéro facture", "Nom", "Quantité", "Date"]
+        )
         self.remplire_table_retour()
-        
 
         # Search bar for filtering
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Chercher par 'Numéro facture'...")
-        self.search_bar.textChanged.connect(self.filter_table)  # Trigger filter when text changes
+        self.search_bar.textChanged.connect(
+            self.filter_table
+        )  # Trigger filter when text changes
 
         main_layout.addWidget(self.search_bar)
         main_layout.addWidget(self.medicament_table)
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
+
     def filter_table(self):
-        #if not self.all_data:
+        # if not self.all_data:
         #    self.load_all_data()
         # Get the filter text from the search bar
         filter_text = self.search_bar.text().lower()
@@ -149,10 +154,11 @@ class Retour_dash:
                     self.medicament_table.setRowHidden(row, False)
                 else:
                     self.medicament_table.setRowHidden(row, True)
+
     def remplire_table_retour(self):
         medicaments = Retour.extraire_tous_table_retours(self.main_interface.conn)
         self.medicament_table.setRowCount(len(medicaments))
-        for index, element in enumerate(medicaments): 
+        for index, element in enumerate(medicaments):
             self.medicament_table.setItem(
                 index, 0, QTableWidgetItem(str(element["numero_facture"]))
             )
@@ -164,20 +170,20 @@ class Retour_dash:
             )
             self.medicament_table.setItem(
                 index, 3, QTableWidgetItem(str(element["date_retour"]))
-            ) 
+            )
 
     def confirmation_retour_seul(self):
         quantite_commender_retour = self.quantite_commender_value_ajout.text()
-        date_expiration_medicament = self.date_expiration_medicament_ajout.date().toString(
-            "yyyy-MM-dd"
+        date_expiration_medicament = (
+            self.date_expiration_medicament_ajout.date().toString("yyyy-MM-dd")
         )
         prix_achat_retour = self.prix_achat_medicament_ajout.text()
         code_barre_value_ajout = self.code_barre_value_ajout.text()
         numero_facture = self.numero_facture.text()
         client_iden = self.client_iden.text()
 
-        self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
-            code_barre_value_ajout
+        self.medicament_search = Medicament.extraire_medicament_code_barre(
+            self.main_interface.conn, code_barre_value_ajout
         )
         if (
             not self.medicament_search
@@ -202,7 +208,8 @@ class Retour_dash:
             QMessageBox.Cancel,
         )
         if reply == QMessageBox.Yes:
-            Retour.ajouter_retour(self.main_interface.conn,
+            Retour.ajouter_retour(
+                self.main_interface.conn,
                 self.medicament_search["id_medicament"],
                 prix_achat_retour,
                 now,
@@ -211,7 +218,8 @@ class Retour_dash:
                 self.main_interface.user_session["id_salarie"],
             )
 
-            Stock.ajouter_stock(self.main_interface.conn,
+            Stock.ajouter_stock(
+                self.main_interface.conn,
                 self.medicament_search["id_medicament"],
                 0,
                 self.main_interface.user_session["id_salarie"],

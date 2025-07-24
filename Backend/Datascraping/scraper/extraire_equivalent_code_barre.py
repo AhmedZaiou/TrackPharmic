@@ -7,6 +7,7 @@ import pandas as pd
 import json
 from tqdm import tqdm
 
+
 def rechercher_medicament_par_code_barres(code_barres):
     url = f"https://medicament.ma/?choice=barcode&s={code_barres}"
 
@@ -15,8 +16,8 @@ def rechercher_medicament_par_code_barres(code_barres):
     options.add_argument("--disable-gpu")
     driver = webdriver.Chrome(service=Service(), options=options)
     try:
-        driver.get(url)  
-        url_finale = driver.current_url 
+        driver.get(url)
+        url_finale = driver.current_url
     except Exception as e:
         print(f"Erreur : {e}")
         url_finale = None
@@ -28,9 +29,9 @@ def rechercher_medicament_par_code_barres(code_barres):
 data = pd.read_csv("codes.csv")
 code_barres = {}
 
-for code_barre in tqdm(data['code'].values, desc="Scraping des pages"):
+for code_barre in tqdm(data["code"].values, desc="Scraping des pages"):
     url = rechercher_medicament_par_code_barres(code_barre)
-    code_barres[str(code_barre)] = url   
+    code_barres[str(code_barre)] = url
     if len(code_barres) % 100 == 0:
         with open("codee_url.json", "w", encoding="utf-8") as f:
             json.dump(code_barres, f, ensure_ascii=False, indent=4)

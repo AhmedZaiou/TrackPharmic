@@ -38,15 +38,14 @@ class MainInterface(QMainWindow):
         self.conn = pymysql.connect(
             host=host, user=user, password=password, database=database
         )
-        
+
         t = threading.Thread(target=self.update_value, daemon=True)
         t.start()
-         
 
-    def update_value(self): 
+    def update_value(self):
         while True:
             self.conn.ping(reconnect=True)
-            time.sleep(18)   
+            time.sleep(18)
 
     def create_database(self):
         import json
@@ -66,7 +65,6 @@ class MainInterface(QMainWindow):
         from Backend.Dataset.retour import Retour
         from Backend.Dataset.commande_client import CommandeClient
 
-
         # Medicament.supprimer_toute_base_donnees()
 
         Clients.create_table_clients(self.conn)
@@ -82,7 +80,8 @@ class MainInterface(QMainWindow):
         Salaries.create_table_salaries(self.conn)
         Retour.create_table_retours(self.conn)
         CommandeClient.create_table_commandes_client(self.conn)
-        Salaries.ajouter_salarie(self.conn,
+        Salaries.ajouter_salarie(
+            self.conn,
             "user",
             "prenom",
             "cin",
@@ -107,7 +106,6 @@ class MainInterface(QMainWindow):
         self.main_layout_p = QVBoxLayout(self.central_widget)
 
         self.setCentralWidget(self.central_widget)
-        
 
         self.central_widget = QWidget()
         self.central_widget.setObjectName("main")
@@ -172,7 +170,7 @@ class MainInterface(QMainWindow):
     def login(self):
         login = self.user_entry.text()
         password = self.password_entry.text()
-        self.user_session = Salaries.extraire_salarie_login(self.conn,login, password)
+        self.user_session = Salaries.extraire_salarie_login(self.conn, login, password)
         if self.user_session is None:
             QMessageBox.information(
                 self, "Erreur de connexion", "Mot de passe ou utilisateur incorrect"
@@ -246,7 +244,7 @@ class MainInterface(QMainWindow):
 
         self.list_stock_bouton = self.create_button_with_icon(
             "Disponibilité en stock", stock_gestion_logo
-        ) 
+        )
 
         self.fournisseur_bouton.clicked.connect(self.fournisseur_click)
         self.medicament_bouton.clicked.connect(self.medicament_click)
@@ -306,8 +304,6 @@ class MainInterface(QMainWindow):
         self.ferme_bouton.clicked.connect(self.cloture_clic)
 
         self.list_stock_bouton.clicked.connect(self.list_stock_click)
-
-
 
         # Ajouter des boutons dans le menu vertical du haut
         self.top_menu_layout.addWidget(self.acceuil_bouton)
@@ -402,8 +398,6 @@ class MainInterface(QMainWindow):
         self.list_stock_bouton = self.create_button_with_icon(
             "Disponibilité en stock", stock_gestion_logo
         )
-
-        
 
         self.fournisseur_bouton.clicked.connect(self.fournisseur_click)
         self.medicament_bouton.clicked.connect(self.medicament_click)
@@ -512,13 +506,14 @@ class MainInterface(QMainWindow):
 
         self.main_interface = Commande_dash(self)
 
-    def commande_client_click(self): 
+    def commande_client_click(self):
         from .commande_client import Commande_client
-        
+
         self.main_interface = Commande_client(self)
 
     def credit_click(self):
         from .credit_interface import Credit_dash
+
         self.main_interface = Credit_dash(self)
 
     def echange_click(self):
@@ -546,6 +541,7 @@ class MainInterface(QMainWindow):
 
     def salarie_click(self):
         from .salarie_interface import Salarie_dash
+
         self.main_interface = Salarie_dash(self)
 
     def stock_click(self):

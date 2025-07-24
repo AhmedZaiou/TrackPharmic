@@ -33,7 +33,7 @@ import fitz
 
 import imaplib
 import email
-from email.header import decode_header 
+from email.header import decode_header
 from Backend.Dataset.justificatifs import JustificatifsManager
 from Frontend.utils.utils import smtp_user, smtp_password
 
@@ -63,12 +63,10 @@ class Stock_dash:
         self.justificatifs.clicked.connect(self.justificatifs_fc)
         menu_layout.addWidget(self.justificatifs)
         return menu_layout
-    
+
     def justificatifs_fc(self):
         self.main_interface.clear_content_frame()
         self.main_interface.keyPressEvent = self.keyPressEvent
-
-        
 
         self.Justif_dash = QWidget()
         self.Justif_dash.setObjectName("vente_dash")
@@ -87,13 +85,15 @@ class Stock_dash:
         main_layout.addLayout(menu_layout)
 
         self.Justificatifs_table = QTableWidget(0, 5)
-        self.Justificatifs_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.Justificatifs_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
+        )
         self.Justificatifs_table.setHorizontalHeaderLabels(
             [
                 "ID",
                 "Doté du justificatif",
                 "Description",
-                "filename", 
+                "filename",
                 "ID Justificatif",
             ]
         )
@@ -102,14 +102,16 @@ class Stock_dash:
         self.charger_Justificatifs_table()
 
         self.main_interface.content_layout.addWidget(self.Justif_dash)
-    
+
     def charger_Justificatifs_table(self):
-        self.Liste_justificatifes = JustificatifsManager.lister_justificatifs(self.main_interface.conn)
+        self.Liste_justificatifes = JustificatifsManager.lister_justificatifs(
+            self.main_interface.conn
+        )
         self.Justificatifs_table.setRowCount(len(self.Liste_justificatifes))
         for row, product in enumerate(self.Liste_justificatifes):
             self.Justificatifs_table.setItem(
                 row, 0, QTableWidgetItem(str(product["id"]))
-            ) 
+            )
             self.Justificatifs_table.setItem(
                 row, 1, QTableWidgetItem(str(product["date_reception"]))
             )
@@ -118,12 +120,14 @@ class Stock_dash:
             )
             self.Justificatifs_table.setItem(
                 row, 3, QTableWidgetItem(str(product["filename"]))
-            ) 
+            )
             self.Justificatifs_table.setItem(
                 row, 4, QTableWidgetItem(str(product["mail_id"]))
-            ) 
-    
-    def telecharger_pieces_jointes(self, email_user = smtp_user, email_pass= smtp_password):
+            )
+
+    def telecharger_pieces_jointes(
+        self, email_user=smtp_user, email_pass=smtp_password
+    ):
         imap = imaplib.IMAP4_SSL("imap.gmail.com")
         imap.login(email_user, email_pass)
         print(email_user, email_pass)
@@ -133,7 +137,7 @@ class Stock_dash:
         if status != "OK":
             print("Erreur lors de la récupération des messages.")
             return
-        mail_ids = messages[0].split() 
+        mail_ids = messages[0].split()
         infos_fichiers = []
         for mail_id in mail_ids:
             status, msg_data = imap.fetch(mail_id, "(RFC822)")
@@ -145,37 +149,50 @@ class Stock_dash:
                     date = msg.get("Date")
                     subject, encoding = decode_header(msg.get("Subject"))[0]
                     if isinstance(subject, bytes):
-                        subject = subject.decode(encoding if encoding else "utf-8", errors="ignore")
+                        subject = subject.decode(
+                            encoding if encoding else "utf-8", errors="ignore"
+                        )
                     from_ = msg.get("From")
 
                     for part in msg.walk():
-                        if part.get_content_maintype() == 'multipart':
+                        if part.get_content_maintype() == "multipart":
                             continue
-                        if part.get('Content-Disposition') is None:
+                        if part.get("Content-Disposition") is None:
                             continue
 
                         filename = part.get_filename()
                         if filename:
                             filename, encoding = decode_header(filename)[0]
                             if isinstance(filename, bytes):
-                                filename = filename.decode(encoding if encoding else "utf-8", errors="ignore")
-    
-                            infos_fichiers.append({
-                                "from": from_,
-                                "date": date,
-                                "subject": subject,
-                                "filename": filename, 
-                                "mail_id": mail_id, 
-                            })
-                            JustificatifsManager.ajouter_justificatif(self.main_interface.conn,infos_fichiers[-1]) 
-        imap.logout()
-    
+                                filename = filename.decode(
+                                    encoding if encoding else "utf-8", errors="ignore"
+                                )
 
-    def telecharger_documents(self, email_user = smtp_user, email_pass= smtp_password, mail_id = None, nom_justificatif = None):
+                            infos_fichiers.append(
+                                {
+                                    "from": from_,
+                                    "date": date,
+                                    "subject": subject,
+                                    "filename": filename,
+                                    "mail_id": mail_id,
+                                }
+                            )
+                            JustificatifsManager.ajouter_justificatif(
+                                self.main_interface.conn, infos_fichiers[-1]
+                            )
+        imap.logout()
+
+    def telecharger_documents(
+        self,
+        email_user=smtp_user,
+        email_pass=smtp_password,
+        mail_id=None,
+        nom_justificatif=None,
+    ):
         imap = imaplib.IMAP4_SSL("imap.gmail.com")
         imap.login(email_user, email_pass)
-        imap.select("INBOX") 
-        infos_fichiers = [] 
+        imap.select("INBOX")
+        infos_fichiers = []
         status, msg_data = imap.fetch(mail_id, "(RFC822)")
         if status != "OK":
             imap.logout()
@@ -183,36 +200,32 @@ class Stock_dash:
         for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
-                date = msg.get("Date") 
+                date = msg.get("Date")
 
                 for part in msg.walk():
-                    if part.get_content_maintype() == 'multipart':
+                    if part.get_content_maintype() == "multipart":
                         continue
-                    if part.get('Content-Disposition') is None:
+                    if part.get("Content-Disposition") is None:
                         continue
 
                     filename = part.get_filename()
                     if filename:
                         filename, encoding = decode_header(filename)[0]
                         if isinstance(filename, bytes):
-                            filename = filename.decode(encoding if encoding else "utf-8", errors="ignore")
+                            filename = filename.decode(
+                                encoding if encoding else "utf-8", errors="ignore"
+                            )
                         if filename == nom_justificatif:
                             imap.logout()
                             return part.get_payload(decode=True)
-        
 
-
-    
-
-
-    
-    
     def justificatifs_select(self, row, column):
         print(self.Justificatifs_table.item(0, 3).text())
         mail_id = self.Justificatifs_table.item(row, 4).text()
         nom_justificatif = self.Justificatifs_table.item(row, 3).text()
-        document = self.telecharger_documents(mail_id=mail_id, nom_justificatif=nom_justificatif)
- 
+        document = self.telecharger_documents(
+            mail_id=mail_id, nom_justificatif=nom_justificatif
+        )
 
         doc = fitz.open(stream=document, filetype="pdf")
         container_widget = QWidget()
@@ -221,7 +234,9 @@ class Stock_dash:
         for page_num in range(len(doc)):
             page = doc.load_page(page_num)
             pix = page.get_pixmap()
-            img = QImage(pix.samples, pix.width, pix.height, pix.stride, QImage.Format_RGB888)
+            img = QImage(
+                pix.samples, pix.width, pix.height, pix.stride, QImage.Format_RGB888
+            )
             label = QLabel()
             label.setPixmap(QPixmap.fromImage(img))
             layout.addWidget(label)
@@ -239,7 +254,6 @@ class Stock_dash:
         self.viewer.resize(800, 1000)
         self.viewer.show()
         print("Justificatif selectionner")
-
 
     def reception_commande_fc(self):
         self.show_reception_interface()
@@ -273,7 +287,7 @@ class Stock_dash:
                 "Code commande",
                 "Fourniseur",
                 "Date de comande",
-                #"Noms des medicaments",
+                # "Noms des medicaments",
                 "Statue commande",
             ]
         )
@@ -317,8 +331,8 @@ class Stock_dash:
         self.statue_commande_value = QLabel("")
 
         code_barre = QLabel("Code EAN 13 :")
-        self.code_barre_value = QLabel()#QLineEdit()
-        #self.code_barre_value.setValidator(int_validator)
+        self.code_barre_value = QLabel()  # QLineEdit()
+        # self.code_barre_value.setValidator(int_validator)
         medicament_name = QLabel("Nom de medicament : ")
         self.medicament_name_value = QLabel("")
 
@@ -507,7 +521,9 @@ class Stock_dash:
         self.main_interface.content_layout.addWidget(self.vente_dash)
 
     def remplir_tableau_stock(self):
-        medicaments = Medicament.extraire_medicament_quantite_minimale_sup_0(self.main_interface.conn)
+        medicaments = Medicament.extraire_medicament_quantite_minimale_sup_0(
+            self.main_interface.conn
+        )
         medicaments = [dict(item) for item in medicaments]
         self.medicament_stock_list.setRowCount(len(medicaments))
         for row, medicament in enumerate(medicaments):
@@ -530,16 +546,17 @@ class Stock_dash:
                 id, 0, QTableWidgetItem(str(item["Code_EAN_13"]))
             )
             self.medicament_traiter_commande_list.setItem(
-                id, 1, QTableWidgetItem(str(item['Nom']))
+                id, 1, QTableWidgetItem(str(item["Nom"]))
             )
             self.medicament_traiter_commande_list.setItem(
                 id, 2, QTableWidgetItem(str(item["quantite_actuelle"]))
             )
 
     def finaliser_commande(self):
-        Commandes.complet_commande(self.main_interface.conn,self.commande_current["id_commande"])
+        Commandes.complet_commande(
+            self.main_interface.conn, self.commande_current["id_commande"]
+        )
         self.show_reception_interface()
-        
 
     def confirmation_ajout(self):
         if self.commande_current is None:
@@ -563,14 +580,15 @@ class Stock_dash:
         self.commande_deja_traiter_list.append(
             {
                 "Code_EAN_13": self.medicament_search["Code_EAN_13"],
-                "Nom":self.medicament_search["Nom"],
-                "quantite_actuelle" : self.quantite_commender_value.value(),
+                "Nom": self.medicament_search["Nom"],
+                "quantite_actuelle": self.quantite_commender_value.value(),
             }
         )
         self.remplire_medicament_deja_traiter()
         now = datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S")
-        Stock.ajouter_stock(self.main_interface.conn,
+        Stock.ajouter_stock(
+            self.main_interface.conn,
             self.medicament_search["id_medicament"],
             self.commande_current["id_commande"],
             self.main_interface.user_session["id_salarie"],
@@ -593,7 +611,6 @@ class Stock_dash:
         self.code_barre_value.clear()
         self.quantite_commender_value.clear()
 
-
     def confirmation_ajout_seul(self):
         if self.medicament_search is None:
             QMessageBox.warning(
@@ -606,7 +623,7 @@ class Stock_dash:
         quantite_minimal_medicament = self.quantite_minimal_medicament_ajout.text()
         date_expiration_medicament = (
             self.date_expiration_medicament_ajout.date().toString("yyyy-MM-dd")
-        ) 
+        )
         prix_achat_medicament = self.prix_achat_medicament_ajout.text()
         prix_vente_medicament = self.prix_vente_medicament_ajout.text()
         now = datetime.now()
@@ -619,7 +636,8 @@ class Stock_dash:
             QMessageBox.Cancel,
         )
         if reply == QMessageBox.Yes:
-            Stock.ajouter_stock(self.main_interface.conn,
+            Stock.ajouter_stock(
+                self.main_interface.conn,
                 self.medicament_search["id_medicament"],
                 "0",
                 self.main_interface.user_session["id_salarie"],
@@ -650,13 +668,17 @@ class Stock_dash:
             pass
 
     def charger_carte_table(self):
-        self.commande_en_cours = Commandes.extraire_tous_commandes_table(self.main_interface.conn)
+        self.commande_en_cours = Commandes.extraire_tous_commandes_table(
+            self.main_interface.conn
+        )
         self.cart_table.setRowCount(len(self.commande_en_cours))
         for row, product in enumerate(self.commande_en_cours):
             self.cart_table.setItem(
                 row, 0, QTableWidgetItem(str(product["id_commande"]))
             )
-            fournissuer = Fournisseur.extraire_fournisseur(self.main_interface.conn,product["id_fournisseur"])
+            fournissuer = Fournisseur.extraire_fournisseur(
+                self.main_interface.conn, product["id_fournisseur"]
+            )
 
             self.cart_table.setItem(
                 row, 1, QTableWidgetItem(str(fournissuer["nom_fournisseur"]))
@@ -664,9 +686,9 @@ class Stock_dash:
             self.cart_table.setItem(
                 row, 2, QTableWidgetItem(str(product["date_commande"]))
             )
-            #self.cart_table.setItem(
+            # self.cart_table.setItem(
             #    row, 3, QTableWidgetItem(str(product["Liste_Produits"]))
-            #)
+            # )
             self.cart_table.setItem(
                 row, 3, QTableWidgetItem(str(product["statut_reception"]))
             )
@@ -675,8 +697,8 @@ class Stock_dash:
         self.show_add_stock_interface()
 
         self.commande_current = dict(self.commande_en_cours[row])
-        self.fournisseur_selectionner = Fournisseur.extraire_fournisseur(self.main_interface.conn,
-            self.commande_current["id_fournisseur"]
+        self.fournisseur_selectionner = Fournisseur.extraire_fournisseur(
+            self.main_interface.conn, self.commande_current["id_fournisseur"]
         )
 
         self.fournisseur_name_value.setText(
@@ -696,8 +718,10 @@ class Stock_dash:
             self.medicament_commande_list.setItem(id, 0, QTableWidgetItem(str(item[0])))
             self.medicament_commande_list.setItem(id, 1, QTableWidgetItem(str(item[1])))
             self.medicament_commande_list.setItem(id, 2, QTableWidgetItem(str(item[2])))
-        
-        self.commande_deja_traiter_list = Stock.get_medicament_commande(self.main_interface.conn,self.commande_current['id_commande'])
+
+        self.commande_deja_traiter_list = Stock.get_medicament_commande(
+            self.main_interface.conn, self.commande_current["id_commande"]
+        )
 
         self.remplire_medicament_deja_traiter()
 
@@ -739,8 +763,8 @@ class Stock_dash:
             print("Erreurs")
 
     def remplir_medicament_ajout(self, code_barre_scanner):
-        self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
-            code_barre_scanner
+        self.medicament_search = Medicament.extraire_medicament_code_barre(
+            self.main_interface.conn, code_barre_scanner
         )
         if self.medicament_search is None:
             reply = QMessageBox.question(
@@ -753,15 +777,14 @@ class Stock_dash:
 
             if reply == QMessageBox.Yes:
                 from .medicament_interface import Medicament_dash
+
                 self.main_interface = Medicament_dash(self.main_interface)
         else:
             self.medicament_search = dict(self.medicament_search)
             self.quantite_minimal_medicament_ajout.setText(
                 str(self.medicament_search["Min_Stock"])
             )
-            self.prix_vente_medicament_ajout.setText(
-                str(self.medicament_search["PPV"])
-            )
+            self.prix_vente_medicament_ajout.setText(str(self.medicament_search["PPV"]))
 
     def keyPressEvent(self, event):
         try:
@@ -779,11 +802,11 @@ class Stock_dash:
             else:
                 self.code_barre_scanner += key  # Ajouter le caractère au code en cours
         except:
-            print('Erreur')
+            print("Erreur")
 
     def remplir_medicament_cases(self, code_barre_scanner):
-        self.medicament_search = Medicament.extraire_medicament_code_barre(self.main_interface.conn,
-            code_barre_scanner
+        self.medicament_search = Medicament.extraire_medicament_code_barre(
+            self.main_interface.conn, code_barre_scanner
         )
         if self.medicament_search is None:
             reply = QMessageBox.question(
@@ -796,15 +819,12 @@ class Stock_dash:
 
             if reply == QMessageBox.Yes:
                 from .medicament_interface import Medicament_dash
+
                 self.main_interface = Medicament_dash(self.main_interface)
         else:
             self.medicament_search = dict(self.medicament_search)
             self.quantite_minimal_medicament.setText(
                 str(self.medicament_search["Min_Stock"])
             )
-            self.medicament_name_value.setText(
-                str(self.medicament_search["Nom"])
-            )
-            self.prix_vente_medicament.setText(
-                str(self.medicament_search["PPV"])
-            )
+            self.medicament_name_value.setText(str(self.medicament_search["Nom"]))
+            self.prix_vente_medicament.setText(str(self.medicament_search["PPV"]))
