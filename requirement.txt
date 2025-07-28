@@ -17,3 +17,5 @@ openpyxl
 beautifulsoup4
 selenium
 dotenv
+fitz
+qrcode
