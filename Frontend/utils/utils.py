@@ -3,11 +3,11 @@ from qtpy.QtGui import QIntValidator, QDoubleValidator
 from Frontend.utils.validators import *
 from qtpy.QtGui import QRegularExpressionValidator
 from qtpy.QtCore import QRegularExpression
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import os
 
 
-load_dotenv("config.env")
+#load_dotenv("config.env")
 
 
 current_directory = Path(__file__).parent
@@ -58,50 +58,30 @@ ferme_logo = f"{Front_end}/images/ferme.png"
 retour_logo = f"{Front_end}/images/retour.png"
 font_path = f"{Front_end}/Monopoly.ttf"
 
-# sumatra_path =r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
+sumatra_path =r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
-sumatra_path = os.getenv(
-    "sumatra_path"
-)  # r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 
 # Informations de connexion Gmail
-smtp_server = os.getenv("smtp_server")
-smtp_port = os.getenv("smtp_port")
-smtp_user = os.getenv("smtp_user")
-smtp_password = os.getenv("smtp_password")
+smtp_server = 'smtp.gmail.com'
+smtp_port = 587
+smtp_user = 'rachadpharmacie@gmail.com'
+smtp_password = "roox neod xzig pemb"
 # Définition de l'expéditeur et du destinataire
 sender_email = smtp_user
+ 
 
 
-# Informations de connexion à la base de données et facture Pharmacie Rachad Taza
-"""
 host = "srv1905.hstgr.io"
 user = "u791384722_pharma"
 password = "@sCM^n4L"
 database = "u791384722_pharma"
-"""
 
-"""Name_pharma = "RACHAD TAZA"
+Name_pharma = "RACHAD TAZA"
 Email_pharma = "bichrjamai@icloud.com"
-receiver_email =  "zaiou.ahm@gmail.com" #"bichrjamai@icloud.com" #
+receiver_email = "bichrjamai@icloud.com" # "bichrjamai@icloud.com" #
 Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
-Tel_pharma = "0535285298, 0680061368"""
-
-
-# data base original
-
-
-host = os.getenv("host")
-user = os.getenv("user")
-password = os.getenv("password")
-database = os.getenv("database")
-
-Name_pharma = os.getenv("Name_pharma")
-Email_pharma = os.getenv("Email_pharma")
-receiver_email = os.getenv("receiver_email")  # "bichrjamai@icloud.com" #
-Adresse_pharma = os.getenv("Adresse_pharma")
-Tel_pharma = os.getenv("Tel_pharma")
+Tel_pharma = "0535285298, 0680061368"
 
 
 from PyQt5.QtWidgets import QMessageBox
@@ -127,3 +107,21 @@ def calculate_check_digit(ean12):
     remainder = total % 10
     check_digit = (10 - remainder) % 10
     return check_digit
+
+
+# Informations de connexion à la base de données et facture Pharmacie Rachad Taza
+"""
+host = "srv1905.hstgr.io"
+user = "u791384722_pharma"
+password = "@sCM^n4L"
+database = "u791384722_pharma"
+"""
+
+"""Name_pharma = "RACHAD TAZA"
+Email_pharma = "bichrjamai@icloud.com"
+receiver_email =  "zaiou.ahm@gmail.com" #"bichrjamai@icloud.com" #
+Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
+Tel_pharma = "0535285298, 0680061368"""
+
+
+# data base original
