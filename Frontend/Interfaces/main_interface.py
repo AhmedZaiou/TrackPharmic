@@ -13,6 +13,7 @@ from qtpy.QtWidgets import (
     QLineEdit,
     QMessageBox,
 )
+from PyQt5.QtCore import QTimer
 from qtpy.QtCore import Qt, QSize
 from qtpy.QtGui import QPixmap, QIcon
 import threading
@@ -601,6 +602,12 @@ class MainInterface(QMainWindow):
             button.setIconSize(QSize(32, 32))  # Définit la taille de l'icône
         else:
             print(f"L'image '{icon_path}' n'a pas été trouvée ou est invalide.")
+
+        def handle_click():
+            button.setEnabled(False)  # Désactiver
+            QTimer.singleShot(1000, lambda: button.setEnabled(True))  # Réactiver après délai
+
+        button.clicked.connect(handle_click)
         return button
 
     def create_menus(self):
