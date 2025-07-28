@@ -45,7 +45,7 @@ class MainInterface(QMainWindow):
     def update_value(self):
         while True:
             self.conn.ping(reconnect=True)
-            time.sleep(18)
+            time.sleep(10)
 
     def create_database(self):
         import json
