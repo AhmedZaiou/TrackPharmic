@@ -604,8 +604,19 @@ class MainInterface(QMainWindow):
             print(f"L'image '{icon_path}' n'a pas été trouvée ou est invalide.")
 
         def handle_click():
-            button.setEnabled(False)  # Désactiver
-            QTimer.singleShot(1000, lambda: button.setEnabled(True))  # Réactiver après délai
+
+
+            app = QApplication.instance()
+
+            # Désactiver toute l'application
+            for widget in app.allWidgets():
+                widget.setEnabled(False)
+            cooldown_s = 1
+
+            # Réactiver après cooldown (converti en ms)
+            QTimer.singleShot(int(cooldown_s * 1000), lambda: [
+                w.setEnabled(True) for w in app.allWidgets()
+            ])
 
         button.clicked.connect(handle_click)
         return button
