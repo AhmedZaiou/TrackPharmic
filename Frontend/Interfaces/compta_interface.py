@@ -156,9 +156,9 @@ class Compta_dash:
             "retours": list(retour_jours.values())[1],
             "ventes": list(ventes_jours.values())[1],
         }
-        self.all_data_jour = self.generer_all_data_jour(
-            30
-        )  # Générer des données aléatoires pour les 30 derniers jours
+        #self.all_data_jour = self.generer_all_data_jour(
+        #    30
+        #)  # Générer des données aléatoires pour les 30 derniers jours
 
         credit_mois = Credit.evolution_par_mois(self.main_interface.conn)
         echanges_mois = Echanges.evolution_par_mois(self.main_interface.conn)
@@ -185,9 +185,9 @@ class Compta_dash:
             "retours": list(retour_mois.values())[1],
             "ventes": list(ventes_mois.values())[1],
         }
-        self.all_data_moi = self.generer_all_data_mois(
-            12
-        )  # Générer des données aléatoires pour les 12 derniers mois
+        #self.all_data_moi = self.generer_all_data_mois(
+        #    12
+        #)  # Générer des données aléatoires pour les 12 derniers mois
 
         aujourdhui = datetime.today().date()
 
@@ -356,9 +356,9 @@ class Compta_dash:
             "ventes": list(ventes_jours.values())[1],
         }
 
-        self.all_data_jour = self.generer_all_data_jour(
-            30
-        )  # Générer des données aléatoires pour les 30 derniers jours
+        #self.all_data_jour = self.generer_all_data_jour(
+        #    30
+        #)  # Générer des données aléatoires pour les 30 derniers jours
 
         # Generate and display figures
         self.generate_plots_quotidiennes()
@@ -406,9 +406,9 @@ class Compta_dash:
             "retours": list(retour_mois.values())[1],
             "ventes": list(ventes_mois.values())[1],
         }
-        self.all_data_moi = self.generer_all_data_mois(
-            12
-        )  # Générer des données aléatoires pour les 12 derniers mois
+        #self.all_data_moi = self.generer_all_data_mois(
+        #    12
+        #)  # Générer des données aléatoires pour les 12 derniers mois
 
         # Generate and display figures
         self.generate_plots_mensuelles()
