@@ -378,12 +378,16 @@ class Medicament:
     @staticmethod
     def extraire_tous_new_medicament(conn):
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
+        try : 
+            cursor.execute(
             "SELECT * FROM Medicament WHERE Code_EAN_13 IS NULL ORDER BY Nom;"
-        )
-        rows = cursor.fetchall()
+            )
+            rows = cursor.fetchall()
 
-        return [dict(row) for row in rows]
+            return [dict(row) for row in rows]
+        except:
+            return []
+        
 
     @staticmethod
     def extraire_medicament_quantite_minimale_sup_0(conn):

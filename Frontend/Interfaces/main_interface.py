@@ -44,8 +44,15 @@ class MainInterface(QMainWindow):
 
     def update_value(self):
         while True:
-            self.conn.ping(reconnect=True)
-            time.sleep(10)
+            try:
+                # Vérifie si la connexion est toujours valide
+                self.conn.ping(reconnect=True)
+            except Exception:
+                print("Reconnexion MySQL...")
+                self.conn = pymysql.connect(
+                    host=host, user=user, password=password, database=database
+                )            
+            time.sleep(3)
 
     def create_database(self):
         import json

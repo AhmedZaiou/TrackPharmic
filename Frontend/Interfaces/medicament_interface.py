@@ -359,27 +359,30 @@ class Medicament_dash:
                     self.medicament_table.setRowHidden(row, True)
 
     def remplire_table_medicamen(self):
-        medicaments = Medicament.extraire_tous_medicament(self.main_interface.conn)
-        self.medicament_table.setRowCount(len(medicaments))
-        for index, element in enumerate(medicaments):
-            self.medicament_table.setItem(
-                index, 0, QTableWidgetItem(str(element["id_medicament"]))
-            )
-            self.medicament_table.setItem(
-                index, 1, QTableWidgetItem(str(element["Code_EAN_13"]))
-            )
-            self.medicament_table.setItem(
-                index, 2, QTableWidgetItem(str(element["Nom"]))
-            )
-            self.medicament_table.setItem(
-                index, 3, QTableWidgetItem(str(element["Présentation"]))
-            )
-            self.medicament_table.setItem(
-                index, 4, QTableWidgetItem(str(element["PPV"]))
-            )
-            self.medicament_table.setItem(
-                index, 5, QTableWidgetItem(str(element["Min_Stock"]))
-            )
+        try:
+            medicaments = Medicament.extraire_tous_medicament(self.main_interface.conn)
+            self.medicament_table.setRowCount(len(medicaments))
+            for index, element in enumerate(medicaments):
+                self.medicament_table.setItem(
+                    index, 0, QTableWidgetItem(str(element["id_medicament"]))
+                )
+                self.medicament_table.setItem(
+                    index, 1, QTableWidgetItem(str(element["Code_EAN_13"]))
+                )
+                self.medicament_table.setItem(
+                    index, 2, QTableWidgetItem(str(element["Nom"]))
+                )
+                self.medicament_table.setItem(
+                    index, 3, QTableWidgetItem(str(element["Présentation"]))
+                )
+                self.medicament_table.setItem(
+                    index, 4, QTableWidgetItem(str(element["PPV"]))
+                )
+                self.medicament_table.setItem(
+                    index, 5, QTableWidgetItem(str(element["Min_Stock"]))
+                )
+        except Exception as e:
+            print(f"Erreur lors de l'extraction des médicaments : {e}")
 
     def remplire_table_new_medicamen(self):
         medicaments = Medicament.extraire_tous_new_medicament(self.main_interface.conn)
