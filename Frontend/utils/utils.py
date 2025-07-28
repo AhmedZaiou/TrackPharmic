@@ -5,6 +5,7 @@ from qtpy.QtGui import QRegularExpressionValidator
 from qtpy.QtCore import QRegularExpression
 #from dotenv import load_dotenv
 import os
+import pymysql
 
 
 #load_dotenv("config.env")
@@ -84,7 +85,30 @@ Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
 Tel_pharma = "0535285298, 0680061368"
 
 
+
+
+
+def reconnexion_database(conn):
+    """
+    Reconnect to the database using the stored credentials.
+
+    
+    """
+    try:
+                # Vérifie si la connexion est toujours valide
+        conn.ping(reconnect=True)
+        return conn
+    except Exception: 
+        return pymysql.connect(
+            host=host, user=user, password=password, database=database
+        ) 
+    
+
+
 from PyQt5.QtWidgets import QMessageBox
+
+
+
 
 
 def confirm_sale(interface, titre, message):

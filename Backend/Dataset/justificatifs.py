@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 class JustificatifsManager:
     @staticmethod
     def create_table_justificatifs(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -27,6 +28,7 @@ class JustificatifsManager:
 
     @staticmethod
     def ajouter_justificatif(conn, data_dict):
+        conn = reconnexion_database(conn)
         """
         data_dict: dict like
         {
@@ -70,6 +72,7 @@ class JustificatifsManager:
 
     @staticmethod
     def extraire_justificatif(conn, id_justificatif):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -84,12 +87,14 @@ class JustificatifsManager:
 
     @staticmethod
     def supprimer_justificatif(conn, id_justificatif):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Justificatifs WHERE id = %s", (id_justificatif,))
         conn.commit()
 
     @staticmethod
     def lister_justificatifs(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """

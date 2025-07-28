@@ -7,7 +7,8 @@ import json
 
 class Medicament:
     @staticmethod
-    def supprimer_toute_base_donnees(conn):
+    def supprimer_toute_base_donnees(conn): 
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SHOW TABLES;")
         tables = cursor.fetchall()
@@ -17,6 +18,7 @@ class Medicament:
 
     @staticmethod
     def create_table_new_medicament(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -46,6 +48,7 @@ class Medicament:
 
     @staticmethod
     def ajouter_medicament_code_barre(conn, code_barre):
+        conn = reconnexion_database(conn)
         """
         Ajoute un médicament à la base de données à partir du code-barres.
         Le code-barres est utilisé pour extraire les informations du médicament.
@@ -105,6 +108,7 @@ class Medicament:
 
     @staticmethod
     def ajouter_medicament_data_frame(conn, dataframe):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.executemany(
             """
@@ -154,6 +158,7 @@ class Medicament:
         Stock_Actuel,
         url_medicament,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -202,6 +207,7 @@ class Medicament:
 
     @staticmethod
     def supprimer_medicament(conn, id_medicament):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "DELETE FROM Medicament WHERE id_medicament = %s;", (id_medicament,)
@@ -210,6 +216,7 @@ class Medicament:
     
     @staticmethod
     def supprimer_medicament_url(conn, url_medicament):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "DELETE FROM Medicament WHERE url_medicament = %s;", (url_medicament,)
@@ -238,6 +245,7 @@ class Medicament:
         Stock_Actuel,
         url_medicament,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = f"UPDATE Medicament SET Code_EAN_13 = %s, \
                     Nom = %s, \
@@ -283,6 +291,7 @@ class Medicament:
 
     @staticmethod
     def extraire_medicament(conn, id_medicament):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Medicament WHERE id_medicament = %s;", (id_medicament,)
@@ -293,6 +302,7 @@ class Medicament:
 
     @staticmethod
     def effectuer_vente_medicament(conn, id_medicament, quantite_vendu):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         UPDATE Medicament SET Stock_Actuel = Stock_Actuel - %s
@@ -303,6 +313,7 @@ class Medicament:
 
     @staticmethod
     def test_existance_url(conn, url):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         SELECT 1 FROM Medicament WHERE url_medicament = %s LIMIT 1;
@@ -313,6 +324,7 @@ class Medicament:
         return result is not None
 
     def effectuer_stock_medicament(conn, id_medicament, quantite_vendu):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         query = """
         UPDATE Medicament SET Stock_Actuel = Stock_Actuel + %s
@@ -323,6 +335,7 @@ class Medicament:
 
     @staticmethod
     def get_medicament_by_code_barre(conn, code_barre):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Medicament WHERE Code_EAN_13 = %s;", (code_barre,)
@@ -333,6 +346,7 @@ class Medicament:
 
     @staticmethod
     def extraire_medicament_code_barre(conn, code_barre):
+        conn = reconnexion_database(conn)
         row = Medicament.get_medicament_by_code_barre(conn, code_barre)
         if not row:
             Medicament.ajouter_medicament_code_barre(conn, code_barre)
@@ -340,6 +354,7 @@ class Medicament:
 
     @staticmethod
     def extraire_medicament_code_barre_like(conn, pattern):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Medicament WHERE Code_EAN_13 LIKE %s;", (f"%{pattern}%",)
@@ -350,6 +365,7 @@ class Medicament:
 
     @staticmethod
     def extraire_medicament_nom_like(conn, pattern):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",))
         rows = cursor.fetchall()
@@ -357,6 +373,7 @@ class Medicament:
         return [dict(row) for row in rows]
 
     def extraire_medicament_nom_like_name(conn, pattern):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT Nom FROM Medicament WHERE Nom LIKE %s;", (f"%{pattern}%",)
@@ -367,6 +384,7 @@ class Medicament:
 
     @staticmethod
     def extraire_tous_medicament(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Medicament WHERE Code_EAN_13 IS NOT NULL ORDER BY Nom;"
@@ -377,20 +395,21 @@ class Medicament:
 
     @staticmethod
     def extraire_tous_new_medicament(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        try : 
-            cursor.execute(
-            "SELECT * FROM Medicament WHERE Code_EAN_13 IS NULL ORDER BY Nom;"
-            )
-            rows = cursor.fetchall()
+        
+        cursor.execute(
+        "SELECT * FROM Medicament WHERE Code_EAN_13 IS NULL ORDER BY Nom;"
+        )
+        rows = cursor.fetchall()
 
-            return [dict(row) for row in rows]
-        except:
-            return []
+        return [dict(row) for row in rows]
+        
         
 
     @staticmethod
     def extraire_medicament_quantite_minimale_sup_0(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Medicament WHERE Min_Stock > 0;")
         rows = cursor.fetchall()
@@ -399,6 +418,7 @@ class Medicament:
 
     @staticmethod
     def extraire_medicament_quantite_minimale_repture(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Medicament WHERE Min_Stock > 0 and Stock_Actuel<Min_Stock; "
@@ -409,6 +429,7 @@ class Medicament:
 
     @staticmethod
     def cloture_journee(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Total des médicaments

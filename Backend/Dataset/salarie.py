@@ -8,6 +8,7 @@ import json
 class Salaries:
     @staticmethod
     def create_table_salaries(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -47,6 +48,7 @@ class Salaries:
         grade,
         password_hash,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -93,6 +95,7 @@ class Salaries:
         grade,
         password_hash,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -121,6 +124,7 @@ class Salaries:
 
     @staticmethod
     def extraire_salarie(conn, id_salarie):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Salaries WHERE id_salarie = %s", (id_salarie,))
         row = cursor.fetchone()
@@ -129,6 +133,7 @@ class Salaries:
 
     @staticmethod
     def extraire_salarie_login(conn, nom, password_hash):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Salaries WHERE nom = %s AND password_hash = %s",
@@ -140,6 +145,7 @@ class Salaries:
 
     @staticmethod
     def extraire_tous_salaries(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Salaries")
         rows = cursor.fetchall()
@@ -148,6 +154,7 @@ class Salaries:
 
     @staticmethod
     def get_salaries(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""SELECT id_salarie, nom, prenom FROM Salaries""")
         result = cursor.fetchall()

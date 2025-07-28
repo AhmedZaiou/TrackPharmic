@@ -14,6 +14,7 @@ class CommandeClient:
 
     @staticmethod
     def create_table_commandes_client(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -54,6 +55,7 @@ class CommandeClient:
         now_str,
         statut_de_commande,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -84,6 +86,7 @@ class CommandeClient:
 
     @staticmethod
     def modifier_statut_commande_client(conn, numero_facture, nouveau_statut):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -97,6 +100,7 @@ class CommandeClient:
 
     @staticmethod
     def get_commande(conn, numero_facture):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -112,6 +116,7 @@ class CommandeClient:
 
     @staticmethod
     def get_all_commandes_client(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -132,6 +137,7 @@ class CommandeClient:
 
     @staticmethod
     def cloture_journee(conn, date_jour=None):
+        conn = reconnexion_database(conn)
         if date_jour is None:
             date_jour = datetime.now().strftime("%Y-%m-%d")
 

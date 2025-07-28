@@ -12,6 +12,7 @@ class Retour:
 
     @staticmethod
     def create_table_retours(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -38,6 +39,7 @@ class Retour:
         numero_facture,
         id_salarie,
     ):
+        conn = reconnexion_database(conn)
         Retour.create_table_retours(conn)
 
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -59,6 +61,7 @@ class Retour:
 
     @staticmethod
     def extraire_tous_retours(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Retours")
         rows = cursor.fetchall()
@@ -66,6 +69,7 @@ class Retour:
         return [dict(row) for row in rows]
 
     def extraire_tous_table_retours(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT 
@@ -91,6 +95,7 @@ class Retour:
 
     @staticmethod
     def extraire_retours_par_numero_facture(conn, numero_facture):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Retours WHERE numero_facture = %s", (numero_facture,)
@@ -101,6 +106,7 @@ class Retour:
 
     @staticmethod
     def cloture_journee(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         # Get today's date in YYYY-MM-DD format
@@ -173,6 +179,7 @@ class Retour:
 
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -197,6 +204,7 @@ class Retour:
 
     @staticmethod
     def evolution_par_mois(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"

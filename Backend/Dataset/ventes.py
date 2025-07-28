@@ -14,6 +14,7 @@ class Ventes:
 
     @staticmethod
     def create_table_ventes(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -50,6 +51,7 @@ class Ventes:
         id_salarie,
         id_stock_item,
     ):
+        conn = reconnexion_database(conn)
         Ventes.create_table_ventes(conn)
 
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -76,6 +78,7 @@ class Ventes:
 
     @staticmethod
     def supprimer_vente(conn, id_vente):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Ventes WHERE id_vente = %s", (id_vente,))
         conn.commit()
@@ -96,6 +99,7 @@ class Ventes:
         id_salarie,
         id_stock_item,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -122,6 +126,7 @@ class Ventes:
 
     @staticmethod
     def extraire_vente(conn, id_vente):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Ventes WHERE id_vente = %s", (id_vente,))
         row = cursor.fetchone()
@@ -130,6 +135,7 @@ class Ventes:
 
     @staticmethod
     def extraire_tous_ventes(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Ventes")
         rows = cursor.fetchall()
@@ -138,6 +144,7 @@ class Ventes:
 
     @staticmethod
     def get_transactions_jour(conn, salarie):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT id_vente FROM Ventes WHERE date_vente = %s AND id_salarie = %s""",
@@ -149,6 +156,7 @@ class Ventes:
 
     @staticmethod
     def get_total_vendu_salarie(conn, salarie):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT SUM(total_facture) as totalVendu FROM Ventes WHERE id_salarie = %s""",
@@ -160,6 +168,7 @@ class Ventes:
 
     @staticmethod
     def get_statistique(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""SELECT * FROM Ventes""")
         result = cursor.fetchall()
@@ -168,6 +177,7 @@ class Ventes:
 
     @staticmethod
     def cloture_journee(conn, date_jour=None):
+        conn = reconnexion_database(conn)
         if date_jour is None:
             date_jour = datetime.now().strftime("%Y-%m-%d")
 
@@ -199,6 +209,7 @@ class Ventes:
 
     @staticmethod
     def get_evolution(conn):
+        conn = reconnexion_database(conn)
         d_now = datetime.now().date()
         res = []
         start_year = date(d_now.year, 1, 1)
@@ -230,6 +241,7 @@ class Ventes:
 
     @staticmethod
     def extraire_ventes_par_numero_facture(conn, numero_facture):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Ventes WHERE numero_facture = %s", (numero_facture,)
@@ -240,6 +252,7 @@ class Ventes:
 
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -264,6 +277,7 @@ class Ventes:
 
     @staticmethod
     def evolution_par_mois(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"

@@ -11,6 +11,7 @@ class Payment:
 
     @staticmethod
     def create_table_payment(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -30,6 +31,7 @@ class Payment:
     def ajouter_payment(
         conn, id_client, numero_facture, montant_paye, date_paiement, id_salarie
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -42,6 +44,7 @@ class Payment:
 
     @staticmethod
     def extraire_payment_with_id_client(conn, id_client):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Payment WHERE id_client = %s", (id_client,))
         rows = cursor.fetchall()
@@ -50,6 +53,7 @@ class Payment:
 
     @staticmethod
     def extraire_paiements_par_numero_facture(conn, numero_facture):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Payment WHERE numero_facture = %s", (numero_facture,)
@@ -60,6 +64,7 @@ class Payment:
 
     @staticmethod
     def get_total_paiement(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""SELECT SUM(montant_paye) as totalPaiement FROM Payment""")
         result = cursor.fetchone()
@@ -68,6 +73,7 @@ class Payment:
 
     @staticmethod
     def get_total_paiement_salarie(conn, salarie):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT SUM(montant_paye) as totalPaiement FROM Payment WHERE id_salarie = %s""",
@@ -79,6 +85,7 @@ class Payment:
 
     @staticmethod
     def cloture_journee(conn):
+        conn = reconnexion_database(conn)
         # Connexion à la base de données
 
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -153,6 +160,7 @@ class Payment:
 
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -177,6 +185,7 @@ class Payment:
 
     @staticmethod
     def evolution_par_mois(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"

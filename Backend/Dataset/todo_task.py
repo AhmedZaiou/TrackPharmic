@@ -6,6 +6,7 @@ from datetime import datetime
 class Todo_Task:
     @staticmethod
     def create_table_todo_task(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -21,6 +22,7 @@ class Todo_Task:
 
     @staticmethod
     def add_todo_task(conn, task, date_execution):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -34,6 +36,7 @@ class Todo_Task:
     # update date execution where task = task
     @staticmethod
     def update_todo_task(conn, task, date_execution=None):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -47,6 +50,7 @@ class Todo_Task:
 
     @staticmethod
     def scraper_today(conn):
+        conn = reconnexion_database(conn)
         date_execution = datetime.today().date()
         task = "get_new_medicament"
 
@@ -63,6 +67,7 @@ class Todo_Task:
 
     @staticmethod
     def test_scrapper(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """

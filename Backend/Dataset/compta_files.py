@@ -14,6 +14,7 @@ class ComptaFilesGeneration:
 
     @staticmethod
     def extraire_vente(conn):
+        conn = reconnexion_database(conn)
         request = """SELECT
                         V.id_vente,
                         V.date_vente,

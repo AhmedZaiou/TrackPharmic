@@ -6,6 +6,7 @@ from datetime import datetime
 class Clients:
     @staticmethod
     def create_table_clients(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -29,6 +30,7 @@ class Clients:
     def ajouter_client(
         conn, nom, prenom, cin, telephone, email, adresse, max_credit, credit_actuel
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -41,6 +43,7 @@ class Clients:
 
     @staticmethod
     def supprimer_client(conn, id_client):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Clients WHERE id_client = %s", (id_client,))
         conn.commit()
@@ -58,6 +61,7 @@ class Clients:
         max_credit,
         credit_actuel,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -92,6 +96,7 @@ class Clients:
         adresse,
         max_credit,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -115,6 +120,7 @@ class Clients:
 
     @staticmethod
     def ajouter_credit_client(conn, id_client, montant_credit):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -128,6 +134,7 @@ class Clients:
 
     @staticmethod
     def extraire_client(conn, id_client):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients WHERE id_client = %s", (id_client,))
         row = cursor.fetchone()
@@ -136,6 +143,7 @@ class Clients:
 
     @staticmethod
     def extraire_client_info(conn, nom, prenom, cin):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Clients WHERE nom = %s AND prenom = %s AND cin = %s",
@@ -147,6 +155,7 @@ class Clients:
 
     @staticmethod
     def extraire_client_nom_like(conn, nom_part):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT nom, prenom, cin FROM Clients WHERE nom LIKE %s",
@@ -158,6 +167,7 @@ class Clients:
 
     @staticmethod
     def extraire_tous_clients(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients order by nom;")
         rows = cursor.fetchall()
@@ -166,6 +176,7 @@ class Clients:
 
     @staticmethod
     def extraire_tous_clients_with_credit(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Clients WHERE credit_actuel > 0 ORDER BY nom; ")
         rows = cursor.fetchall()
@@ -174,6 +185,7 @@ class Clients:
 
     @staticmethod
     def cloture_journee(conn, date_jour=None):
+        conn = reconnexion_database(conn)
         if date_jour is None:
             date_jour = datetime.now().strftime("%Y-%m-%d")
 

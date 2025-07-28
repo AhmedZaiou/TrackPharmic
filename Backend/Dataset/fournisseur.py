@@ -8,6 +8,7 @@ import json
 class Fournisseur:
     @staticmethod
     def create_table_fournisseur(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -29,6 +30,7 @@ class Fournisseur:
     def ajouter_fournisseur(
         conn, nom_fournisseur, telephone, email, adresse, ville, pays
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -41,6 +43,7 @@ class Fournisseur:
 
     @staticmethod
     def supprimer_fournisseur(conn, id_fournisseur):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             "DELETE FROM Fournisseur WHERE id_fournisseur = %s", (id_fournisseur,)
@@ -51,6 +54,7 @@ class Fournisseur:
     def modifier_fournisseur(
         conn, id_fournisseur, nom_fournisseur, telephone, email, adresse, ville, pays
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -64,6 +68,7 @@ class Fournisseur:
 
     @staticmethod
     def extraire_fournisseur(conn, id_fournisseur):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Fournisseur WHERE id_fournisseur = %s", (id_fournisseur,)
@@ -74,6 +79,7 @@ class Fournisseur:
 
     @staticmethod
     def extraire_fournisseur_nom(conn, nom_fournisseur):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Fournisseur WHERE nom_fournisseur = %s", (nom_fournisseur,)
@@ -84,6 +90,7 @@ class Fournisseur:
 
     @staticmethod
     def extraire_fournisseur_nom_like(conn, nom_fournisseur_like):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Fournisseur WHERE nom_fournisseur LIKE %s",
@@ -95,6 +102,7 @@ class Fournisseur:
 
     @staticmethod
     def extraire_tous_fournisseurs(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Fournisseur")
         rows = cursor.fetchall()

@@ -14,6 +14,7 @@ class Commandes:
 
     @staticmethod
     def create_table_commandes(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -48,6 +49,7 @@ class Commandes:
         id_salarie,
         status_incl,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -71,6 +73,7 @@ class Commandes:
 
     @staticmethod
     def supprimer_commande(conn, id_commande):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Commandes WHERE id_commande = %s", (id_commande,))
         conn.commit()
@@ -90,6 +93,7 @@ class Commandes:
         id_salarie,
         status_incl,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -115,6 +119,7 @@ class Commandes:
 
     @staticmethod
     def complet_commande(conn, id_commande):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -128,6 +133,7 @@ class Commandes:
 
     @staticmethod
     def extraire_commande(conn, id_commande):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes WHERE id_commande = %s", (id_commande,))
         row = cursor.fetchone()
@@ -136,6 +142,7 @@ class Commandes:
 
     @staticmethod
     def extraire_tous_commandes(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes")
         rows = cursor.fetchall()
@@ -144,6 +151,7 @@ class Commandes:
 
     @staticmethod
     def extraire_tous_commandes_table(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Commandes WHERE Statut_Reception != 'Complète'")
         rows = cursor.fetchall()
@@ -152,6 +160,7 @@ class Commandes:
 
     @staticmethod
     def get_commandes_jour(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT ID_Commande FROM Commandes WHERE DATE(Date_Commande) = %s""",
@@ -163,6 +172,7 @@ class Commandes:
 
     @staticmethod
     def get_commandes_recues_jour(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT ID_Commande FROM Commandes WHERE DATE(Date_Reception) = %s""",
@@ -174,6 +184,7 @@ class Commandes:
 
     @staticmethod
     def get_commandes_jour_salarie(conn, salarie):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT ID_Commande FROM Commandes WHERE DATE(Date_Commande) = %s AND ID_Salarie = %s""",
@@ -185,6 +196,7 @@ class Commandes:
 
     @staticmethod
     def get_commandes_recues_jour_salarie(conn, salarie):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """SELECT ID_Commande FROM Commandes WHERE DATE(Date_Reception) = %s AND ID_Salarie = %s""",
@@ -196,6 +208,7 @@ class Commandes:
 
     @staticmethod
     def statistic_commande_salarie(conn, salarie):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_jour = datetime.now().date()
@@ -228,6 +241,7 @@ class Commandes:
 
     @staticmethod
     def statistic_commande_generale(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_jour = datetime.now().date()
@@ -257,6 +271,7 @@ class Commandes:
 
     @staticmethod
     def cloture_journee(conn):
+        conn = reconnexion_database(conn)
         commande_cloture = {}
         commande_cloture["statistique general"] = Commandes.statistic_commande_generale(
             conn

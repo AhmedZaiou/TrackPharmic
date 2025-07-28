@@ -6,6 +6,7 @@ from datetime import datetime
 class Credit:
     @staticmethod
     def create_table_credit(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -34,6 +35,7 @@ class Credit:
         statut,
         id_salarie,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -54,6 +56,7 @@ class Credit:
 
     @staticmethod
     def extraire_credits_par_numero_facture(conn, numero_facture):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT * FROM Credit WHERE numero_facture = %s", (numero_facture,)
@@ -64,6 +67,7 @@ class Credit:
 
     @staticmethod
     def supprimer_credit(conn, id_credit):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("DELETE FROM Credit WHERE id_credit = %s", (id_credit,))
         conn.commit()
@@ -80,6 +84,7 @@ class Credit:
         statut,
         id_salarie,
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -102,6 +107,7 @@ class Credit:
 
     @staticmethod
     def extraire_credit(conn, id_credit):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit WHERE id_credit = %s", (id_credit,))
         row = cursor.fetchone()
@@ -110,6 +116,7 @@ class Credit:
 
     @staticmethod
     def extraire_tous_credits(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit")
         rows = cursor.fetchall()
@@ -118,6 +125,7 @@ class Credit:
 
     @staticmethod
     def extraire_credit_with_id_client(conn, id_client):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Credit WHERE id_client = %s", (id_client,))
         rows = cursor.fetchall()
@@ -126,6 +134,7 @@ class Credit:
 
     @staticmethod
     def get_total_credits(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT SUM(reste_a_payer) as totalCredits FROM Credit")
         result = cursor.fetchone()
@@ -134,6 +143,7 @@ class Credit:
 
     @staticmethod
     def get_total_credits_salarie(conn, salarie):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT SUM(reste_a_payer) as totalCredits FROM Credit WHERE id_salarie = %s",
@@ -145,6 +155,7 @@ class Credit:
 
     @staticmethod
     def cloture_journee(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_aujourdhui = datetime.now().strftime("%Y-%m-%d")
@@ -167,6 +178,7 @@ class Credit:
 
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -191,6 +203,7 @@ class Credit:
 
     @staticmethod
     def evolution_par_mois(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"

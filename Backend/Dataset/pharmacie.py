@@ -7,6 +7,7 @@ import os
 class Pharmacies:
     @staticmethod
     def create_table_pharmacies(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -26,6 +27,7 @@ class Pharmacies:
 
     @staticmethod
     def ajouter_pharmacie(conn, nom, adresse, telephone, email, outvalue, invalue):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -40,6 +42,7 @@ class Pharmacies:
     def modifier_pharmacie(
         conn, id_pharmacie, nom, adresse, telephone, email, outvalue, invalue
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -53,6 +56,7 @@ class Pharmacies:
 
     @staticmethod
     def modifier_pharmacie_echange(conn, id_pharmacie, value, out_in):
+        conn = reconnexion_database(conn)
         value = float(value)
 
         cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -79,6 +83,7 @@ class Pharmacies:
 
     @staticmethod
     def extraire_tous_pharma(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Pharmacies")
         rows = cursor.fetchall()
@@ -87,6 +92,7 @@ class Pharmacies:
 
     @staticmethod
     def extraire_pharma_nom_like(conn, nom_part):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             "SELECT nom FROM Pharmacies WHERE nom LIKE %s", ("%" + nom_part + "%",)
@@ -97,6 +103,7 @@ class Pharmacies:
 
     @staticmethod
     def extraire_pharma_nom(conn, nom):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Pharmacies WHERE nom = %s", (nom,))
         rows = cursor.fetchone()

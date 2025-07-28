@@ -53,7 +53,7 @@ class MainInterface(QMainWindow):
                 self.conn = pymysql.connect(
                     host=host, user=user, password=password, database=database
                 )            
-            time.sleep(3)
+            time.sleep(10)
 
     def create_database(self):
         import json
@@ -604,14 +604,12 @@ class MainInterface(QMainWindow):
             print(f"L'image '{icon_path}' n'a pas été trouvée ou est invalide.")
 
         def handle_click():
-
-
             app = QApplication.instance()
 
             # Désactiver toute l'application
             for widget in app.allWidgets():
                 widget.setEnabled(False)
-            cooldown_s = 1
+            cooldown_s = 0.5
 
             # Réactiver après cooldown (converti en ms)
             QTimer.singleShot(int(cooldown_s * 1000), lambda: [

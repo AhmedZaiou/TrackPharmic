@@ -7,6 +7,7 @@ from Backend.Dataset.pharmacie import Pharmacies
 class Echanges:
     @staticmethod
     def create_table_echanges(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -27,6 +28,7 @@ class Echanges:
     def ajouter_echange(
         conn, id_pharmacie, id_facture, date_echange, total_facture, sens, id_salarie
     ):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute(
             """
@@ -41,6 +43,7 @@ class Echanges:
 
     @staticmethod
     def extraire_tous_echanges_pharma(conn, id_pharma):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT * FROM Echanges  WHERE id_pharmacie = %s;", (id_pharma,))
         rows = cursor.fetchall()
@@ -49,6 +52,7 @@ class Echanges:
 
     @staticmethod
     def get_total_echanges(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         cursor.execute("SELECT SUM(total_facture) as totalEchanges FROM Echanges")
         result = cursor.fetchone()
@@ -57,6 +61,7 @@ class Echanges:
 
     @staticmethod
     def cloture_journee(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         date_aujourdhui = datetime.now().strftime("%Y-%m-%d")
 
@@ -119,6 +124,7 @@ class Echanges:
 
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
@@ -161,6 +167,7 @@ class Echanges:
 
     @staticmethod
     def evolution_par_mois(conn):
+        conn = reconnexion_database(conn)
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
         date_debut_annee = f"{datetime.now().year}-01-01"
