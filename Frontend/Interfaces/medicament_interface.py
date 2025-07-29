@@ -102,7 +102,7 @@ class Medicament_dash:
             QHeaderView.Stretch
         )
         self.new_medicament_table.setHorizontalHeaderLabels(
-            ["ID", "Nom", "Caractéristique", "Prix Public de Vente", "Indications"]
+            ["ID", "Nom", "Caractéristique", "Prix Public de Vente"]
         )
         self.remplire_table_new_medicamen()
         self.new_medicament_table.cellClicked.connect(
@@ -401,9 +401,7 @@ class Medicament_dash:
             self.new_medicament_table.setItem(
                 index, 3, QTableWidgetItem(str(element["PPV"]))
             )
-            self.new_medicament_table.setItem(
-                index, 4, QTableWidgetItem(str(element["Indications"]))
-            )
+            
 
     def keyPressEvent(self, event):
         try:

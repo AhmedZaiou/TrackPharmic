@@ -8,29 +8,32 @@ import json
 class Salaries:
     @staticmethod
     def create_table_salaries(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS Salaries (
+                    id_salarie INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    nom VARCHAR(100),
+                    prenom VARCHAR(100),
+                    cin VARCHAR(20) UNIQUE,
+                    telephone VARCHAR(15),
+                    email VARCHAR(100),
+                    adresse TEXT,
+                    photo TEXT,
+                    salaire REAL,
+                    type_contrat VARCHAR(50),
+                    date_embauche DATE,
+                    grade VARCHAR(50),
+                    password_hash TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
             """
-            CREATE TABLE IF NOT EXISTS Salaries (
-                id_salarie INTEGER PRIMARY KEY AUTO_INCREMENT,
-                nom VARCHAR(100),
-                prenom VARCHAR(100),
-                cin VARCHAR(20) UNIQUE,
-                telephone VARCHAR(15),
-                email VARCHAR(100),
-                adresse TEXT,
-                photo TEXT,
-                salaire REAL,
-                type_contrat VARCHAR(50),
-                date_embauche DATE,
-                grade VARCHAR(50),
-                password_hash TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        """
-        )
-        conn.commit()
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Erreur lors de la création de la table Salaries: {e}")
 
     @staticmethod
     def ajouter_salarie(
@@ -48,35 +51,42 @@ class Salaries:
         grade,
         password_hash,
     ):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-            INSERT INTO Salaries (nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """,
-            (
-                nom,
-                prenom,
-                cin,
-                telephone,
-                email,
-                adresse,
-                photo,
-                salaire,
-                type_contrat,
-                date_embauche,
-                grade,
-                password_hash,
-            ),
-        )
-        conn.commit()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                INSERT INTO Salaries (nom, prenom, cin, telephone, email, adresse, photo, salaire, type_contrat, date_embauche, grade, password_hash)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+                (
+                    nom,
+                    prenom,
+                    cin,
+                    telephone,
+                    email,
+                    adresse,
+                    photo,
+                    salaire,
+                    type_contrat,
+                    date_embauche,
+                    grade,
+                    password_hash,
+                ),
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Erreur lors de l'ajout du salarié: {e}")
 
     @staticmethod
     def supprimer_salarie(conn, id_salarie):
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("DELETE FROM Salaries WHERE id_salarie = %s", (id_salarie,))
-        conn.commit()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("DELETE FROM Salaries WHERE id_salarie = %s", (id_salarie,))
+            conn.commit()
+        except Exception as e:
+            print(f"Erreur lors de la suppression du salarié: {e}")
 
     @staticmethod
     def modifier_salarie(
@@ -95,72 +105,91 @@ class Salaries:
         grade,
         password_hash,
     ):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-            UPDATE Salaries
-            SET nom = %s, prenom = %s, cin = %s, telephone = %s, email = %s, adresse = %s, photo = %s, salaire = %s, 
-                type_contrat = %s, date_embauche = %s, grade = %s, password_hash = %s
-            WHERE id_salarie = %s
-        """,
-            (
-                nom,
-                prenom,
-                cin,
-                telephone,
-                email,
-                adresse,
-                photo,
-                salaire,
-                type_contrat,
-                date_embauche,
-                grade,
-                password_hash,
-                id_salarie,
-            ),
-        )
-        conn.commit()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                UPDATE Salaries
+                SET nom = %s, prenom = %s, cin = %s, telephone = %s, email = %s, adresse = %s, photo = %s, salaire = %s, 
+                    type_contrat = %s, date_embauche = %s, grade = %s, password_hash = %s
+                WHERE id_salarie = %s
+            """,
+                (
+                    nom,
+                    prenom,
+                    cin,
+                    telephone,
+                    email,
+                    adresse,
+                    photo,
+                    salaire,
+                    type_contrat,
+                    date_embauche,
+                    grade,
+                    password_hash,
+                    id_salarie,
+                ),
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Erreur lors de la modification du salarié: {e}")
 
     @staticmethod
     def extraire_salarie(conn, id_salarie):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Salaries WHERE id_salarie = %s", (id_salarie,))
-        row = cursor.fetchone()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("SELECT * FROM Salaries WHERE id_salarie = %s", (id_salarie,))
+            row = cursor.fetchone()
 
-        return dict(row) if row else None
+            return dict(row) if row else None
+        except Exception as e:
+            print(f"Erreur lors de l'extraction du salarié: {e}")
+            return None
 
     @staticmethod
     def extraire_salarie_login(conn, nom, password_hash):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            "SELECT * FROM Salaries WHERE nom = %s AND password_hash = %s",
-            (nom, password_hash),
-        )
-        row = cursor.fetchone()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                "SELECT * FROM Salaries WHERE nom = %s AND password_hash = %s",
+                (nom, password_hash),
+            )
+            row = cursor.fetchone()
 
-        return dict(row) if row else None
+            return dict(row) if row else None
+        except Exception as e:
+            print(f"Erreur lors de l'extraction du salarié pour login: {e}")
+            return None
 
     @staticmethod
     def extraire_tous_salaries(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Salaries")
-        rows = cursor.fetchall()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("SELECT * FROM Salaries")
+            rows = cursor.fetchall()
 
-        return [dict(row) for row in rows]
+            return [dict(row) for row in rows]
+        except Exception as e:
+            print(f"Erreur lors de l'extraction des salariés: {e}")
+            return []
 
     @staticmethod
     def get_salaries(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("""SELECT id_salarie, nom, prenom FROM Salaries""")
-        result = cursor.fetchall()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("""SELECT id_salarie, nom, prenom FROM Salaries""")
+            result = cursor.fetchall()
 
-        return (
-            [row["id_salarie"] for row in result],
-            [row["nom"] for row in result],
-            [row["prenom"] for row in result],
-        )
+            return (
+                [row["id_salarie"] for row in result],
+                [row["nom"] for row in result],
+                [row["prenom"] for row in result],
+            )
+        except Exception as e:
+            print(f"Erreur lors de l'extraction des IDs et noms des salariés: {e}")
+            return ([], [], [])

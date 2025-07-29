@@ -21,7 +21,7 @@ pyinstaller --onefile --windowed --name "Pharma" --add-data  "Frontend/images:Fr
 
 pyinstaller --onefile --windowed --name "Pharma"   --add-data "Frontend/images:Frontend/images"   --add-data "Frontend/style:Frontend/style"   --icon="Frontend/images/pharmacie_bloc.png" main.py
 
-pyinstaller --onefile --windowed --name "Pharma" --add-data "Frontend/images:Frontend/images" --add-data "Frontend/kabel.ttf:assets/fonts" --add-data "env1/lib/python3.11/site-packages/treepoem/postscriptbarcode/barcode.ps:treepoem/postscriptbarcode" --add-data "Frontend/Monopoly.ttf:assets/fonts"  --add-data "Frontend/style:Frontend/style" --icon="Frontend/images/pharmacie_bloc.png" --hidden-import="reportlab.graphics.barcode.common" --hidden-import="reportlab.graphics.barcode.code128" --hidden-import="reportlab.graphics.barcode.code93" --hidden-import="reportlab.graphics.barcode.code39" --hidden-import="reportlab.graphics.barcode.usps" --hidden-import="reportlab.graphics.barcode.usps4s" --hidden-import="reportlab.graphics.barcode.ecc200datamatrix" main.py
+pyinstaller --onefile --windowed --name "Pharma" --add-data "Frontend/images:Frontend/images" --add-data "Frontend/kabel.ttf:assets/fonts" --add-data "env4/lib/python3.11/site-packages/treepoem/postscriptbarcode/barcode.ps:treepoem/postscriptbarcode" --add-data "Frontend/Monopoly.ttf:assets/fonts"  --add-data "Frontend/style:Frontend/style" --icon="Frontend/images/pharmacie_bloc.png" --hidden-import="reportlab.graphics.barcode.common" --hidden-import="reportlab.graphics.barcode.code128" --hidden-import="reportlab.graphics.barcode.code93" --hidden-import="reportlab.graphics.barcode.code39" --hidden-import="reportlab.graphics.barcode.usps" --hidden-import="reportlab.graphics.barcode.usps4s" --hidden-import="reportlab.graphics.barcode.ecc200datamatrix" --add-data "config.env:config.env" main.py
 
 
 
@@ -34,3 +34,7 @@ Bénéficiez d’une base de données médicaments mise à jour gratuitement cha
 
 Avec notre solution, optimisez votre temps, gagnez en efficacité et gardez le contrôle de votre comptoir numérique.
 Contactez-nous dès aujourd’hui : +212 6 35-807615 – contact@modeaest.com – www.modeaest.com.
+
+
+
+sur windows: pyinstaller --onefile --windowed --name "Pharma" --add-data "Frontend/images:Frontend/images" --add-data "Frontend/style:Frontend/style" --icon="Frontend/images/pharmacie_bloc.png" --hidden-import="reportlab.graphics.barcode.common" --hidden-import="reportlab.graphics.barcode.code128" --hidden-import="reportlab.graphics.barcode.code93" --hidden-import="reportlab.graphics.barcode.code39" --hidden-import="reportlab.graphics.barcode.usps" --hidden-import="reportlab.graphics.barcode.usps4s" --hidden-import="reportlab.graphics.barcode.ecc200datamatrix" main.py

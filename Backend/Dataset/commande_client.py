@@ -14,29 +14,32 @@ class CommandeClient:
 
     @staticmethod
     def create_table_commandes_client(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS Commandes_client (
-                id_commande_client INT PRIMARY KEY AUTO_INCREMENT,
-                numero_facture VARCHAR(50),
-                code_ean_13 VARCHAR(50),
-                id_medicament INT,
-                prix_vente FLOAT,
-                date_vente DATE,
-                quantite_vendue INT,
-                id_client INT,
-                id_salarie INT,
-                nom_medicament VARCHAR(255),
-                to_pay_now FLOAT,
-                total_facture_calculer FLOAT,
-                now_str VARCHAR(100),
-                statut_de_commande VARCHAR(50)
-            );
-            """
-        )
-        conn.commit()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS Commandes_client (
+                    id_commande_client INT PRIMARY KEY AUTO_INCREMENT,
+                    numero_facture VARCHAR(50),
+                    code_ean_13 VARCHAR(50),
+                    id_medicament INT,
+                    prix_vente FLOAT,
+                    date_vente DATE,
+                    quantite_vendue INT,
+                    id_client INT,
+                    id_salarie INT,
+                    nom_medicament VARCHAR(255),
+                    to_pay_now FLOAT,
+                    total_facture_calculer FLOAT,
+                    now_str VARCHAR(100),
+                    statut_de_commande VARCHAR(50)
+                );
+                """
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Erreur lors de la création de la table Commandes_client: {e}")
 
     @staticmethod
     def ajouter_commande_client(
@@ -55,114 +58,135 @@ class CommandeClient:
         now_str,
         statut_de_commande,
     ):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-            INSERT INTO Commandes_client (
-                numero_facture, code_ean_13, id_medicament, prix_vente, date_vente,
-                quantite_vendue, id_client, id_salarie, nom_medicament,
-                to_pay_now, total_facture_calculer, now_str, statut_de_commande
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                INSERT INTO Commandes_client (
+                    numero_facture, code_ean_13, id_medicament, prix_vente, date_vente,
+                    quantite_vendue, id_client, id_salarie, nom_medicament,
+                    to_pay_now, total_facture_calculer, now_str, statut_de_commande
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    numero_facture,
+                    code_ean_13,
+                    id_medicament,
+                    prix_vente,
+                    date_vente,
+                    quantite_vendue,
+                    id_client,
+                    id_salarie,
+                    nom_medicament,
+                    to_pay_now,
+                    total_facture_calculer,
+                    now_str,
+                    statut_de_commande,
+                ),
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """,
-            (
-                numero_facture,
-                code_ean_13,
-                id_medicament,
-                prix_vente,
-                date_vente,
-                quantite_vendue,
-                id_client,
-                id_salarie,
-                nom_medicament,
-                to_pay_now,
-                total_facture_calculer,
-                now_str,
-                statut_de_commande,
-            ),
-        )
-        conn.commit()
+            conn.commit()
+        except Exception as e:
+            print(f"Erreur lors de l'ajout de la commande client: {e}")
 
     @staticmethod
     def modifier_statut_commande_client(conn, numero_facture, nouveau_statut):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-            UPDATE Commandes_client
-            SET statut_de_commande = %s
-            WHERE numero_facture = %s
-            """,
-            (nouveau_statut, numero_facture),
-        )
-        conn.commit()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                UPDATE Commandes_client
+                SET statut_de_commande = %s
+                WHERE numero_facture = %s
+                """,
+                (nouveau_statut, numero_facture),
+            )
+            conn.commit()
+        except Exception as e:
+            pass
 
     @staticmethod
     def get_commande(conn, numero_facture):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-            Select * from  Commandes_client 
-            WHERE numero_facture = %s
-            """,
-            (numero_facture),
-        )
-        conn.commit()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                Select * from  Commandes_client 
+                WHERE numero_facture = %s
+                """,
+                (numero_facture),
+            )
+            conn.commit()
 
-        rows = cursor.fetchall()
-        return [dict(row) for row in rows]
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
+        except Exception as e:
+            print(f"Erreur lors de la récupération de la commande: {e}")
+            return []
 
     @staticmethod
     def get_all_commandes_client(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-            SELECT *
-                FROM Commandes_client
-                WHERE statut_de_commande = 'in progresse'
-                AND id_commande_client IN (
-                    SELECT MIN(id_commande_client)
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                SELECT *
                     FROM Commandes_client
-                    GROUP BY numero_facture
-                );
-            """
-        )
-        rows = cursor.fetchall()
-        conn.commit()
-
-        return [dict(row) for row in rows]
-
-    @staticmethod
-    def cloture_journee(conn, date_jour=None):
-        conn = reconnexion_database(conn)
-        if date_jour is None:
-            date_jour = datetime.now().strftime("%Y-%m-%d")
-
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-
-        cursor.execute(
-            """SELECT COUNT(*) as count, SUM(to_pay_now) as total
-                    FROM Commandes_client
-                    WHERE DATE(date_vente) = %s
+                    WHERE statut_de_commande = 'in progresse'
                     AND id_commande_client IN (
                         SELECT MIN(id_commande_client)
                         FROM Commandes_client
                         GROUP BY numero_facture
-                    );""",
-            (date_jour,),
-        )
-        resultats = cursor.fetchone()
-        total_ventes_jour = resultats["count"]
-        total_vente_jour = resultats["total"]
+                    );
+                """
+            )
+            rows = cursor.fetchall()
+            conn.commit()
 
-        statistiques_ventes_jour = {
-            "Nombre total de commandes clients effectuées aujourdhui": total_ventes_jour
-            or 0,
-            "Montant total des commandes clients effectuées aujourdhui": total_vente_jour
-            or 0,
-        }
+            return [dict(row) for row in rows]
+        except Exception as e:
+            print(f"Erreur lors de la récupération des commandes clients: {e}")
+            return []
 
-        return statistiques_ventes_jour
+    @staticmethod
+    def cloture_journee(conn, date_jour=None):
+        try:
+            conn = reconnexion_database(conn)
+            if date_jour is None:
+                date_jour = datetime.now().strftime("%Y-%m-%d")
+
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+            cursor.execute(
+                """SELECT COUNT(*) as count, SUM(to_pay_now) as total
+                        FROM Commandes_client
+                        WHERE DATE(date_vente) = %s
+                        AND id_commande_client IN (
+                            SELECT MIN(id_commande_client)
+                            FROM Commandes_client
+                            GROUP BY numero_facture
+                        );""",
+                (date_jour,),
+            )
+            resultats = cursor.fetchone()
+            total_ventes_jour = resultats["count"]
+            total_vente_jour = resultats["total"]
+
+            statistiques_ventes_jour = {
+                "Nombre total de commandes clients effectuées aujourdhui": total_ventes_jour
+                or 0,
+                "Montant total des commandes clients effectuées aujourdhui": total_vente_jour
+                or 0,
+            }
+
+            return statistiques_ventes_jour
+        except Exception as e:
+            print(f"Erreur lors de la clôture de la journée: {e}")
+            return {
+                "Nombre total de commandes clients effectuées aujourdhui": 0,
+                "Montant total des commandes clients effectuées aujourdhui": 0,
+            }

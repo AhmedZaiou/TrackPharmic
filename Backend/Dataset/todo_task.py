@@ -6,77 +6,96 @@ from datetime import datetime
 class Todo_Task:
     @staticmethod
     def create_table_todo_task(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor()
-        cursor.execute(
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS todo_task (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        task TEXT NOT NULL,
+                        date_execution DATE NOT NULL,
+                        status VARCHAR(50) DEFAULT 'nouvelle'
+                    );
             """
-            CREATE TABLE IF NOT EXISTS todo_task (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    task TEXT NOT NULL,
-                    date_execution DATE NOT NULL,
-                    status VARCHAR(50) DEFAULT 'nouvelle'
-                );
-        """
-        )
-        conn.commit()
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Error creating table: {e}") 
 
     @staticmethod
     def add_todo_task(conn, task, date_execution):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            INSERT INTO todo_task (task, date_execution)
-            VALUES (%s, %s)
-        """,
-            (task, date_execution),
-        )
-        conn.commit()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT INTO todo_task (task, date_execution)
+                VALUES (%s, %s)
+            """,
+                (task, date_execution),
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Error adding task: {e}")
+            
 
     # update date execution where task = task
     @staticmethod
     def update_todo_task(conn, task, date_execution=None):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            UPDATE todo_task
-            SET date_execution = %s
-            WHERE task = %s
-        """,
-            (date_execution, task),
-        )
-        conn.commit()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                UPDATE todo_task
+                SET date_execution = %s
+                WHERE task = %s
+            """,
+                (date_execution, task),
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Error updating task: {e}")
 
     @staticmethod
     def scraper_today(conn):
-        conn = reconnexion_database(conn)
-        date_execution = datetime.today().date()
-        task = "get_new_medicament"
+        try: 
 
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            UPDATE todo_task
-            SET date_execution = %s
-            WHERE task = %s
-        """,
-            (date_execution, task),
-        )
-        conn.commit()
+            conn = reconnexion_database(conn)
+            date_execution = datetime.today().date()
+            task = "get_new_medicament"
+
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                UPDATE todo_task
+                SET date_execution = %s
+                WHERE task = %s
+            """,
+                (date_execution, task),
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Error updating scraper task: {e}")
 
     @staticmethod
     def test_scrapper(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor()
-        cursor.execute(
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT date_execution FROM todo_task WHERE task = 'get_new_medicament';
             """
-            SELECT date_execution FROM todo_task WHERE task = 'get_new_medicament';
-        """
-        )
-        result = cursor.fetchone()
+            )
+            result = cursor.fetchone()
 
-        if result:
-            date_scrap = result[0] == datetime.today().date()
-            return not date_scrap
-        return None
+            if result:
+                date_scrap = result[0] == datetime.today().date()
+                return not date_scrap
+            return None
+        except Exception as e:
+            print(f"Error checking scraper task: {e}")
+            return None
+        

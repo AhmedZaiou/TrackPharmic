@@ -12,22 +12,25 @@ class Retour:
 
     @staticmethod
     def create_table_retours(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS Retours (
+                    id_retour INTEGER PRIMARY KEY AUTO_INCREMENT,
+                    id_medicament INTEGER NOT NULL, 
+                    prix REAL, 
+                    date_retour DATETIME NOT NULL,
+                    quantite_retour INTEGER DEFAULT 0,  
+                    numero_facture VARCHAR(50),
+                    id_salarie INTEGER 
+                );
             """
-            CREATE TABLE IF NOT EXISTS Retours (
-                id_retour INTEGER PRIMARY KEY AUTO_INCREMENT,
-                id_medicament INTEGER NOT NULL, 
-                prix REAL, 
-                date_retour DATETIME NOT NULL,
-                quantite_retour INTEGER DEFAULT 0,  
-                numero_facture VARCHAR(50),
-                id_salarie INTEGER 
-            );
-        """
-        )
-        conn.commit()
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Erreur lors de la création de la table Retours: {e}")
 
     @staticmethod
     def ajouter_retour(
@@ -39,194 +42,226 @@ class Retour:
         numero_facture,
         id_salarie,
     ):
-        conn = reconnexion_database(conn)
-        Retour.create_table_retours(conn)
+        try:
+            conn = reconnexion_database(conn)
+            Retour.create_table_retours(conn)
 
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """
-            INSERT INTO Retours (id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """,
-            (
-                id_medicament,
-                prix,
-                date_retour,
-                quantite_retour,
-                numero_facture,
-                id_salarie,
-            ),
-        )
-        conn.commit()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """
+                INSERT INTO Retours (id_medicament, prix, date_retour, quantite_retour, numero_facture, id_salarie)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+                (
+                    id_medicament,
+                    prix,
+                    date_retour,
+                    quantite_retour,
+                    numero_facture,
+                    id_salarie,
+                ),
+            )
+            conn.commit()
+        except Exception as e:
+            print(f"Erreur lors de l'ajout du retour: {e}")
 
     @staticmethod
     def extraire_tous_retours(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM Retours")
-        rows = cursor.fetchall()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("SELECT * FROM Retours")
+            rows = cursor.fetchall()
 
-        return [dict(row) for row in rows]
+            return [dict(row) for row in rows]
+        except Exception as e:
+            print(f"Erreur lors de l'extraction des retours: {e}")
+            return []
 
     def extraire_tous_table_retours(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            """SELECT 
-                            r.id_retour, 
-                            r.id_medicament, 
-                            m.Nom AS nom_medicament,
-                            r.prix, 
-                            r.date_retour, 
-                            r.quantite_retour, 
-                            r.numero_facture, 
-                            r.id_salarie
-                        FROM 
-                            Retours r
-                        JOIN 
-                            Medicament m ON r.id_medicament = m.ID_Medicament
-                        WHERE 
-                            1
-                        LIMIT 30;"""
-        )
-        rows = cursor.fetchall()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                """SELECT 
+                                r.id_retour, 
+                                r.id_medicament, 
+                                m.Nom AS nom_medicament,
+                                r.prix, 
+                                r.date_retour, 
+                                r.quantite_retour, 
+                                r.numero_facture, 
+                                r.id_salarie
+                            FROM 
+                                Retours r
+                            JOIN 
+                                Medicament m ON r.id_medicament = m.ID_Medicament
+                            WHERE 
+                                1
+                            LIMIT 30;"""
+            )
+            rows = cursor.fetchall()
 
-        return [dict(row) for row in rows]
+            return [dict(row) for row in rows]
+        except Exception as e:
+            print(f"Erreur lors de l'extraction des retours: {e}")
+            return []
 
     @staticmethod
     def extraire_retours_par_numero_facture(conn, numero_facture):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(
-            "SELECT * FROM Retours WHERE numero_facture = %s", (numero_facture,)
-        )
-        rows = cursor.fetchall()
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute(
+                "SELECT * FROM Retours WHERE numero_facture = %s", (numero_facture,)
+            )
+            rows = cursor.fetchall()
 
-        return [dict(row) for row in rows] if rows else []
+            return [dict(row) for row in rows] if rows else []
+        except Exception as e:
+            print(f"Erreur lors de l'extraction des retours par numéro de facture: {e}")
+            return []
 
     @staticmethod
     def cloture_journee(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        # Get today's date in YYYY-MM-DD format
-        today = datetime.today().strftime("%Y-%m-%d")
+            # Get today's date in YYYY-MM-DD format
+            today = datetime.today().strftime("%Y-%m-%d")
 
-        # Total returns made today (total price of returns)
-        cursor.execute(
-            """
-            SELECT SUM(prix * quantite_retour) AS total_retours
-            FROM Retours
-            WHERE Date(date_retour) = %s
-        """,
-            (today,),
-        )
-        total_retours = cursor.fetchone()
-        total_retours = total_retours["total_retours"]
+            # Total returns made today (total price of returns)
+            cursor.execute(
+                """
+                SELECT SUM(prix * quantite_retour) AS total_retours
+                FROM Retours
+                WHERE Date(date_retour) = %s
+            """,
+                (today,),
+            )
+            total_retours = cursor.fetchone()
+            total_retours = total_retours["total_retours"]
 
-        # Total returns made today by employee
-        cursor.execute(
-            """
-            SELECT id_salarie, SUM(prix * quantite_retour) AS total_retours_salarie
-            FROM Retours
-            WHERE Date(date_retour) = %s
-            GROUP BY id_salarie
-        """,
-            (today,),
-        )
-        retours_salaries = cursor.fetchall()
+            # Total returns made today by employee
+            cursor.execute(
+                """
+                SELECT id_salarie, SUM(prix * quantite_retour) AS total_retours_salarie
+                FROM Retours
+                WHERE Date(date_retour) = %s
+                GROUP BY id_salarie
+            """,
+                (today,),
+            )
+            retours_salaries = cursor.fetchall()
 
-        # Total number of returns made today
-        cursor.execute(
-            """
-            SELECT COUNT(id_retour) AS total_retours_count
-            FROM Retours
-            WHERE Date(date_retour) = %s
-        """,
-            (today,),
-        )
-        total_retours_count = cursor.fetchone()
-        total_retours_count = total_retours_count["total_retours_count"]
+            # Total number of returns made today
+            cursor.execute(
+                """
+                SELECT COUNT(id_retour) AS total_retours_count
+                FROM Retours
+                WHERE Date(date_retour) = %s
+            """,
+                (today,),
+            )
+            total_retours_count = cursor.fetchone()
+            total_retours_count = total_retours_count["total_retours_count"]
 
-        # Total returns made today by medication
-        cursor.execute(
-            """
-            SELECT id_medicament, SUM(prix * quantite_retour) AS total_retours_medicament
-            FROM Retours
-            WHERE Date(date_retour) = %s
-            GROUP BY id_medicament
-        """,
-            (today,),
-        )
-        retours_medicaments = cursor.fetchall()
+            # Total returns made today by medication
+            cursor.execute(
+                """
+                SELECT id_medicament, SUM(prix * quantite_retour) AS total_retours_medicament
+                FROM Retours
+                WHERE Date(date_retour) = %s
+                GROUP BY id_medicament
+            """,
+                (today,),
+            )
+            retours_medicaments = cursor.fetchall()
 
-        # Close the connection
+            # Close the connection
 
-        # Prepare results as a dictionary
-        statistiques = {
-            "Total des retours effectués aujourdhui": total_retours
-            if total_retours
-            else 0.0,
-            "Nombre total de retours effectués aujourdhui": total_retours_count
-            if total_retours_count
-            else 0,
-            "Total des retours effectués aujourdhui par salarié": retours_salaries,
-            "Total des retours effectués aujourdhui par médicament en Dhs": retours_medicaments
-            or 0,
-        }
+            # Prepare results as a dictionary
+            statistiques = {
+                "Total des retours effectués aujourdhui": total_retours
+                if total_retours
+                else 0.0,
+                "Nombre total de retours effectués aujourdhui": total_retours_count
+                if total_retours_count
+                else 0,
+                "Total des retours effectués aujourdhui par salarié": retours_salaries,
+                "Total des retours effectués aujourdhui par médicament en Dhs": retours_medicaments
+                or 0,
+            }
 
-        return statistiques
+            return statistiques
+        except Exception as e:
+            print(f"Erreur lors de la clôture de la journée: {e}")
+            return {
+                "Total des retours effectués aujourdhui": 0.0,
+                "Nombre total de retours effectués aujourdhui": 0,
+                "Total des retours effectués aujourdhui par salarié": [],
+                "Total des retours effectués aujourdhui par médicament en Dhs": [],
+            }
 
     @staticmethod
     def evolution_par_jour_moiis_courant(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
+            date_debut_annee = f"{datetime.now().year}-{datetime.now().month}-01"
 
-        cursor.execute(
-            """
-            SELECT DATE(date_retour) as date_paiements, SUM(quantite_retour * prix) as total_restant
-            FROM Retours
-            WHERE DATE(date_retour) >= %s
-            GROUP BY DATE(date_retour)
-            ORDER BY DATE(date_retour) ASC
-            """,
-            (date_debut_annee,),
-        )
+            cursor.execute(
+                """
+                SELECT DATE(date_retour) as date_paiements, SUM(quantite_retour * prix) as total_restant
+                FROM Retours
+                WHERE DATE(date_retour) >= %s
+                GROUP BY DATE(date_retour)
+                ORDER BY DATE(date_retour) ASC
+                """,
+                (date_debut_annee,),
+            )
 
-        evolution_credit = cursor.fetchall()
+            evolution_credit = cursor.fetchall()
 
-        return {
-            row["date_paiements"].strftime("%Y-%m-%d"): row["total_restant"]
-            for row in evolution_credit
-        }
+            return {
+                row["date_paiements"].strftime("%Y-%m-%d"): row["total_restant"]
+                for row in evolution_credit
+            }
+        except Exception as e:
+            print(f"Erreur lors de l'extraction de l'évolution par jour du mois courant: {e}")
+            return {}
 
     @staticmethod
     def evolution_par_mois(conn):
-        conn = reconnexion_database(conn)
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        date_debut_annee = f"{datetime.now().year}-01-01"
-        query = """
-                SELECT 
-                    DATE_FORMAT(date_retour, '%%Y-%%m') AS mois_paiement, 
-                    SUM(quantite_retour * prix) AS total_restant
-                FROM 
-                    Retours
-                WHERE 
-                    date_retour >= %s
-                GROUP BY 
-                    mois_paiement
-                ORDER BY 
-                    mois_paiement ASC;
-                """
+            date_debut_annee = f"{datetime.now().year}-01-01"
+            query = """
+                    SELECT 
+                        DATE_FORMAT(date_retour, '%%Y-%%m') AS mois_paiement, 
+                        SUM(quantite_retour * prix) AS total_restant
+                    FROM 
+                        Retours
+                    WHERE 
+                        date_retour >= %s
+                    GROUP BY 
+                        mois_paiement
+                    ORDER BY 
+                        mois_paiement ASC;
+                    """
 
-        cursor.execute(
-            query,
-            (date_debut_annee,),
-        )
+            cursor.execute(
+                query,
+                (date_debut_annee,),
+            )
 
-        evolution_credit = cursor.fetchall()
+            evolution_credit = cursor.fetchall()
 
-        return {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
+            return {row["mois_paiement"]: row["total_restant"] for row in evolution_credit}
+        except Exception as e:
+            print(f"Erreur lors de l'extraction de l'évolution par mois: {e}")
+            return {}

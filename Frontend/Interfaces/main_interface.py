@@ -45,8 +45,7 @@ class MainInterface(QMainWindow):
 
     def update_value(self):
         while True:
-            try:
-                # Vérifie si la connexion est toujours valide
+            try: 
                 self.conn.ping(reconnect=True)
             except Exception:
                 print("Reconnexion MySQL...")
@@ -609,7 +608,7 @@ class MainInterface(QMainWindow):
             # Désactiver toute l'application
             for widget in app.allWidgets():
                 widget.setEnabled(False)
-            cooldown_s = 0.5
+            cooldown_s = 0
 
             # Réactiver après cooldown (converti en ms)
             QTimer.singleShot(int(cooldown_s * 1000), lambda: [
