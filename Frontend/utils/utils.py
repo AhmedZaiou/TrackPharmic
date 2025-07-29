@@ -59,7 +59,7 @@ ferme_logo = f"{Front_end}/images/ferme.png"
 retour_logo = f"{Front_end}/images/retour.png"
 font_path = f"{Front_end}/Monopoly.ttf"
 
-sumatra_path =r"C:\Users\dikster\AppData\Local\SumatraPDF\SumatraPDF.exe"
+sumatra_path =r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 
 
