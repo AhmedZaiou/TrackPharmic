@@ -760,14 +760,21 @@ class Vente_dash:
             pisa.CreatePDF(message_html, dest=f)
 
         if os.name == "nt":  # 'nt' indique Windows
-            cmd = [
-                sumatra_path,
-                "-print-to-default",
-                "-print-settings",
-                "noscale",
-                pdf_path,
-            ]
-            subprocess.run(cmd, shell=False)
+            try:
+                cmd = [
+                    sumatra_path,
+                    "-print-to-default",
+                    "-print-settings",
+                    "noscale",
+                    pdf_path,
+                ]
+                subprocess.run(cmd, shell=False)
+            except Exception as e:
+                QMessageBox.information(
+                    self.main_interface,
+                    "Confirmation de vente",
+                    f"Erreur lors de l'impression du ticket : merci de vérifier la connection avec l'imprimante",
+                )
 
             # win32api.ShellExecute(0, "print", pdf_path, None, ".", 0)
         else:

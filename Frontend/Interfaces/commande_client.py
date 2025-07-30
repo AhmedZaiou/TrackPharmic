@@ -699,7 +699,7 @@ class Commande_client:
                 QMessageBox.information(
                     self.main_interface,
                     "Confirmation de vente",
-                    f"Unexpected error: {e}",
+                    f"Erreur lors de l'impression du ticket : merci de vérifier la connection avec l'imprimante",
                 )
         else:
             try:
