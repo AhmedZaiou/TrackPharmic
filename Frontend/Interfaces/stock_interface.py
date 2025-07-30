@@ -227,7 +227,7 @@ class Stock_dash:
             mail_id=mail_id, nom_justificatif=nom_justificatif
         )
 
-        doc = fitz.open(stream=document, filetype="pdf")
+        doc = fitz.open("pdf", document)
         container_widget = QWidget()
         layout = QVBoxLayout(container_widget)
 

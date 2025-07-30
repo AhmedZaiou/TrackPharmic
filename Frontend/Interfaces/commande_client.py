@@ -454,7 +454,8 @@ class Commande_client:
                 self.producs_table = pd.concat(
                     [self.producs_table, df], ignore_index=True
                 )
-            self.producs_table["Prix_total"] = self.producs_table["Prix_total"].round(2)
+            #self.producs_table["Prix_total"] = self.producs_table["Prix_total"].round(2)
+            self.producs_table["Prix_total"] = pd.to_numeric(self.producs_table["Prix_total"], errors="coerce").round(2)
             self.update_table()
 
     def keyPressEvent(self, event):

@@ -40,6 +40,7 @@ class Echange_dash:
         self.last_key_time = time.time()
         self.barcode_delay_threshold = 0.1
         self.code_barre_scanner = ""
+        self.medicament_search = None
 
     def create_menu_commande(self):
         menu_layout = QHBoxLayout()
