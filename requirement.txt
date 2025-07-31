@@ -11,11 +11,10 @@ pymysql
 treepoem
 pymupdf
 seaborn
-fitz
 pytest-shutil
 openpyxl
 beautifulsoup4
 selenium
 dotenv
-fitz
+pymupdf
 qrcode

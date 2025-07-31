@@ -429,7 +429,7 @@ class Commande_client:
             ] += self.producs_table.loc[
                 self.producs_table["Code_EAN_13"] == code_barre_scanner,
                 "PPV",
-            ]
+            ].astype(float)
             self.update_table()
         else:
             medicament = Medicament.extraire_medicament_code_barre(
