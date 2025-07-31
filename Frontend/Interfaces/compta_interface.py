@@ -193,7 +193,10 @@ class Compta_dash:
 
         # Obtenir le jour du mois (1-31)
         jour_du_mois = aujourdhui.day - 1
-        mois_du_annee = aujourdhui.month - 1
+        mois_du_annee = aujourdhui.month - 1 
+
+        if len(self.all_data_jour["jours"]) <= jour_du_mois:
+            jour_du_mois = len(self.all_data_jour["jours"]) - 1
 
         values_to_plot_jour = [
             self.all_data_jour["credits"][jour_du_mois],
