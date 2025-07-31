@@ -345,7 +345,7 @@ class Commandes:
             commande_cloture["statistique par salarie"] = []
             salaries, noms, prenoms = Salaries.get_salaries(conn)
             for salarie, nom, prenom in zip(salaries, noms, prenoms):
-                performance = {"salarie": str(nom) + " " + str(prenom)}
+                performance = {'id_salarie' : salarie,"salarie": str(nom) + " " + str(prenom)}
                 performance["statistique"] = Commandes.statistic_commande_salarie(
                     conn, salarie
                 )

@@ -53,6 +53,7 @@ class Caisse:
         cloture_dict = json.loads(json.dumps(cloture_dict, default=str))
         data = cloture_dict
         # Restructuration du dictionnaire
+        
         result = {
             "Credit_situation_general": {
                 "nombre_de_clients": data["Client statistique"]["nombre_de_clients"],
@@ -141,7 +142,7 @@ class Caisse:
                                 for x in data["Paiment statistique"][
                                     "Total des paiements effectués aujourd'hui par salarié"
                                 ]
-                                if x["id_salarie"] == item["salarie"]
+                                if x["id_salarie"] == item["id_salarie"]
                             ),
                             0,
                         ),
@@ -151,7 +152,7 @@ class Caisse:
                                 for x in data["Retour statistique"][
                                     "Total des retours effectués aujourdhui par salarié"
                                 ]
-                                if x["id_salarie"] == item["salarie"]
+                                if x["id_salarie"] == item["id_salarie"]
                             ),
                             0,
                         ),

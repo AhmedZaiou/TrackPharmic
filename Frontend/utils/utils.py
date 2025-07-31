@@ -62,7 +62,7 @@ font_path = f"{Front_end}/Monopoly.ttf"
 sumatra_path =r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 
-
+"""
 # Informations de connexion Gmail
 smtp_server = 'smtp.gmail.com'
 smtp_port = 587
@@ -82,6 +82,30 @@ Name_pharma = "RACHAD TAZA"
 Email_pharma = "bichrjamai@icloud.com"
 receiver_email = "bichrjamai@icloud.com" # "bichrjamai@icloud.com" #
 Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
+Tel_pharma = "0535285298, 0680061368"""
+
+
+ 
+
+smtp_server = 'smtp.gmail.com'
+smtp_port = 587
+smtp_user = 'zaiou.ahm@gmail.com'
+smtp_password = "mayl jcus zpsg mrwt"
+# Définition de l'expéditeur et du destinataire
+sender_email = smtp_user
+
+
+
+host = "srv1653.hstgr.io"
+user = "u454999796_root"
+password = "Ah@2019@"
+database = "u454999796_pharma"
+
+
+Name_pharma = "My pharma desk"
+Email_pharma = "zaiou.ahm@gmail.com"
+receiver_email =  "zaiou.ahm@gmail.com" 
+Adresse_pharma = "Hay Rachad,Bloc2,n:XX,Taza"
 Tel_pharma = "0535285298, 0680061368"
 
 
@@ -141,8 +165,8 @@ password = "@sCM^n4L"
 database = "u791384722_pharma"
 """
 
-"""Name_pharma = "RACHAD TAZA"
-Email_pharma = "bichrjamai@icloud.com"
+"""Name_pharma = "My pharma desk"
+Email_pharma = "zaiou.ahm@gmail.com"
 receiver_email =  "zaiou.ahm@gmail.com" #"bichrjamai@icloud.com" #
 Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
 Tel_pharma = "0535285298, 0680061368"""

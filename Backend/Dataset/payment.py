@@ -115,7 +115,7 @@ class Payment:
 
             # Obtenir la date actuelle au format YYYY-MM-DD
             today = datetime.today().strftime("%Y-%m-%d")
-            print(today)
+            
 
             # Total des paiements effectués aujourd'hui
             cursor.execute(
