@@ -38,13 +38,15 @@ url = "https://dmp.sante.gov.ma/basesdedonnes/listes-medicaments"
 
 list_url = [
     f"https://dmp.sante.gov.ma/basesdedonnes/listes-medicaments?page={i}&search="
-    for i in range(2, 200)
+    for i in range(2, 4)
 ]
 list_url.append(url)
 # Scraper les données
 data = []
 for url in list_url:
+
     data += scrape_medicaments(url)
+    print(data)
 pd.DataFrame(data).to_csv(
-    "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Datascraping/scrapedData/DMPdata-.csv"
+    "/Users/ahmedzaiou/Documents/ProjetsApps/TrackPharmic/Datascraping/scrapedData/DMPdata-1.csv"
 )

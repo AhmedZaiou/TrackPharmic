@@ -3,10 +3,24 @@
 
 pyinstaller main.py
 
+
+https://citymall-para.ma/produit/accu-chek-softclix-lancette-200-unites/
+
+
 https://dmp.sante.gov.ma/recherche-medicaments
 
 
+
+https://medicament.ma/?choice=specialite&keyword=contains&s=ARTINOV
+
+
+https://officielpharma.ma/ficheProduit/j5dzkTPCdd/AVENT%20NATURAL%20BIBERON%20%2B3MOIS%20330ML%2F01%20ACC-BB?mode=p
+
+https://expert-pharma.com/produits/index/Tous?search=6118001185733
+
 https://www.ghostscript.com/releases/gsdnld.html
+
+https://oauth2.vidal.fr/inscription.html?client_id=vidal_2017&redirect_uri=https%3A%2F%2Fwww.vidal.fr%2Fmedicaments%2Fforxiga-10-mg-cp-pellic-123958.html
 
  pharmacieapplication@gmail.com
  Pharmaciehajra

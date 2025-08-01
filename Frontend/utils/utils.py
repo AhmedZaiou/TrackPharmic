@@ -62,7 +62,7 @@ font_path = f"{Front_end}/Monopoly.ttf"
 sumatra_path =r"C:\Users\Admin\AppData\Local\SumatraPDF\SumatraPDF.exe"
 
 
-"""
+
 # Informations de connexion Gmail
 smtp_server = 'smtp.gmail.com'
 smtp_port = 587
@@ -82,12 +82,12 @@ Name_pharma = "RACHAD TAZA"
 Email_pharma = "bichrjamai@icloud.com"
 receiver_email = "bichrjamai@icloud.com" # "bichrjamai@icloud.com" #
 Adresse_pharma = "Hay Rachad,Bloc2,n:75,Taza"
-Tel_pharma = "0535285298, 0680061368"""
+Tel_pharma = "0535285298, 0680061368"
 
 
  
 
-smtp_server = 'smtp.gmail.com'
+"""smtp_server = 'smtp.gmail.com'
 smtp_port = 587
 smtp_user = 'zaiou.ahm@gmail.com'
 smtp_password = "mayl jcus zpsg mrwt"
@@ -106,7 +106,7 @@ Name_pharma = "My pharma desk"
 Email_pharma = "zaiou.ahm@gmail.com"
 receiver_email =  "zaiou.ahm@gmail.com" 
 Adresse_pharma = "Hay Rachad,Bloc2,n:XX,Taza"
-Tel_pharma = "0535285298, 0680061368"
+Tel_pharma = "0535285298, 0680061368"""
 
 
 
