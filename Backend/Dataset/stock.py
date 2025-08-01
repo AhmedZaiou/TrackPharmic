@@ -244,11 +244,11 @@ class Stock:
             return []
 
     @staticmethod
-    def extraire_stock_medicament(conn):
+    def extraire_stock_medicament(conn, alphabet='A'):
         try:
             conn = reconnexion_database(conn)
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            query = """SELECT 
+            query = f"""SELECT 
                             m.Nom,
                             m.Code_EAN_13,
                             s.date_expiration,
@@ -259,6 +259,7 @@ class Stock:
                             Medicament m 
                         ON 
                             s.id_medicament = m.id_medicament
+                        WHERE UPPER(m.Nom) LIKE '{alphabet}%'
                         ORDER BY m.Nom;"""
             cursor.execute(query)
             rows = cursor.fetchall()

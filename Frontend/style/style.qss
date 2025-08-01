@@ -264,3 +264,23 @@ QHeaderView::section {
     padding: 5px;
     border: 1px solid #155724;
 }
+
+
+
+/* QPushButton */
+#page_button{
+    background-color: #7fc590;
+    border: 1px solid #82c292;
+    border-radius: 7px;
+    padding: 6px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#page_button:hover {
+    background-color: #65c87d; /* Couleur plus foncée au survol */
+}
+#page_button:pressed {
+    background-color: #1e7e34; /* Couleur encore plus foncée quand cliqué */
+}

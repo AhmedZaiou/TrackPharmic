@@ -15,6 +15,8 @@ from qtpy.QtWidgets import (
     QLineEdit,
     QHeaderView,
 )
+import string
+
 from qtpy.QtCore import Qt
 
 
@@ -82,7 +84,7 @@ class Medicament_dash:
                 "Min in stock",
             ]
         )
-        self.remplire_table_medicamen()
+        
         self.medicament_table.cellClicked.connect(self.afficher_medicament_depuis_table)
 
         # Search bar for filtering
@@ -95,6 +97,26 @@ class Medicament_dash:
         main_layout.addWidget(liste_all_medicament)
         main_layout.addWidget(self.search_bar)
         main_layout.addWidget(self.medicament_table)
+
+        self.page = "A" 
+
+        
+
+        self.pagination_layout = QHBoxLayout()
+        self.pagination_layout.setAlignment(Qt.AlignCenter)  
+        for i in list(string.ascii_uppercase):
+            page_button = QPushButton(str(i))
+            page_button.setObjectName("page_button")
+            page_button.clicked.connect(lambda _, page=i: self.change_page(page))
+            page_button.setCheckable(True)
+            self.pagination_layout.addWidget(page_button) 
+
+        main_layout.addLayout(self.pagination_layout)
+        self.remplire_table_medicamen()
+
+
+
+
         main_layout.addWidget(liste_new_medicament)
 
         self.new_medicament_table = QTableWidget(0, 4)
@@ -108,9 +130,15 @@ class Medicament_dash:
         self.new_medicament_table.cellClicked.connect(
             self.afficher_new_medicament_depuis_table
         )
+        
         main_layout.addWidget(self.new_medicament_table)
 
+
         self.main_interface.content_layout.addWidget(self.vente_dash)
+    
+    def change_page(self, page):
+        self.page = page
+        self.remplire_table_medicamen()
 
     def show_modifier_interface(self):
         self.main_interface.clear_content_frame()
@@ -347,11 +375,11 @@ class Medicament_dash:
         # if not self.all_data:
         #    self.load_all_data()
         # Get the filter text from the search bar
-        filter_text = self.search_bar.text().lower()
+        filter_text = self.search_bar.text().lower() 
 
         # Loop through all rows and hide/show them based on the search
         for row in range(self.medicament_table.rowCount()):
-            item = self.medicament_table.item(row, 1)  # Assuming column 0 is 'Nom'
+            item = self.medicament_table.item(row, 2)  # Assuming column 0 is 'Nom'
             if item is not None:
                 if filter_text in item.text().lower():  # Case-insensitive comparison
                     self.medicament_table.setRowHidden(row, False)
@@ -360,7 +388,7 @@ class Medicament_dash:
 
     def remplire_table_medicamen(self):
         try:
-            medicaments = Medicament.extraire_tous_medicament(self.main_interface.conn)
+            medicaments = Medicament.extraire_tous_medicament(self.main_interface.conn, alphabet=self.page)
             self.medicament_table.setRowCount(len(medicaments))
             for index, element in enumerate(medicaments):
                 self.medicament_table.setItem(

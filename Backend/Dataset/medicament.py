@@ -448,12 +448,12 @@ class Medicament:
             return []
 
     @staticmethod
-    def extraire_tous_medicament(conn):
+    def extraire_tous_medicament(conn, alphabet='A'):
         try:
             conn = reconnexion_database(conn)
             cursor = conn.cursor(pymysql.cursors.DictCursor)
             cursor.execute(
-                "SELECT id_medicament, Code_EAN_13, Nom, Présentation, PPV, Min_Stock FROM Medicament WHERE Code_EAN_13 IS NOT NULL ORDER BY Nom;"
+                f"SELECT id_medicament, Code_EAN_13, Nom, Présentation, PPV, Min_Stock FROM Medicament WHERE Code_EAN_13 IS NOT NULL AND UPPER(Nom) LIKE '{alphabet}%' ORDER BY Nom;"
             )
             rows = cursor.fetchall()
 

@@ -12,6 +12,7 @@ from qtpy.QtWidgets import (
     QLineEdit,
     QCheckBox,
 )
+import string
 from qtpy.QtCore import Qt
 
 from Backend.Dataset.stock import Stock
@@ -45,7 +46,8 @@ class List_stock_dash:
         self.table_widget_medicament_expiration.setHorizontalHeaderLabels(
             ["Code médicament", "Nom médicament", "Date expiration", "Quantité"]
         )
-        self.populate_table()
+        
+        
 
         # Search bar for filtering
         self.search_bar = QLineEdit()
@@ -60,6 +62,20 @@ class List_stock_dash:
         )
         main_layout.addWidget(widget_medicament_expiration)
 
+        self.page = "A" 
+
+        self.pagination_layout = QHBoxLayout() 
+        self.pagination_layout.setAlignment(Qt.AlignCenter)  
+        for i in list(string.ascii_uppercase):
+            page_button = QPushButton(str(i))
+            page_button.setObjectName("page_button")
+            page_button.clicked.connect(lambda _, page=i: self.change_page(page))
+            page_button.setCheckable(True)
+            self.pagination_layout.addWidget(page_button) 
+
+        main_layout.addLayout(self.pagination_layout)
+        self.populate_table()
+
         # Quatrième widget: Nombre de ventes effectuées aujourd'hui
         widget_statistique = QWidget()
         widget_statistique_layout = QVBoxLayout(widget_statistique)
@@ -70,6 +86,10 @@ class List_stock_dash:
         main_layout.addWidget(widget_statistique)
 
         self.main_interface.content_layout.addWidget(self.vente_dash)
+
+    def change_page(self, page):
+        self.page = page
+        self.populate_table()
 
     def filter_table(self):
         # if not self.all_data:
@@ -89,7 +109,7 @@ class List_stock_dash:
                     self.table_widget_medicament_expiration.setRowHidden(row, True)
 
     def populate_table(self):
-        data = Stock.extraire_stock_medicament(self.main_interface.conn)
+        data = Stock.extraire_stock_medicament(self.main_interface.conn, self.page)
         self.table_widget_medicament_expiration.setRowCount(len(data))
         for index, element in enumerate(data):
             self.table_widget_medicament_expiration.setItem(
