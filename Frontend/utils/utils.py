@@ -6,6 +6,8 @@ from qtpy.QtCore import QRegularExpression
 #from dotenv import load_dotenv
 import os
 import pymysql
+from PyQt5.QtCore import QLocale
+
 
 
 #load_dotenv("config.env")
@@ -36,6 +38,7 @@ def set_styles():
 
 int_validator = QRegularExpressionValidator(QRegularExpression(r"^\d{1,15}$"))
 float_validator = QDoubleValidator()
+float_validator.setLocale(QLocale("C"))
 email_validator = EmailValidator()
 phone_validator = PhoneValidator()
 
