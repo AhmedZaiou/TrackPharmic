@@ -55,7 +55,7 @@ class Scraper_medicament:
                 return float(prix_str.replace("dhs", "").strip())
             return None
 
-        data["PPV"] = parse_prix(data.get("PPV"))
+        data["PPV"] = parse_prix(data.get("PPV") if data.get("PPV") else data.get("PPC") if data.get("PPC") else None)
         data["Prix hospitalier"] = parse_prix(data.get("Prix hospitalier"))
         data["url"] = url
         return data
