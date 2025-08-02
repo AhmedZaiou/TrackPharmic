@@ -69,7 +69,7 @@ class Commande_client:
         }
         self.producs_table = pd.DataFrame()
         self.last_key_time = time.time()
-        self.barcode_delay_threshold = 0.1
+        self.barcode_delay_threshold = barcode_delay_threshold
         self.code_b = False
 
     def show_vente_interface(self):
@@ -93,9 +93,8 @@ class Commande_client:
         barcode_layout = QHBoxLayout()
 
         self.barcode_input = QLineEdit()
-        self.barcode_input.setValidator(int_validator)
-        self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
-        self.barcode_input.returnPressed.connect(self.process_barcode_manuel)
+        #self.barcode_input.setValidator(int_validator)
+        self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici") 
 
         self.name_medicament_input = QLineEdit()
         self.name_medicament_input.setPlaceholderText("Entrez le nom du medicament")
@@ -365,16 +364,11 @@ class Commande_client:
             self.client_max_credit.setText(f"{self.client_info['max_credit']} Dh")
             self.client_credit_actuel.setText(f"{self.client_info['credit_actuel']} Dh")
 
-    def process_barcode(self, codebare):
-        if len(codebare) >= 13:
-            return codebare[-13:]
-        return ""
+    
 
     def ajouter_panier(self):
-        code = self.barcode_input.text()
-        code = self.process_barcode(code)
-        if len(code) == 13:
-            self.add_medicament_to_vente(code)
+        code = self.barcode_input.text()  
+        self.add_medicament_to_vente(code)
 
     def update_table(self):
         self.cart_table.setRowCount(len(self.producs_table))
@@ -436,16 +430,17 @@ class Commande_client:
                 self.main_interface.conn, code_barre_scanner
             )
 
-            medicament["Quantite"] = 1
-            medicament["Prix_total"] = medicament["PPV"]
+            
 
             if medicament is None:
                 QMessageBox.information(
                     self.main_interface,
                     "Medicament non reconue",
-                    "Medicament non reconue",
+                    f"Médicament avec le code-barres {code_barre_scanner} non reconnu. Veuillez vérifier que le code-barres est correct et réessayer.",
                 )
                 return
+            medicament["Quantite"] = 1
+            medicament["Prix_total"] = medicament["PPV"]
             df = pd.DataFrame([medicament])
 
             if self.producs_table.empty:
@@ -460,27 +455,20 @@ class Commande_client:
 
     def keyPressEvent(self, event):
         try:
-            key = event.text()
+            key = event.text() 
             current_time = time.time()
-            if current_time - self.last_key_time < self.barcode_delay_threshold:
-                self.code_b = True
+            if (current_time - self.last_key_time) > self.barcode_delay_threshold:
+                self.code_barre_scanner = ""  
             self.last_key_time = current_time
-
-            if (
-                key == "\r" and self.code_b
-            ):  # Lorsque le lecteur envoie un saut de ligne
-                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+            if key == "\r" or key == "\n":  
                 if self.code_barre_scanner != "":
                     self.add_medicament_to_vente(self.code_barre_scanner)
-                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-                self.code_b = False
+                self.code_barre_scanner = "" 
             else:
-                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+                self.code_barre_scanner += key  
         except:
-            print("Erreur")
+            print("erreur")
 
-    def process_barcode_manuel(self):
-        pass
 
     def add_product_to_cart(self, barcode):
         # Simule l'ajout d'un produit basé sur un code-barres

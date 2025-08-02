@@ -11,7 +11,7 @@ from PyQt5.QtCore import QLocale
 
 
 #load_dotenv("config.env")
-
+barcode_delay_threshold = 0.3
 
 current_directory = Path(__file__).parent
 Front_end = current_directory.parent

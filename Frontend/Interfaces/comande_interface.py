@@ -36,7 +36,7 @@ class Commande_dash:
         self.info_fourniseur = None
         self.code_barre_scanner = ""
         self.last_key_time = time.time()
-        self.barcode_delay_threshold = 0.1
+        self.barcode_delay_threshold = barcode_delay_threshold
         self.main_interface.keyPressEvent = self.keyPressEvent
 
     def create_menu_commande(self):
@@ -111,7 +111,7 @@ class Commande_dash:
         # Zone d'entrée pour le code-barres
         barcode_layout = QGridLayout()
         self.barcode_input = QLineEdit()
-        self.barcode_input.setValidator(int_validator)
+        #self.barcode_input.setValidator(int_validator)
         self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
 
         self.nom_medicament = QLineEdit()
@@ -229,7 +229,7 @@ class Commande_dash:
         )
         if medicament is None:
             QMessageBox.information(
-                self.main_interface, "Medicament non reconue", "Medicament non reconue"
+                self.main_interface, "Medicament non reconue", f"Médicament avec le code-barres {code_barre_scanner} non reconnu. Veuillez vérifier que le code-barres est correct et réessayer."
             )
             return
         else:
@@ -414,19 +414,16 @@ class Commande_dash:
 
     def keyPressEvent(self, event):
         try:
-            key = event.text()
+            key = event.text() 
             current_time = time.time()
-            if current_time - self.last_key_time < self.barcode_delay_threshold:
-                code_b = True
+            if (current_time - self.last_key_time) > self.barcode_delay_threshold:
+                self.code_barre_scanner = ""  
             self.last_key_time = current_time
-
-            if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
-                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+            if key == "\r" or key == "\n":  
                 if self.code_barre_scanner != "":
                     self.ajouter_medi_to_commande_code(self.code_barre_scanner)
-                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-
+                self.code_barre_scanner = "" 
             else:
-                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+                self.code_barre_scanner += key  
         except:
             print("erreur")

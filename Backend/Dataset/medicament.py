@@ -91,6 +91,9 @@ class Medicament:
             Stock_Actuel = 0
             url_medicament = values.get("url")
 
+            if Nom == 'Page non trouvée.':
+                return None
+
             Medicament.supprimer_medicament_url(conn, url_medicament)
             Medicament.ajouter_medicament(
                 conn,

@@ -452,7 +452,7 @@ class Stock_dash:
 
         code_barre = QLabel("Code EAN 13 :")
         self.code_barre_value_ajout = QLineEdit()
-        self.code_barre_value_ajout.setValidator(int_validator)
+        #self.code_barre_value_ajout.setValidator(int_validator)
         self.code_barre_value_ajout.setPlaceholderText(" Scanner Code EAN 13")
         self.code_barre_value_ajout.setEnabled(False)
 
@@ -744,23 +744,25 @@ class Stock_dash:
         return ""
 
     def keyPressEventLibre(self, event):
+
         try:
-            """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
-            key = event.text()
+            key = event.text() 
             current_time = time.time()
-            if current_time - self.last_key_time < self.barcode_delay_threshold:
-                code_b = True
+            if (current_time - self.last_key_time) > self.barcode_delay_threshold:
+                self.code_barre_scanner = ""  
             self.last_key_time = current_time
-            if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
-                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+            if key == "\r" or key == "\n":  
                 if self.code_barre_scanner != "":
                     self.code_barre_value_ajout.setText(self.code_barre_scanner)
                     self.remplir_medicament_ajout(self.code_barre_scanner)
-                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
+                self.code_barre_scanner = "" 
             else:
-                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+                self.code_barre_scanner += key  
         except:
-            print("Erreurs")
+            print("erreur")
+
+
+ 
 
     def remplir_medicament_ajout(self, code_barre_scanner):
         self.medicament_search = Medicament.extraire_medicament_code_barre(
@@ -770,7 +772,7 @@ class Stock_dash:
             reply = QMessageBox.question(
                 self.main_interface,
                 "Erreur",
-                f"Le medicament n'exsiste pas, voulez vous l'ajouter ?",
+                f"Médicament avec le code-barres {code_barre_scanner} non reconnu. Veuillez vérifier que le code-barres est correct et réessayer.",
                 QMessageBox.Yes,
                 QMessageBox.Cancel,
             )
@@ -787,22 +789,22 @@ class Stock_dash:
             self.prix_vente_medicament_ajout.setText(str(self.medicament_search["PPV"]))
 
     def keyPressEvent(self, event):
+
         try:
-            key = event.text()
+            key = event.text() 
             current_time = time.time()
-            if current_time - self.last_key_time < self.barcode_delay_threshold:
-                code_b = True
+            if (current_time - self.last_key_time) > self.barcode_delay_threshold:
+                self.code_barre_scanner = ""  
             self.last_key_time = current_time
-            if key == "\r" and code_b:  # Lorsque le lecteur envoie un saut de ligne
-                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
+            if key == "\r" or key == "\n":  
                 if self.code_barre_scanner != "":
                     self.code_barre_value.setText(self.code_barre_scanner)
                     self.remplir_medicament_cases(self.code_barre_scanner)
-                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
+                self.code_barre_scanner = "" 
             else:
-                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+                self.code_barre_scanner += key  
         except:
-            print("Erreur")
+            print("erreur")
 
     def remplir_medicament_cases(self, code_barre_scanner):
         self.medicament_search = Medicament.extraire_medicament_code_barre(
@@ -812,7 +814,7 @@ class Stock_dash:
             reply = QMessageBox.question(
                 self.main_interface,
                 "Erreur",
-                f"Le medicament n'exsiste pas, voulez vous l'ajouter ?",
+                f"Médicament avec le code-barres {code_barre_scanner} non reconnu. Veuillez vérifier que le code-barres est correct et réessayer.",
                 QMessageBox.Yes,
                 QMessageBox.Cancel,
             )

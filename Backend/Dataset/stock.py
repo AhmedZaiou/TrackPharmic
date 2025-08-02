@@ -348,6 +348,16 @@ class Stock:
             total_achat = result["total_achat"]
             total_vente = result["total_vente"]
 
+            cursor.execute(
+                """
+                SELECT SUM(prix_vente * quantite_actuelle )AS chiffre_affaire 
+                FROM Stock  
+            """,
+                (),
+            )
+            result = cursor.fetchone()
+            chiffre_affaire = result["chiffre_affaire"] 
+
             # Quantités totales en stock aujourd'hui
             cursor.execute(
                 """
@@ -387,6 +397,7 @@ class Stock:
             return {
                 "Total des achats pour la journée": total_achat or 0,
                 "Total des ventes pour la journée": total_vente or 0,
+                "Chiffre d'affaire (total)" : chiffre_affaire or 0,
                 "Quantités totales en stock aujourdhui": total_quantite or 0,
                 "Quantités minimales non respectées aujourdhui": quantites_minimales_non_respectees
                 or 0,
@@ -398,6 +409,7 @@ class Stock:
             return {
                 "Total des achats pour la journée": 0,
                 "Total des ventes pour la journée": 0,
+                "Chiffre d'affaire (total)" : 0,
                 "Quantités totales en stock aujourdhui": 0,
                 "Quantités minimales non respectées aujourdhui": 0,
                 "Nombre Médicaments proches de la date dexpiration aujourdhui": 0,

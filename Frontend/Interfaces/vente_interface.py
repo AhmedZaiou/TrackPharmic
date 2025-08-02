@@ -152,7 +152,7 @@ class Vente_dash:
         # Zone d'entrée pour le code-barres
         barcode_layout = QHBoxLayout()
         self.barcode_input = QLineEdit()
-        self.barcode_input.setValidator(int_validator)
+        #self.barcode_input.setValidator(int_validator)
         self.barcode_input.setPlaceholderText("Entrez le code-barres ou scannez ici")
         self.barcode_input.returnPressed.connect(self.process_barcode_manuel)
 
@@ -254,20 +254,30 @@ class Vente_dash:
         self.list_od_commande = CommandeClient.get_commande(
             self.main_interface.conn, code_commande
         )
-
-        self.commande_id_input.setText(code_commande)
-        self.montant_facture_commande_value.setText(
-            str(self.list_od_commande[0]["total_facture_calculer"])
-        )
-        self.montant_payer_commande_value.setText(
-            str(self.list_od_commande[0]["to_pay_now"])
-        )
-        self.montant_rest_commande_value.setText(
-            str(
-                self.list_od_commande[0]["total_facture_calculer"]
-                - self.list_od_commande[0]["to_pay_now"]
+        if len(self.list_od_commande) > 0:
+            self.commande_id_input.setText(code_commande)
+            self.montant_facture_commande_value.setText(
+                str(self.list_od_commande[0]["total_facture_calculer"])
             )
-        )
+            self.montant_payer_commande_value.setText(
+                str(self.list_od_commande[0]["to_pay_now"])
+            )
+            self.montant_rest_commande_value.setText(
+                str(
+                    self.list_od_commande[0]["total_facture_calculer"]
+                    - self.list_od_commande[0]["to_pay_now"]
+                )
+            )
+        else:
+            QMessageBox.information(
+                self.main_interface,
+                "Commande non trouvée",
+                f"Commande avec l'ID {code_commande} non trouvée.",
+            )
+            self.commande_id_input.clear()
+            self.montant_facture_commande_value.setText("None")
+            self.montant_payer_commande_value.setText("None")
+            self.montant_rest_commande_value.setText("None")
 
     def OntextChangeClient(self, text):
         if len(text) >= 3:
@@ -408,7 +418,7 @@ class Vente_dash:
                 QMessageBox.information(
                     self.main_interface,
                     "Medicament non reconue",
-                    "Medicament non reconue",
+                    f"Médicament avec le code-barres {code_barre_scanner} non reconnu. Veuillez vérifier que le code-barres est correct et réessayer.",
                 )
                 return
             else:
@@ -465,29 +475,25 @@ class Vente_dash:
                     self.update_table()
 
     def keyPressEvent(self, event):
+
+
         try:
-            key = event.text()
+            key = event.text() 
             current_time = time.time()
-            if current_time - self.last_key_time < self.barcode_delay_threshold:
-                self.code_b = True
+            if (current_time - self.last_key_time) > self.barcode_delay_threshold:
+                self.code_barre_scanner = ""  
             self.last_key_time = current_time
-            if (
-                key == "\r" and self.code_b
-            ):  # Lorsque le lecteur envoie un saut de ligne
-                self.code_barre_scanner = self.process_barcode(self.code_barre_scanner)
-                if (
-                    self.code_barre_scanner != ""
-                    and self.code_barre_scanner[:2] == "10"
-                ):
-                    self.search_commande_button(self.code_barre_scanner)
-                elif self.code_barre_scanner != "":
-                    self.add_medicament_to_vente(self.code_barre_scanner)
-                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
-                self.code_b = False
+            if key == "\r" or key == "\n":  
+                if self.code_barre_scanner != "":
+                    if (self.code_barre_scanner[:2] == "10"):
+                        self.search_commande_button(self.code_barre_scanner)
+                    else:
+                        self.add_medicament_to_vente(self.code_barre_scanner)
+                self.code_barre_scanner = "" 
             else:
-                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+                self.code_barre_scanner += key  
         except:
-            print("Erreur")
+            print("erreur")
 
     def process_barcode_manuel(self):
         pass
@@ -835,11 +841,11 @@ class Vente_dash:
             id_client,
             numero_facture,
             to_pay_now,
-            total_facture - int(to_pay_now),
+            total_facture - float(to_pay_now),
             now_str,
             status,
             id_salarie,
         )
         Clients.ajouter_credit_client(
-            self.main_interface.conn, id_client, total_facture - int(to_pay_now)
+            self.main_interface.conn, id_client, total_facture - float(to_pay_now)
         )

@@ -16,7 +16,7 @@ from qtpy.QtWidgets import (
     QHeaderView,
 )
 import string
-
+import time
 from qtpy.QtCore import Qt
 
 
@@ -432,17 +432,19 @@ class Medicament_dash:
             
 
     def keyPressEvent(self, event):
-        try:
-            """Gérer les entrées clavier, comme les données du lecteur de code-barres."""
-            key = event.text()
 
-            if key == "\r":  # Lorsque le lecteur envoie un saut de ligne
-                if len(self.code_barre_scanner) == 13:
+        try:
+            key = event.text() 
+            current_time = time.time()
+            if (current_time - self.last_key_time) > self.barcode_delay_threshold:
+                self.code_barre_scanner = ""  
+            self.last_key_time = current_time
+            if key == "\r" or key == "\n":  
+                if self.code_barre_scanner != "":
                     self.code_ean_input.setText(self.code_barre_scanner)
                     self.medicament_search = Medicament.extraire_medicament_code_barre(
                         self.main_interface.conn, self.code_barre_scanner
                     )
-                    self.code_barre_scanner = ""  # Réinitialiser pour le prochain scan
                     if self.medicament_search is not None:
                         reply = QMessageBox.question(
                             self.main_interface,
@@ -452,10 +454,14 @@ class Medicament_dash:
                         )
                         if reply == QMessageBox.Yes:
                             self.modifier_medicament_inter(self.code_barre_scanner)
+
+
+                self.code_barre_scanner = "" 
             else:
-                self.code_barre_scanner += key  # Ajouter le caractère au code en cours
+                self.code_barre_scanner += key  
         except:
             print("erreur")
+
 
     def modifier_medicament_inter(self, medicament):
         self.medicament_modif = medicament

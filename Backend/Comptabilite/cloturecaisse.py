@@ -104,6 +104,7 @@ class Caisse:
                 "commandes_en_attente": data["Commande statistique"][
                     "statistique general"
                 ]["commandes_en_attente"],
+                "chiffre_affaire": data["Stock statistique"]["Chiffre d'affaire (total)"],
             },
             "commande_situation": {
                 "commend_passer": data["Commande statistique"]["statistique general"][
@@ -610,6 +611,10 @@ class Caisse:
                     <tr>
                         <th>Nombre de médicaments proches de la date d'expiration</th>
                         <td>{data['Stock_situation']['medicaments_stock_positif']}</td>
+                    </tr> 
+                    <tr>
+                        <th>Somme des prix de vente de tous les médicaments disponibles en stock</th>
+                        <td>{data['Stock_situation']['chiffre_affaire']}</td>
                     </tr> 
                     
                 </table>
