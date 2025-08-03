@@ -16,6 +16,9 @@ def generate_barcode(barcode_data):
     }
     barcode_format = barcode.get_barcode_class(
         "EAN13"
+    ) 
+    barcode_format = barcode.get_barcode_class(
+        "code128"
     )  # Barcode format (EAN13 in this case)
     barcode_instance = barcode_format(barcode_data, writer=ImageWriter())
 
@@ -28,19 +31,15 @@ def generate_barcode(barcode_data):
     barcode_image.save(buffered, format="PNG")
     # Convert the image to base64
     barcode_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-    barcode_image.save(f"barcode_{barcode_data}.png", format="PNG")
+    barcode_image.save(f"bare_code/barcode_{barcode_data}.png", format="PNG")
 
     return barcode_base64
 
 
 barcode_data_list = [
-    "6118000420422",
-    "6118001072330",
-    "6118001072347",
-    "6118000340669",
-    "6118001170388",
-    "6118001170371",
-    "6118000430025",
+    "ART6536",
+    "VC",
+    "20094827",
 ]
 for item in barcode_data_list:
     generate_barcode(item)
