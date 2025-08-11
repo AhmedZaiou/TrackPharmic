@@ -209,8 +209,8 @@ class Commande_dash:
             self.commande.append([code_barre, nom_medicament, quantite])
             test_existance = False
             for item in self.commande:
-                if item[0] == code_barre:
-                    item[2] += 1
+                if item[0] == code_barre and item[1] == nom_medicament:
+                    #item[2] += quantite
                     test_existance = True
                     break
             if not test_existance:

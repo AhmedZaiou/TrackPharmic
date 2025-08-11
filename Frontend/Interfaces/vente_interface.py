@@ -375,12 +375,12 @@ class Vente_dash:
             self.cart_table.setItem(
                 row, 7, QTableWidgetItem(str(product["Prix_total"]))
             )
-
+        total = self.producs_table['Prix_total'].astype(float).sum()
         self.subtotal_label.setText(
-            f"Sous-total : {self.producs_table['Prix_total'].sum()} Dh"
+            f"Sous-total : {total:.2f} Dh"
         )
         self.total_label.setText(
-            f"<b>Total : {self.producs_table['Prix_total'].sum()} Dh</b>"
+            f"<b>Total : {total:.2f} Dh</b>"
         )
 
         self.barcode_input.clear()
