@@ -161,6 +161,33 @@ class Ventes:
         except Exception as e:
             print(f"Erreur lors de l'extraction des ventes : {e}")
             return []
+    
+    @staticmethod
+    def extraire_ventes_by_date(conn, date= "2025-08-12"):
+        #SELECT V.id_medicament, M.Nom, M.Code_EAN_13, M.PPV, V.prix_vente, V.date_vente, V.quantite_vendue, V.total_facture, V.numero_facture, V.id_salarie FROM `Ventes` AS V JOIN `Medicament` AS M ON V.id_medicament = M.id_medicament WHERE DATE(V.date_vente) = CURDATE();
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("SELECT `numero_facture`, `date_vente`, sum(`total_facture`) as `total_facture`  FROM Ventes where DATE(date_vente)  = %s GROUP BY numero_facture" , (date,))
+            rows = cursor.fetchall()
+
+            return [dict(row) for row in rows]
+        except Exception as e:
+            print(f"Erreur lors de l'extraction des ventes : {e}")
+            return []
+    @staticmethod
+    def extraire_ventes_by_nymero(conn, numero_facture):
+        #
+        try:
+            conn = reconnexion_database(conn)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("SELECT V.id_medicament, M.Nom, M.Code_EAN_13, M.PPV, V.prix_vente, V.date_vente, V.quantite_vendue, V.total_facture, V.numero_facture, V.id_salarie FROM `Ventes` AS V JOIN `Medicament` AS M ON V.id_medicament = M.id_medicament WHERE V.numero_facture = %s" , (numero_facture,))
+            rows = cursor.fetchall()
+
+            return [dict(row) for row in rows]
+        except Exception as e:
+            print(f"Erreur lors de l'extraction des ventes : {e}")
+            return []
 
     @staticmethod
     def get_transactions_jour(conn, salarie):

@@ -15,7 +15,9 @@ from qtpy.QtWidgets import (
     QPushButton,
     QLineEdit,
     QCheckBox,
+    QDateEdit,
 )
+from PyQt5.QtCore import QDate
 from qtpy.QtCore import Qt, QStringListModel
 from Backend.Dataset.medicament import Medicament
 from Backend.Dataset.stock import Stock
@@ -94,8 +96,8 @@ class Vente_dash:
 
         self.search_client_button = QPushButton("Rechercher")
         self.search_client_button.clicked.connect(self.search_client)
-        self.add_client_button = QPushButton("Nouveau client")
-        self.add_client_button.clicked.connect(self.search_client)
+        #self.add_client_button = QPushButton("Nouveau client")
+        #self.add_client_button.clicked.connect(self.search_client)
 
         self.client_status_label = QLabel("None")
         self.client_cin_label = QLabel(" None")
@@ -109,7 +111,7 @@ class Vente_dash:
 
         client_layout.addWidget(self.client_id_input, 0, 0)
         client_layout.addWidget(self.search_client_button, 0, 1)
-        client_layout.addWidget(self.add_client_button, 0, 2)
+        #client_layout.addWidget(self.add_client_button, 0, 2)
 
         # section commande :
         self.label_commande = QLabel("Numéro commande : ")
@@ -235,6 +237,10 @@ class Vente_dash:
         self.cancel_button = QPushButton("Annuler")
         self.cancel_button.clicked.connect(self.cancel_sale)
         button_layout.addWidget(self.cancel_button)
+
+        self.hist_button = QPushButton("Historique des ventes")
+        self.hist_button.clicked.connect(self.hist_button_func)
+        button_layout.addWidget(self.hist_button)
 
         main_layout.addLayout(button_layout)
 
@@ -849,3 +855,97 @@ class Vente_dash:
         Clients.ajouter_credit_client(
             self.main_interface.conn, id_client, total_facture - float(to_pay_now)
         )
+
+    def hist_button_func(self):
+        self.code_barre_scanner = ""
+        self.main_interface.keyPressEvent = self.keyPressEvent
+
+        self.main_interface.clear_content_frame()
+
+        self.vente_dash = QWidget()
+        self.vente_dash.setObjectName("vente_dash")
+        # Widget central
+        # Layout principal
+        main_layout = QVBoxLayout(self.vente_dash)
+
+        titre_page = QLabel("Historique de Ventes")
+        titre_page.setObjectName("TitrePage")
+        titre_page.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(titre_page)
+
+        self.date_input = QDateEdit()
+        self.date_input.setCalendarPopup(True)  # Afficher le calendrier
+        self.date_input.setDisplayFormat("yyyy-MM-dd")
+        self.date_input.setDate(QDate.currentDate())
+
+        btn_filtrer = QPushButton("Filtrer")
+        btn_filtrer.clicked.connect(self.filtrer_par_date)
+
+        main_layout.addWidget(self.date_input)
+        main_layout.addWidget(btn_filtrer)
+
+
+        self.table_hist = QTableWidget()
+        self.table_hist.setColumnCount(3)
+
+        self.table_hist.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_hist.setHorizontalHeaderLabels(
+            ["N° facture", "Date de facture", "Total de la facture"]
+        )
+        self.table_hist.cellClicked.connect(self.facture_selected)
+        date_select = datetime.today().strftime("%Y-%m-%d")
+        self.remplir_tableau_factire(date_select)
+
+        main_layout.addWidget(self.table_hist)
+
+        self.main_interface.content_layout.addWidget(self.vente_dash)
+    
+    def filtrer_par_date(self):
+        date = self.date_input.date().toString("yyyy-MM-dd")
+        self.remplir_tableau_factire(date)
+
+    def facture_selected(self, row, column):
+        self.numero_facture = self.table_hist.item(row, 0).text()
+        data_facture = Ventes.extraire_ventes_by_nymero(self.main_interface.conn,self.numero_facture)
+        numero_facture = data_facture[0]["numero_facture"]
+        id_sala = data_facture[0]["id_salarie"]
+        total_facture = 0
+        message = f"""
+            <!DOCTYPE html>
+            <html>
+            <body>
+                <h2>RACHAD TAZA</h2>
+                <p><strong>Adresse :</strong> Hay Rachad, Bloc2, n:75, Taza</p>
+                <p><strong>Téléphone :</strong> 0535285298, 0680061368</p>  
+                <p>Facture n°: {numero_facture}</p>
+                <p><strong>Agent :</strong> {id_sala}</p>
+                <hr>
+                """
+        message += "<h4>Détails de la vente:</h4>"
+
+        message += "<hr>"
+
+        for item in data_facture: 
+
+            message += f"{item['Nom']} <br>"
+            message += f"{item['Code_EAN_13']}   &nbsp;&nbsp; {item['quantite_vendue']} x  &nbsp;&nbsp; {item['prix_vente']} Dh <br><br>"
+            total_facture +=  item['prix_vente'] * item['quantite_vendue']
+        message += f""" 
+
+                <hr>
+
+                <p><strong>Total facture :</strong> {total_facture} Dh</p>"""
+        reply = confirm_sale(self.main_interface, "", message)
+        
+    
+
+    def remplir_tableau_factire(self, date):
+        # Exemple de données fictives
+        ventes_data = Ventes.extraire_ventes_by_date(self.main_interface.conn, date)
+
+        self.table_hist.setRowCount(len(ventes_data))
+
+        for row, data_vente in enumerate(ventes_data):
+            self.table_hist.setItem(row, 0, QTableWidgetItem(str(data_vente["numero_facture"])))
+            self.table_hist.setItem(row, 1, QTableWidgetItem(str(data_vente["date_vente"])))
+            self.table_hist.setItem(row, 2, QTableWidgetItem(str(data_vente["total_facture"])))
