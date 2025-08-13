@@ -84,6 +84,11 @@ class Stock_dash:
         menu_layout = self.create_menu_commande()
         main_layout.addLayout(menu_layout)
 
+        label_information = QLabel(f"Merci d'envoyer les documents par mail à l'adresse : <b>{smtp_user}</b>")
+        label_information.setOpenExternalLinks(True)
+
+        main_layout.addWidget(label_information)
+
         self.Justificatifs_table = QTableWidget(0, 5)
         self.Justificatifs_table.horizontalHeader().setSectionResizeMode(
             QHeaderView.Stretch
